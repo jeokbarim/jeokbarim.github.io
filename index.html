@@ -594,9 +594,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
   }
   var BUILD = "1.22.0";
   var SEEN_KEY = "jeokbarim-seen-version";
-  var CHANGES = [
-    "(귀여운) 앱 아이콘을 업데이트 했어\uD83D\uDC9F\n\n꼭 백업을 한 뒤,\n\nhttps://jeokbarim.netlify.app\n\n다시 웹사이트 들어가서 홈 화면 추가하고 기존 어플 삭제하면 완료!\n\n백업 파일 불러와서 다시 즐기면 돼\uD83D\uDC69\uD83C\uDFFB\u200D\uD83C\uDFA4"
-  ];
+  // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
+  var CHANGES = [];
   var DAILY_KEY = "jeokbarim-daily-pick";
   function pickDailyQuote(forceNew) {
     var d = today(), stored = null;
