@@ -318,7 +318,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 #dwCrayonBtn { margin-left: auto; }
 .book-draw { width: 100%; max-width: 300px; display: block; border-radius: 2px; }
 .datewrap { position: relative; }
-.datewrap input[type="date"] { padding-right: 30px; }
+.datewrap input[type="text"] { padding-right: 58px; }
+.datewrap input[readonly] { cursor: pointer; }
 .datex { position: absolute; right: 4px; bottom: 0; width: 28px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 19px; line-height: 1; color: var(--muted); border: none; background: none; padding: 0; }
 .f label { display: block; font-size: 11.5px; color: var(--muted); margin-bottom: 5px; letter-spacing: 0.06em; }
 .row { display: flex; gap: 9px; }
@@ -332,6 +333,27 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .star.half { color: var(--line); }
 .star.half::before { content: '★'; position: absolute; left: 3px; top: 0; width: calc(50% - 3px); overflow: hidden; color: var(--lemon); }
 #fStars { display: inline-flex; touch-action: none; user-select: none; cursor: pointer; }
+.calpop { position: absolute; left: 0; right: 0; top: 100%; z-index: 40; margin-top: 4px;
+  background: var(--panel); border: 1px solid var(--paper); border-radius: 3px; padding: 9px 9px 8px; }
+.cal-h { display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 7px; }
+.cal-h span { flex: 1; text-align: center; font-size: 12.5px; color: var(--paper); }
+.cal-nav { display: flex; align-items: center; gap: 0; background: none; border: none; padding: 5px 6px; }
+.cal-nav.r { transform: rotate(180deg); }
+.cv { display: block; width: 7px; height: 10px; background-color: var(--paper);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 10'><path d='M5.7 1.4 L1.5 5 L5.7 8.6' fill='none' stroke='black' stroke-width='1.15' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center/contain;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 10'><path d='M5.7 1.4 L1.5 5 L5.7 8.6' fill='none' stroke='black' stroke-width='1.15' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center/contain; }
+.cal-nav .cv + .cv { margin-left: -2px; }
+.cal-g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+.cal-g i, .cal-g button { display: flex; align-items: center; justify-content: center; height: 27px; font-size: 11.5px; font-style: normal; }
+.cal-w { color: var(--muted); font-size: 10px; }
+.cal-d { color: var(--text); background: none; border: none; border-radius: 2px; padding: 0; }
+.cal-d.today { color: var(--lemon); }
+.cal-d.on { background: var(--paper); color: #22282A; }
+.cal-b { display: flex; gap: 5px; margin-top: 7px; }
+.cal-b button { flex: 1; font-size: 11px; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 2px; padding: 4px 0; }
+.datetype { position: absolute; right: 30px; bottom: 0; height: 44px; display: flex; align-items: center; background: none; border: none; padding: 0 4px; }
+.datetype::before { content: "직접"; font-size: 10.5px; line-height: 1; color: var(--muted); border: 1px solid var(--line); border-radius: 2px; padding: 3px 6px; }
+.datetype.on::before { background: var(--paper); color: #22282A; border-color: var(--paper); }
 .f label .hint { color: var(--muted); font-weight: 400; opacity: 0.8; letter-spacing: 0; font-size: 11px; }
 .boldbtn { float: right; font-size: 12px; font-weight: 700; color: var(--paper); background: none; border: 1px solid var(--paper); border-radius: 2px; padding: 5px 13px; margin-top: -12px; letter-spacing: 0; }
 .boldbtn.on { background: var(--paper); color: #22282A; border-color: var(--paper); }
@@ -844,7 +866,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.40.2";
+  var BUILD = "1.42.8";
   var SEEN_KEY = "jeokbarim-seen-version";
   // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
   var CHANGES = [];
@@ -1838,11 +1860,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += '<div class="f"><label>지은이</label><input id="fAuthor" value="' + esc(b ? b.author : "") + '"></div>';
     h += '<div class="f"><div class="filters" id="fStatus" style="margin-bottom:0">' + statusHtml(form.status) + "</div></div>";
     h += '<div class="row f"><div class="datewrap"><label>펼친 날</label>' +
-      '<input type="date" id="fStart" value="' + esc(form.startedAt) + '">' +
-      '<button type="button" class="datex" data-act="clearDate" data-v="fStart" aria-label="펼친 날 지우기">\u00d7</button></div>';
+      '<input type="text" id="fStart" readonly data-act="openCal" data-v="fStart" value="' + esc(dateLabel(form.startedAt)) + '">' +
+      '<button type="button" class="datex" data-act="clearDate" data-v="fStart" aria-label="펼친 날 지우기">\u00d7</button>' +
+      '<button type="button" class="datetype" data-act="dateType" data-v="fStart" aria-label="직접 입력"></button></div>';
     h += '<div class="datewrap"><label>덮은 날</label>' +
-      '<input type="date" id="fFinish" value="' + esc(form.finishedAt || "") + '">' +
-      '<button type="button" class="datex" data-act="clearDate" data-v="fFinish" aria-label="덮은 날 지우기">\u00d7</button></div></div>';
+      '<input type="text" id="fFinish" readonly data-act="openCal" data-v="fFinish" value="' + esc(dateLabel(form.finishedAt || "")) + '">' +
+      '<button type="button" class="datex" data-act="clearDate" data-v="fFinish" aria-label="덮은 날 지우기">\u00d7</button>' +
+      '<button type="button" class="datetype" data-act="dateType" data-v="fFinish" aria-label="직접 입력"></button></div></div>';
     h += '<div class="f"><label>별점 <span class="hint">(.5점은 밀어서 조절)</span></label><div id="fStars">' + starsHtml(form.rating) +
       '</div><div class="starrow2">' +
       '<button type="button" id="starNoneBtn" class="starzero' + (form.rating == null ? " on" : "") + '" data-act="starNone">별점 없음</button>' +
@@ -2005,7 +2029,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += '<div class="f wherewrap"><label>어디서</label><input id="qWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
       esc(whereInit) + '"><span class="where-caret"></span><div id="whereList"></div></div>';
     h += '<div class="row f"><div><label>쪽</label><input id="qPage" value="' + esc(q ? q.page : "") + '"></div>';
-    h += '<div><label>적은 날</label><input type="date" id="qDate" value="' + esc(form.createdAt) + '"></div></div>';
+    h += '<div class="datewrap"><label>적은 날</label>' +
+      '<input type="text" id="qDate" readonly data-act="openCal" data-v="qDate" value="' + esc(dateLabel(form.createdAt)) + '">' +
+      '<button type="button" class="datetype" data-act="dateType" data-v="qDate" aria-label="직접 입력"></button></div></div>';
     h += '<div class="f"><label>내 생각</label><textarea id="qNote" rows="4">' + esc(q ? q.note : "") + "</textarea></div>";
     h += '<div class="f"><label>태그 (쉼표로 구분)</label><input id="qTags" value="' + esc(q && q.tags ? q.tags.join(", ") : "") + '"></div>';
     h += '<button class="save" data-act="saveQuote">저장</button>';
@@ -2383,7 +2409,46 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         form.status = v;
         document.getElementById("fStatus").innerHTML = statusHtml(v);
         break;
+      case "openCal": openCal(v); break;
+      case "calClose": closeCal(); break;
+      case "calM":
+        calM += parseInt(v, 10);
+        if (calM < 0) { calM = 11; calY--; }
+        if (calM > 11) { calM = 0; calY++; }
+        renderCal();
+        break;
+      case "calY": calY += parseInt(v, 10); renderCal(); break;
+      case "calPick":
+        var cEl = document.getElementById(calFor);
+        if (cEl) cEl.value = dateLabel(v);
+        closeCal();
+        break;
+      case "dateType":
+        var dEl = document.getElementById(v);
+        if (dEl) {
+          closeCal();
+          if (dEl.readOnly) {
+            dEl.readOnly = false;
+            dEl.removeAttribute("data-act");
+            dEl.setAttribute("inputmode", "numeric");
+            dEl.setAttribute("placeholder", "2025 03 23");
+            dEl.value = "";
+            t.classList.add("on");
+            dEl.focus();
+          } else {
+            var iso = parseDateText(dEl.value);
+            dEl.readOnly = true;
+            dEl.setAttribute("data-act", "openCal");
+            dEl.removeAttribute("inputmode");
+            dEl.removeAttribute("placeholder");
+            if (dEl.value.trim() && !iso) toast("날짜가 잘못됐어");
+            dEl.value = dateLabel(iso);
+            t.classList.remove("on");
+          }
+        }
+        break;
       case "clearDate":
+        closeCal();
         var dEl = document.getElementById(v);
         if (dEl) dEl.value = "";
         break;
@@ -2459,6 +2524,129 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     }
   });
 
+  // "2026 5 12", "2026-5-12", "20260512" 같은 것을 날짜로 읽음
+  function parseDateText(v) {
+    var t = String(v || "").trim();
+    if (!t) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return t;
+
+    function two(x) { return (x < 10 ? "0" : "") + x; }
+    function build(y, m, d) {
+      y = parseInt(y, 10); m = parseInt(m, 10); d = parseInt(d, 10);
+      if (!y || !m || !d || m < 1 || m > 12 || d < 1 || d > 31) return "";
+      if (y < 100) y += 2000;
+      if (y < 1000) return "";
+      // 2월 30일처럼 실제로 없는 날 거르기
+      var chk = new Date(y, m - 1, d);
+      if (chk.getFullYear() !== y || chk.getMonth() !== m - 1 || chk.getDate() !== d) return "";
+      return y + "-" + two(m) + "-" + two(d);
+    }
+
+    // 구분자가 있으면 그걸로 나눔 (2025 3 23, 2025-3-23, 2025.3.23 …)
+    var parts = t.split(/[^0-9]+/).filter(function (x) { return x; });
+    if (parts.length >= 3) {
+      var r = build(parts[0], parts[1], parts[2]);
+      if (r) return r;
+    }
+
+    // 붙여 쓴 숫자만 있을 때 (20250323, 2025323, 250323 …)
+    var d0 = t.replace(/[^0-9]/g, "");
+    if (d0.length < 5 || d0.length > 8) return "";
+    var yLens = /^(19|20)/.test(d0) ? [4, 2] : [2, 4];
+    for (var a2 = 0; a2 < yLens.length; a2++) {
+      var yl = yLens[a2];
+      if (d0.length <= yl) continue;
+      var rest = d0.length - yl;
+      var splits = [];
+      if (rest === 2) splits.push([1, 1]);
+      else if (rest === 3) { splits.push([1, 2]); splits.push([2, 1]); }
+      else if (rest === 4) splits.push([2, 2]);
+      for (var k = 0; k < splits.length; k++) {
+        var ml = splits[k][0], dl = splits[k][1];
+        var got = build(d0.slice(0, yl), d0.slice(yl, yl + ml), d0.slice(yl + ml, yl + ml + dl));
+        if (got) return got;
+      }
+    }
+    return "";
+  }
+  function normalizeDateField(el) {
+    if (!el || el.readOnly) return;
+    var raw = String(el.value || "").trim();
+    if (!raw) return;
+    var iso = parseDateText(raw);
+    if (iso) el.value = dateLabel(iso);
+    else { el.value = ""; toast("날짜가 잘못됐어"); }
+  }
+  function isDateField(el) {
+    return !!el && (el.id === "fStart" || el.id === "fFinish" || el.id === "qDate");
+  }
+  function readDate(id) {
+    var el = document.getElementById(id);
+    if (!el) return "";
+    return el.type === "date" ? el.value : parseDateText(el.value);
+  }
+  /* ── 우리가 만든 달력 ── */
+  var calFor = null, calY = 0, calM = 0;
+  function dateLabel(iso) {
+    if (!iso) return "";
+    var p = String(iso).split("-");
+    if (p.length !== 3) return iso;
+    return p[0] + ". " + p[1] + ". " + p[2];
+  }
+  function openCal(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var iso = parseDateText(el.value);
+    var d = iso ? new Date(iso + "T00:00:00") : new Date();
+    calFor = id; calY = d.getFullYear(); calM = d.getMonth();
+    renderCal();
+  }
+  function closeCal() {
+    calFor = null;
+    var c = document.getElementById("calPop");
+    if (c && c.parentNode) c.parentNode.removeChild(c);
+  }
+  function renderCal() {
+    if (!calFor) return;
+    var host = document.getElementById(calFor);
+    if (!host) return;
+    var wrap = host.parentNode;
+    var old = document.getElementById("calPop");
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+
+    var first = new Date(calY, calM, 1);
+    var start = first.getDay();
+    var days = new Date(calY, calM + 1, 0).getDate();
+    var cur = parseDateText(host.value);
+    var today = new Date();
+    var todayIso = today.getFullYear() + "-" + (today.getMonth() < 9 ? "0" : "") + (today.getMonth() + 1) +
+      "-" + (today.getDate() < 10 ? "0" : "") + today.getDate();
+
+    var h = '<div class="cal-h">' +
+      '<button type="button" class="cal-nav" data-act="calY" data-v="-1" aria-label="한 해 전"><i class="cv"></i><i class="cv"></i></button>' +
+      '<button type="button" class="cal-nav" data-act="calM" data-v="-1" aria-label="한 달 전"><i class="cv"></i></button>' +
+      '<span>' + calY + "년 " + (calM + 1) + "월</span>" +
+      '<button type="button" class="cal-nav r" data-act="calM" data-v="1" aria-label="한 달 뒤"><i class="cv"></i></button>' +
+      '<button type="button" class="cal-nav r" data-act="calY" data-v="1" aria-label="한 해 뒤"><i class="cv"></i><i class="cv"></i></button></div>';
+    h += '<div class="cal-g">';
+    ["일", "월", "화", "수", "목", "금", "토"].forEach(function (w) { h += '<i class="cal-w">' + w + "</i>"; });
+    for (var i = 0; i < start; i++) h += "<i></i>";
+    for (var d2 = 1; d2 <= days; d2++) {
+      var iso2 = calY + "-" + (calM < 9 ? "0" : "") + (calM + 1) + "-" + (d2 < 10 ? "0" : "") + d2;
+      var cls = "cal-d" + (iso2 === cur ? " on" : "") + (iso2 === todayIso ? " today" : "");
+      h += '<button type="button" class="' + cls + '" data-act="calPick" data-v="' + iso2 + '">' + d2 + "</button>";
+    }
+    h += "</div>";
+    h += '<div class="cal-b"><button type="button" data-act="calPick" data-v="' + todayIso + '">오늘</button>' +
+      '<button type="button" data-act="calPick" data-v="">비우기</button>' +
+      '<button type="button" data-act="calClose">닫기</button></div>';
+
+    var pop = document.createElement("div");
+    pop.id = "calPop";
+    pop.className = "calpop";
+    pop.innerHTML = h;
+    wrap.appendChild(pop);
+  }
   function saveBook() {
     devLog("책 저장 시도");
     var title = document.getElementById("fTitle").value.trim();
@@ -2468,8 +2656,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       title: title,
       author: document.getElementById("fAuthor").value.trim(),
       status: form.status,
-      startedAt: document.getElementById("fStart").value,
-      finishedAt: document.getElementById("fFinish").value,
+      startedAt: readDate("fStart"),
+      finishedAt: readDate("fFinish"),
       rating: (form.rating == null ? null : form.rating),
       starPlus: !!form.starPlus,
       review: document.getElementById("fReview").value,
@@ -2507,7 +2695,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       bookId: matched ? matched.id : null,
       source: matched ? "" : where,
       page: document.getElementById("qPage").value.trim(),
-      createdAt: document.getElementById("qDate").value || today(),
+      createdAt: readDate("qDate") || today(),
       savedAt: form.savedAt || new Date().toISOString(),
       note: trimEnd(document.getElementById("qNote").value),
       tags: parseTags(document.getElementById("qTags").value)
@@ -2610,6 +2798,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && mroot.innerHTML) closeModal();
+    if (e.key === "Enter" && isDateField(e.target) && !e.target.readOnly) {
+      e.preventDefault();
+      normalizeDateField(e.target);
+      e.target.blur();
+    }
+  });
+  // 칸에서 손을 떼면 정리
+  document.addEventListener("focusout", function (e) {
+    if (isDateField(e.target)) normalizeDateField(e.target);
   });
 
   load();
