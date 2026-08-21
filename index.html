@@ -352,7 +352,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .cal-b { display: flex; gap: 5px; margin-top: 7px; }
 .cal-b button { flex: 1; font-size: 11px; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 2px; padding: 4px 0; }
 .datetype { position: absolute; right: 30px; bottom: 0; height: 44px; display: flex; align-items: center; background: none; border: none; padding: 0 4px; }
-.datetype::before { content: "직접"; font-size: 10.5px; line-height: 1; color: var(--muted); border: 1px solid var(--line); border-radius: 2px; padding: 3px 6px; }
+.datetype::before { content: "직접"; font-size: 10.5px; line-height: 1; color: var(--paper); border: 1px solid var(--paper); border-radius: 2px; padding: 3px 6px; }
 .datetype.on::before { background: var(--paper); color: #22282A; border-color: var(--paper); }
 .f label .hint { color: var(--muted); font-weight: 400; opacity: 0.8; letter-spacing: 0; font-size: 11px; }
 .boldbtn { float: right; font-size: 12px; font-weight: 700; color: var(--paper); background: none; border: 1px solid var(--paper); border-radius: 2px; padding: 5px 13px; margin-top: -12px; letter-spacing: 0; }
@@ -866,7 +866,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.42.8";
+  var BUILD = "1.42.10";
   var SEEN_KEY = "jeokbarim-seen-version";
   // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
   var CHANGES = [];
@@ -1640,7 +1640,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 
     function canStart(target) {
       if (modal.scrollTop > 0) return false;
-      if (target.closest("textarea, input, select, .wherelist, canvas, .drawpanel, .rich")) return false;
+      if (target.closest("textarea, input, select, .wherelist, canvas, .drawpanel, .rich, .calpop, .datewrap")) return false;
       return true;
     }
     function begin(y) {
@@ -1691,6 +1691,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 
   }
   function closeModal() {
+    closeCal();
     var back = backToBook;
     backToBook = null;
     mroot.innerHTML = "";
@@ -2278,6 +2279,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       wipeBtn.dataset.step = "";
       wipeBtn.className = "ghost danger";
       wipeBtn.textContent = "모든 기록 삭제하기";
+    }
+    // 달력이 열려 있는데 달력 밖을 눌렀으면 닫음
+    if (calFor && !e.target.closest("#calPop")) {
+      var ta = t ? t.dataset.act : "";
+      if (ta !== "openCal" && ta !== "dateType") closeCal();
     }
     if (!t) return;
     var act = t.dataset.act, id = t.dataset.id, v = t.dataset.v;
