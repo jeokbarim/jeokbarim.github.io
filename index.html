@@ -75,7 +75,7 @@ input, select { height: 44px; padding-top: 0; padding-bottom: 0; line-height: no
 input[type="date"] { -webkit-appearance: none; appearance: none; display: block; text-align: left; line-height: 42px; }
 input[type="date"]::-webkit-date-and-time-value { text-align: left; margin: 0; display: block; height: 42px; line-height: 42px; }
 input:focus, textarea:focus, select:focus { border-color: var(--paper); }
-textarea { resize: vertical; line-height: 1.65; }
+textarea { resize: vertical; line-height: 1.65; max-height: 44vh; overflow-y: auto; }
 select { -webkit-appearance: none; appearance: none; background-image: none; }
 ::placeholder { color: #567571; }
 :focus-visible { outline: 2px solid var(--lilac); outline-offset: 2px; }
@@ -355,14 +355,20 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .datetype::before { content: "직접"; font-size: 10.5px; line-height: 1; color: var(--paper); border: 1px solid var(--paper); border-radius: 2px; padding: 3px 6px; }
 .datetype.on::before { background: var(--paper); color: #22282A; border-color: var(--paper); }
 .f label .hint { color: var(--muted); font-weight: 400; opacity: 0.8; letter-spacing: 0; font-size: 11px; }
+.boldbtn + .boldbtn { margin-right: 6px; }
 .boldbtn { float: right; font-size: 12px; font-weight: 700; color: var(--paper); background: none; border: 1px solid var(--paper); border-radius: 2px; padding: 5px 13px; margin-top: -12px; letter-spacing: 0; }
 .boldbtn.on { background: var(--paper); color: #22282A; border-color: var(--paper); }
 .rich { font-size: 16px; width: 100%; background: rgba(0,0,0,0.22); color: var(--text);
   border: 1px solid var(--line); border-radius: 2px; padding: 10px 11px; outline: none;
-  min-height: 150px; line-height: 1.65; white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere;
+  height: 150px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  line-height: 1.65; white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere;
   caret-color: #F2E27E; -webkit-user-select: text; user-select: text; }
 .rich:focus { border-color: var(--paper); }
 .rich b { font-weight: 700; }
+.qt i, .qn i, .qn-line i, .review-line i, .extra-b i, .note-t i, .rich i { font-style: italic; }
+.qt u, .qn u, .qn-line u, .review-line u, .extra-b u, .note-t u, .rich u {
+  text-decoration: underline; text-decoration-color: currentColor;
+  text-underline-offset: 4px; text-decoration-thickness: 0.6px; }
 /* 서체 4종이 굵기가 하나뿐이라 브라우저가 굵게 만들어주지 않음.
    그래서 글자 테두리를 살짝 덧그려 직접 굵게 보이게 함.
    덧그린 만큼 잉크가 늘어나 더 검게 보이므로, 색을 조금 덜어 무게를 맞춤. */
@@ -411,7 +417,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .note-t { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 14.5px; line-height: 1.88; word-break: break-all; overflow-wrap: anywhere; color: var(--paper); text-align: justify; -webkit-text-align-last: left; text-align-last: left; }
 .note .tags { margin-top: 10px; }
 .note .tag { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
-#nText { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 16px; line-height: 1.8; min-height: 230px; }
+#nText { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 16px; line-height: 1.8; height: 230px; }
 .rich:empty::before { content: attr(data-ph); color: var(--muted); opacity: .75; }
 #nTags { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
 .empty { text-align: center; padding: 50px 22px; color: var(--muted); font-size: 13.5px; line-height: 1.85; }
@@ -745,7 +751,10 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   function escKeepIndent(v) {
     // 순서 주의: 따옴표를 먼저 굽고 나서 span을 심는다.
     // span을 먼저 심으면 class="indent"의 따옴표까지 곡선으로 바뀌어 클래스가 깨짐.
-    var out = esc(v);
+    // 줄 맨 앞 공백이 진하게/밑줄 표시 안쪽에 갇히면 들여쓰기가 사라지므로 밖으로 빼냄
+    var src = String(v == null ? "" : v)
+      .replace(/^(\*\*|__|_)+([ \t]+)/gm, function (m, _a, sp) { return sp + m.slice(0, m.length - sp.length); });
+    var out = esc(src);
     // 곧은 따옴표를 곡선 따옴표로 (여는 자리 / 닫는 자리 판단)
     out = out.replace(/&quot;/g, "\u0022").replace(/&#39;/g, "\u0027");
     out = out.replace(/[\u0022\u0027]/g, function (ch, i, str) {
@@ -754,8 +763,10 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       if (ch === "\u0022") return opening ? "\u201C" : "\u201D";
       return opening ? "\u2018" : "\u2019";
     });
-    // **글자** 로 감싼 부분은 진하게
+    // **글자** 는 진하게, __글자__ 는 밑줄
     out = out.replace(/\*\*([^*\n][^*]*?)\*\*/g, "<b>$1</b>");
+    out = out.replace(/__([^_\n][^_]*?)__/g, "<u>$1</u>");
+    out = out.replace(/_([^_\n][^_]*?)_/g, "<i>$1</i>");
     // 줄 맨 앞 들여쓰기
     out = out.replace(/^[ \t]+/gm, function (m) {
       return new Array(m.length + 1).join('<span class="indent"></span>');
@@ -866,7 +877,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.42.10";
+  var BUILD = "1.44.0";
   var SEEN_KEY = "jeokbarim-seen-version";
   // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
   var CHANGES = [];
@@ -1906,7 +1917,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   // 저장은 지금까지처럼 글자로 함. **표시**는 편집칸에서 진한 글씨로만 보이고 글자로는 안 보임.
   function boldToHtml(t) {
     return esc(String(t == null ? "" : t))
-      .replace(/\*\*([^*\n][^*]*?)\*\*/g, "<b>$1</b>");
+      .replace(/\*\*([^*\n][^*]*?)\*\*/g, "<b>$1</b>")
+      .replace(/__([^_\n][^_]*?)__/g, "<u>$1</u>")
+      .replace(/_([^_\n][^_]*?)_/g, "<i>$1</i>");
   }
   function htmlToBold(el) {
     var out = "";
@@ -1915,11 +1928,12 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         var c = node.childNodes[i], nm = c.nodeName;
         if (c.nodeType === 3) { out += c.nodeValue; continue; }
         if (nm === "BR") { out += "\n"; continue; }
-        if (nm === "B" || nm === "STRONG") {
+        if (nm === "B" || nm === "STRONG" || nm === "U" || nm === "INS" || nm === "I" || nm === "EM") {
+          var mk = (nm === "U" || nm === "INS") ? "__" : ((nm === "I" || nm === "EM") ? "_" : "**");
           var save = out; out = "";
           walk(c);
           var inner = out; out = save;
-          out += inner.trim() ? "**" + inner + "**" : inner;
+          out += inner.trim() ? mk + inner + mk : inner;
           continue;
         }
         if (nm === "DIV" || nm === "P") {
@@ -1931,18 +1945,30 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       }
     })(el);
     // 붙어 있는 진한 덩어리 둘은 하나로 합침 (**가**​**나** → **가나**)
-    return out.replace(/\u00a0/g, " ").replace(/\u200B/g, "").replace(/\*\*\*\*/g, "");
+    return out.replace(/\u00a0/g, " ").replace(/\u200B/g, "").replace(/\*\*\*\*/g, "").replace(/____/g, "");
   }
   var richId = "qText";
   function syncBoldBtn() {
-    var b = document.getElementById("boldBtn");
-    if (!b) return;
-    var on = false;
-    try { on = document.queryCommandState("bold"); } catch (e) {}
-    b.classList.toggle("on", !!on);
+    var b = document.getElementById("boldBtn"), u = document.getElementById("uLineBtn");
+    if (b) {
+      var on = false;
+      try { on = document.queryCommandState("bold"); } catch (e) {}
+      b.classList.toggle("on", !!on);
+    }
+    if (u) {
+      var uo = false;
+      try { uo = document.queryCommandState("underline"); } catch (e2) {}
+      u.classList.toggle("on", !!uo);
+    }
+    var it = document.getElementById("italBtn");
+    if (it) {
+      var io = false;
+      try { io = document.queryCommandState("italic"); } catch (e3) {}
+      it.classList.toggle("on", !!io);
+    }
   }
   // 커서만 있을 때 진하게를 끄는 건 브라우저가 잘 못함. 진한 덩어리 밖으로 커서를 직접 빼냄.
-  function exitBoldAtCaret() {
+  function exitBoldAtCaret(tags) {
     var el = document.getElementById(richId);
     var sel = window.getSelection();
     if (!el || !sel || !sel.rangeCount) return false;
@@ -1950,7 +1976,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (!r.collapsed) return false;
     var n = r.startContainer, b = null;
     while (n && n !== el) {
-      if (n.nodeName === "B" || n.nodeName === "STRONG") b = n;
+      if (tags.indexOf(n.nodeName) > -1) b = n;
       n = n.parentNode;
     }
     if (!b) return false;
@@ -1963,7 +1989,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       var parent = b.parentNode;
       parent.insertBefore(zw, b.nextSibling);
       if (frag.textContent) {
-        var nb = document.createElement("b");
+        var nb = document.createElement(b.nodeName.toLowerCase());
         nb.appendChild(frag);
         parent.insertBefore(nb, zw.nextSibling);
       }
@@ -1974,26 +2000,28 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       return true;
     } catch (e) { return false; }
   }
-  function applyBold() {
+  function applyMark(cmd) {
     var el = document.getElementById(richId);
     if (!el) return;
+    var tags = cmd === "underline" ? ["U", "INS"] : (cmd === "italic" ? ["I", "EM"] : ["B", "STRONG"]);
     if (document.activeElement !== el) el.focus();
     try { document.execCommand("styleWithCSS", false, false); } catch (e0) {}
     var on = false;
-    try { on = document.queryCommandState("bold"); } catch (e1) {}
+    try { on = document.queryCommandState(cmd); } catch (e1) {}
     var sel = window.getSelection();
     var collapsed = sel && sel.rangeCount && sel.getRangeAt(0).collapsed;
     if (on && collapsed) {
-      var moved = exitBoldAtCaret();
-      // 커서를 밖으로 뺀 뒤에도 브라우저가 '진하게 상태'를 들고 있으면 그것도 끔
+      var moved = exitBoldAtCaret(tags);
+      // 커서를 밖으로 뺀 뒤에도 브라우저가 그 상태를 들고 있으면 그것도 끔
       var still = false;
-      try { still = document.queryCommandState("bold"); } catch (e2) {}
-      if (still) { try { document.execCommand("bold", false, null); } catch (e3) {} }
+      try { still = document.queryCommandState(cmd); } catch (e2) {}
+      if (still) { try { document.execCommand(cmd, false, null); } catch (e3) {} }
       if (moved || still) { syncBoldBtn(); return; }
     }
-    try { document.execCommand("bold", false, null); } catch (e) {}
+    try { document.execCommand(cmd, false, null); } catch (e) {}
     syncBoldBtn();
   }
+  function applyBold() { applyMark("bold"); }
   var richHooked = false;
   function richInit(id) {
     richId = id || "qText";
@@ -2004,15 +2032,16 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       el.addEventListener(ev, syncBoldBtn);
     });
     // 버튼은 누르는 순간 처리함. 그래야 커서가 편집칸에서 안 빠져나감.
-    var bb = document.getElementById("boldBtn");
-    if (bb) {
+    [["boldBtn", "bold"], ["uLineBtn", "underline"], ["italBtn", "italic"]].forEach(function (pair) {
+      var bb = document.getElementById(pair[0]);
+      if (!bb) return;
       ["touchstart", "mousedown"].forEach(function (ev) {
         bb.addEventListener(ev, function (e) {
           if (e.cancelable) e.preventDefault();
-          applyBold();
+          applyMark(pair[1]);
         }, { passive: false });
       });
-    }
+    });
     if (!richHooked) {
       richHooked = true;
       document.addEventListener("selectionchange", syncBoldBtn);
@@ -2024,7 +2053,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (q) { whereInit = q.bookId ? ((bookOf(q.bookId) || {}).title || "") : (q.source || ""); }
     else if (presetBookId) { whereInit = (bookOf(presetBookId) || {}).title || ""; }
 
-    var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="boldBtn">진하게</button></label>' +
+    var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="italBtn">기울임</button><button type="button" class="boldbtn" id="uLineBtn">밑줄</button><button type="button" class="boldbtn" id="boldBtn">진하게</button></label>' +
       '<div id="qText" class="rich" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off">' +
       boldToHtml(q ? q.text : "") + "</div></div>";
     h += '<div class="f wherewrap"><label>어디서</label><input id="qWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
@@ -2043,7 +2072,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 
   function noteForm(n) {
     form = n ? JSON.parse(JSON.stringify(n)) : { id: null, tags: [], createdAt: today() };
-    var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="boldBtn">진하게</button></label>' +
+    var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="italBtn">기울임</button><button type="button" class="boldbtn" id="uLineBtn">밑줄</button><button type="button" class="boldbtn" id="boldBtn">진하게</button></label>' +
       '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 하다 만 생각, 닿지 않는 혼잣말, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자! ♡">' +
       boldToHtml(n ? n.text : "") + "</div></div>";
     h += '<div class="f"><label>태그 (쉼표로 구분)</label><input id="nTags" value="' +
