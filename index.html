@@ -270,9 +270,16 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .modal.snapback { transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1); }
 .modal.closing { transition: transform 0.3s cubic-bezier(0.4, 0, 0.9, 0.5); }
 .ov.closing { transition: background 0.3s ease; background: rgba(6,18,20,0); }
-.modal.mj input, .modal.mj textarea { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; }
+/* 한 탭 안에서는 라벨·버튼·입력칸까지 모두 그 탭의 서체 */
+.modal.mj, .modal.mj input, .modal.mj textarea, .modal.mj .rich, .modal.mj button, .modal.mj label
+  { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; }
+.modal.kb, .modal.kb input, .modal.kb textarea, .modal.kb .rich, .modal.kb button, .modal.kb label
+  { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
 .mh { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 17px; }
 .mh h2 { font-size: 17px; color: var(--paper); font-weight: 700; word-break: keep-all; }
+.modal.mj .mh h2, .modal.kb .mh h2 { font-size: 14.5px; font-weight: 400; }
+/* ×표만 프리텐다드 고정 (기호가 다른 서체에 없을 수 있어서) */
+.modal.mj .x, .modal.kb .x { font-family: 'Pretendard', sans-serif; }
 /* 업데이트 안내창(center)만 제목 아래 구분선 */
 .modal.center .mh { border-bottom: 1px solid var(--line); padding-bottom: 13px; }
 .x { color: var(--muted); font-size: 23px; padding: 2px 6px; line-height: 1; flex: 0 0 auto; }
@@ -321,6 +328,22 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .star.half::before { content: '★'; position: absolute; left: 3px; top: 0; width: calc(50% - 3px); overflow: hidden; color: var(--lemon); }
 #fStars { display: inline-flex; touch-action: none; user-select: none; cursor: pointer; }
 .f label .hint { color: var(--muted); font-weight: 400; opacity: 0.8; letter-spacing: 0; font-size: 11px; }
+.boldbtn { float: right; font-size: 12px; font-weight: 700; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 2px; padding: 5px 13px; margin-top: -12px; letter-spacing: 0; }
+.boldbtn.on { background: var(--paper); color: #22282A; border-color: var(--paper); }
+.rich { font-size: 16px; width: 100%; background: rgba(0,0,0,0.22); color: var(--text);
+  border: 1px solid var(--line); border-radius: 2px; padding: 10px 11px; outline: none;
+  min-height: 150px; line-height: 1.65; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere;
+  caret-color: #F2E27E; -webkit-user-select: text; user-select: text; }
+.rich:focus { border-color: var(--paper); }
+.rich b { font-weight: 700; }
+/* 서체 4종이 굵기가 하나뿐이라 브라우저가 굵게 만들어주지 않음.
+   그래서 글자 테두리를 살짝 덧그려 직접 굵게 보이게 함. */
+.qt b, .qn b, .qn-line b, .review-line b, .extra-b b, .note-t b, .rich b {
+  font-weight: 700;
+  -webkit-text-stroke: 0.6px currentColor;
+  text-stroke: 0.6px currentColor;
+  paint-order: stroke fill;
+}
 .starrow2 { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
 .starzero { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; }
 .starzero.on { color: #1B2A2C; background: var(--paper); border-color: var(--paper); font-weight: 700; }
@@ -335,15 +358,29 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .stars i.blank { color: var(--line); }
 
 .note { display: block; width: 100%; text-align: left; padding: 15px 0 16px; border-bottom: 1px solid var(--line); }
+/* 심필 탭: 크기가 같은 포스트잇 판 */
+.note-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+@media (min-width: 560px) { .note-grid { grid-template-columns: 1fr 1fr 1fr; } }
+.note-grid .note { padding: 12px 12px 10px; border: 1px solid var(--paper); border-bottom: 1px solid var(--paper); aspect-ratio: 1 / 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+.note-grid .note:first-of-type { padding-top: 12px; }
+.note-grid .note-row, .note-grid .tagrow { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.note-grid .note-t { flex: 1; min-height: 0; overflow: hidden; font-size: 12.5px; line-height: 1.7; }
+.note-grid .note-d { margin-top: 6px; flex: none; color: var(--paper); }
+.note-grid .tags { max-height: 22px; overflow: hidden; }
+.note-grid .note-t { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent); }
+.note-grid .note-t.short { -webkit-mask-image: none; mask-image: none; }
 /* 첫 심필은 위에 구분선이 없어서 라벨 아래 여백과 겹쳐 보임 */
 .note:first-of-type { padding-top: 0; }
 .note-d { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 10.5px; color: var(--muted); letter-spacing: 0.08em; text-align: right; margin-top: 12px; }
 .note-box { border: 1px solid var(--line); padding: 14px 15px; }
+.note-box.paper { border-color: var(--paper); margin-bottom: 4px; }
 .note-box .note { border-bottom: none; padding: 0; }
 .note-t { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 14.5px; line-height: 1.88; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; color: var(--paper); }
 .note .tags { margin-top: 10px; }
 .note .tag { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
-#nText { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 16px; line-height: 1.8; }
+#nText { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 16px; line-height: 1.8; min-height: 230px; }
+.rich:empty::before { content: attr(data-ph); color: var(--muted); opacity: .75; }
 #nTags { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
 .empty { text-align: center; padding: 50px 22px; color: var(--muted); font-size: 13.5px; line-height: 1.85; }
 .empty b:only-child { margin-bottom: 0; }
@@ -685,6 +722,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
       if (ch === "\u0022") return opening ? "\u201C" : "\u201D";
       return opening ? "\u2018" : "\u2019";
     });
+    // **글자** 로 감싼 부분은 진하게
+    out = out.replace(/\*\*([^*\n][^*]*?)\*\*/g, "<b>$1</b>");
     // 줄 맨 앞 들여쓰기
     out = out.replace(/^[ \t]+/gm, function (m) {
       return new Array(m.length + 1).join('<span class="indent"></span>');
@@ -793,7 +832,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.29.6";
+  var BUILD = "1.33.6";
   var SEEN_KEY = "jeokbarim-seen-version";
   var CHANGES = [
     "1. 책과 어울리는 노래, 내가 주인공이라면 어떻게 했을지 적어볼 수 있는 기능이 추가되었어.\n(책 올리거나 수정할 때 감상 칸 밑에서 볼 수 있어.)",
@@ -963,7 +1002,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
       var ns2 = state.notes.slice().sort(function (a, b) {
         return nSortMode === "oldest" ? -nRecent(a, b) : nRecent(a, b);
       });
-      h += ns2.length ? ns2.map(noteCard).join("")
+      h += ns2.length ? '<div class="note-grid">' + ns2.map(noteCard).join("") + "</div>"
         : '<div class="empty kb"><b>휑•••</b></div>';
     } else if (tab === "flow") {
       var ev = [];
@@ -1006,7 +1045,28 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     if (keepScroll !== null) el.scrollTop = keepScroll;
     else if (tab === "stats" && !query) el.scrollTop = 0;
     checkDailyClamp();
+    clampNotes();
     watchScrollBtn();
+  }
+
+  // 심필 판에서 글이 넘치면 마지막 글자 뒤에 한 칸 띄고 … 을 붙임
+  function clampNotes() {
+    var els = document.querySelectorAll(".note-grid .note-t");
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      var full = el.getAttribute("data-full");
+      if (full === null) { full = el.textContent; el.setAttribute("data-full", full); }
+      else if (el.textContent !== full) { el.textContent = full; el.classList.remove("short"); }
+      if (el.scrollHeight <= el.clientHeight + 1) { el.classList.add("short"); continue; }
+      el.classList.remove("short");
+      var lo = 0, hi = full.length;
+      while (lo < hi) {
+        var mid = Math.ceil((lo + hi) / 2);
+        el.textContent = full.slice(0, mid).replace(/\s+$/, "") + " \u2026";
+        if (el.scrollHeight <= el.clientHeight + 1) lo = mid; else hi = mid - 1;
+      }
+      el.textContent = full.slice(0, lo).replace(/\s+$/, "") + " \u2026";
+    }
   }
 
   function bytesOf(obj) {
@@ -1073,6 +1133,9 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     "status": "done",
     "rating": 5,
     "starPlus": true,
+    "song": "새소년 - 난춘",
+    "imagine": "난 이미 주인공이야",
+    "draw": 1,
     "review": "내가 꿈을 꾸는 밤에 너는 내 낮의 못되고 반짝이는 기록을 견뎌내 주었지",
     "tags": [
       "시집"
@@ -1155,9 +1218,21 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
         startedAt: start.toISOString().slice(0, 10),
         finishedAt: sb.status === "done" ? fin.toISOString().slice(0, 10) : "",
         review: sb.review || "",
+        song: sb.song || "",
+        imagine: sb.imagine || "",
+        drawId: "",
         tags: sb.tags || [],
         createdAt: start.toISOString().slice(0, 10)
       });
+      if (sb.draw) {
+        var data = makeSampleDraw();
+        if (data) {
+          var did = uid();
+          state.books[0].drawId = did;
+          sampleDrawIds.push(did);
+          drawStorePut(did, data);
+        }
+      }
     });
     SAMPLE_QUOTES.forEach(function (sq, i) {
       var d = new Date(base.getTime() - (14 - i * 3) * 86400000);
@@ -1187,9 +1262,36 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     render();
   }
 
+  // 예시용 그림은 코드에 그림 파일을 박아 넣지 않고 그 자리에서 그려 만듦 (파일이 무거워지지 않게)
+  var sampleDrawIds = [];
+  function makeSampleDraw() {
+    try {
+      var c = document.createElement("canvas");
+      c.width = CV; c.height = CV;
+      var x = c.getContext("2d");
+      x.fillStyle = DRAW_BG; x.fillRect(0, 0, CV, CV);
+      x.lineCap = "round"; x.lineJoin = "round";
+      // 분홍 계열 동그라미들
+      var pinks = ["#D6409F", "#F5A8D0", "#E0D0F8", "#F5A8D0", "#D6409F", "#FBBE8E"];
+      var spots = [[210, 230, 78], [370, 200, 52], [300, 330, 96],
+                   [180, 400, 44], [420, 380, 66], [280, 470, 36]];
+      spots.forEach(function (p, i) {
+        x.beginPath();
+        x.arc(p[0], p[1], p[2], 0, Math.PI * 2);
+        x.fillStyle = pinks[i % pinks.length];
+        x.globalAlpha = i % 2 ? 0.55 : 0.85;
+        x.fill();
+      });
+      x.globalAlpha = 1;
+      return c.toDataURL("image/png");
+    } catch (e) { return ""; }
+  }
+
   function undoSample() {
     if (!sampleUndo) return;
     devLog("예시 기록 되돌리기");
+    sampleDrawIds.forEach(function (id) { drawStoreDel(id); });
+    sampleDrawIds = [];
     state = sampleUndo;
     sampleUndo = null;
     persist();
@@ -1374,7 +1476,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     } catch (err) { devLog("!! 붙여넣기 복원 실패"); toast("이 내용은 읽을 수 없어"); }
   }
   function disableSpellcheck(root) {
-    var els = root.querySelectorAll("input, textarea");
+    var els = root.querySelectorAll("input, textarea, .rich");
     for (var i = 0; i < els.length; i++) {
       els[i].setAttribute("spellcheck", "false");
       els[i].setAttribute("autocorrect", "off");
@@ -1399,7 +1501,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 
     function canStart(target) {
       if (modal.scrollTop > 0) return false;
-      if (target.closest("textarea, input, select, .wherelist, canvas, .drawpanel")) return false;
+      if (target.closest("textarea, input, select, .wherelist, canvas, .drawpanel, .rich")) return false;
       return true;
     }
     function begin(y) {
@@ -1500,9 +1602,10 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
   }
 
   var DRAW_DEFAULT = "#1A1A1A";
-  var DRAW_COLORS = ["#E5484D", "#F76B15", "#F5D90A", "#46A758", "#216E4E", "#235055",
-                     "#45CAD9", "#8FD8F5", "#3E63DD", "#2F3B8C", "#8E4EC6", "#C4A7F0",
-                     "#D6409F", "#F5A8D0", "#8A5A32", "#1A1A1A", "#FFFFFF"];
+  var DRAW_COLORS = ["#E5484D", "#F76B15", "#FBBE8E", "#F5D90A", "#F2E27E", "#BADB94",
+                     "#46A758", "#216E4E", "#235055", "#45CAD9", "#8FD8F5", "#2F6FF7",
+                     "#2451D6", "#2F3B8C", "#8E4EC6", "#C4A7F0", "#E0D0F8", "#D6409F",
+                     "#F5A8D0", "#8A5A32", "#1A1A1A", "#FFFFFF"];
   var DRAW_SIZES = [3, 6, 12];
   var DRAW_BG = "#F2ECDC";
   var CV = 600;     // 그리는 해상도
@@ -1656,13 +1759,131 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     setTimeout(function () { var t = document.getElementById("fTitle"); if (t) t.focus(); }, 60);
   }
 
+  // ── 진하게 편집 ──
+  // 저장은 지금까지처럼 글자로 함. **표시**는 편집칸에서 진한 글씨로만 보이고 글자로는 안 보임.
+  function boldToHtml(t) {
+    return esc(String(t == null ? "" : t))
+      .replace(/\*\*([^*\n][^*]*?)\*\*/g, "<b>$1</b>");
+  }
+  function htmlToBold(el) {
+    var out = "";
+    (function walk(node) {
+      for (var i = 0; i < node.childNodes.length; i++) {
+        var c = node.childNodes[i], nm = c.nodeName;
+        if (c.nodeType === 3) { out += c.nodeValue; continue; }
+        if (nm === "BR") { out += "\n"; continue; }
+        if (nm === "B" || nm === "STRONG") {
+          var save = out; out = "";
+          walk(c);
+          var inner = out; out = save;
+          out += inner.trim() ? "**" + inner + "**" : inner;
+          continue;
+        }
+        if (nm === "DIV" || nm === "P") {
+          if (out && !/\n$/.test(out)) out += "\n";
+          walk(c);
+          continue;
+        }
+        walk(c);
+      }
+    })(el);
+    // 붙어 있는 진한 덩어리 둘은 하나로 합침 (**가**​**나** → **가나**)
+    return out.replace(/\u00a0/g, " ").replace(/\u200B/g, "").replace(/\*\*\*\*/g, "");
+  }
+  var richId = "qText";
+  function syncBoldBtn() {
+    var b = document.getElementById("boldBtn");
+    if (!b) return;
+    var on = false;
+    try { on = document.queryCommandState("bold"); } catch (e) {}
+    b.classList.toggle("on", !!on);
+  }
+  // 커서만 있을 때 진하게를 끄는 건 브라우저가 잘 못함. 진한 덩어리 밖으로 커서를 직접 빼냄.
+  function exitBoldAtCaret() {
+    var el = document.getElementById(richId);
+    var sel = window.getSelection();
+    if (!el || !sel || !sel.rangeCount) return false;
+    var r = sel.getRangeAt(0);
+    if (!r.collapsed) return false;
+    var n = r.startContainer, b = null;
+    while (n && n !== el) {
+      if (n.nodeName === "B" || n.nodeName === "STRONG") b = n;
+      n = n.parentNode;
+    }
+    if (!b) return false;
+    try {
+      var tail = document.createRange();
+      tail.setStart(r.startContainer, r.startOffset);
+      tail.setEnd(b, b.childNodes.length);
+      var frag = tail.extractContents();
+      var zw = document.createTextNode("\u200B");
+      var parent = b.parentNode;
+      parent.insertBefore(zw, b.nextSibling);
+      if (frag.textContent) {
+        var nb = document.createElement("b");
+        nb.appendChild(frag);
+        parent.insertBefore(nb, zw.nextSibling);
+      }
+      if (!b.textContent) parent.removeChild(b);
+      var nr = document.createRange();
+      nr.setStart(zw, 1); nr.collapse(true);
+      sel.removeAllRanges(); sel.addRange(nr);
+      return true;
+    } catch (e) { return false; }
+  }
+  function applyBold() {
+    var el = document.getElementById(richId);
+    if (!el) return;
+    if (document.activeElement !== el) el.focus();
+    try { document.execCommand("styleWithCSS", false, false); } catch (e0) {}
+    var on = false;
+    try { on = document.queryCommandState("bold"); } catch (e1) {}
+    var sel = window.getSelection();
+    var collapsed = sel && sel.rangeCount && sel.getRangeAt(0).collapsed;
+    if (on && collapsed) {
+      var moved = exitBoldAtCaret();
+      // 커서를 밖으로 뺀 뒤에도 브라우저가 '진하게 상태'를 들고 있으면 그것도 끔
+      var still = false;
+      try { still = document.queryCommandState("bold"); } catch (e2) {}
+      if (still) { try { document.execCommand("bold", false, null); } catch (e3) {} }
+      if (moved || still) { syncBoldBtn(); return; }
+    }
+    try { document.execCommand("bold", false, null); } catch (e) {}
+    syncBoldBtn();
+  }
+  var richHooked = false;
+  function richInit(id) {
+    richId = id || "qText";
+    var el = document.getElementById(richId);
+    if (!el) return;
+    try { document.execCommand("styleWithCSS", false, false); } catch (e) {}
+    ["keyup", "mouseup", "input", "focus"].forEach(function (ev) {
+      el.addEventListener(ev, syncBoldBtn);
+    });
+    // 버튼은 누르는 순간 처리함. 그래야 커서가 편집칸에서 안 빠져나감.
+    var bb = document.getElementById("boldBtn");
+    if (bb) {
+      ["touchstart", "mousedown"].forEach(function (ev) {
+        bb.addEventListener(ev, function (e) {
+          if (e.cancelable) e.preventDefault();
+          applyBold();
+        }, { passive: false });
+      });
+    }
+    if (!richHooked) {
+      richHooked = true;
+      document.addEventListener("selectionchange", syncBoldBtn);
+    }
+  }
   function quoteForm(q, presetBookId) {
     form = q ? JSON.parse(JSON.stringify(q)) : { id: null, bookId: presetBookId || null, tags: [], createdAt: today() };
     var whereInit = "";
     if (q) { whereInit = q.bookId ? ((bookOf(q.bookId) || {}).title || "") : (q.source || ""); }
     else if (presetBookId) { whereInit = (bookOf(presetBookId) || {}).title || ""; }
 
-    var h = '<div class="f"><label>구절</label><textarea id="qText" rows="6">' + esc(q ? q.text : "") + "</textarea></div>";
+    var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="boldBtn">진하게</button></label>' +
+      '<div id="qText" class="rich" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off">' +
+      boldToHtml(q ? q.text : "") + "</div></div>";
     h += '<div class="f wherewrap"><label>어디서</label><input id="qWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
       esc(whereInit) + '"><span class="where-caret"></span><div id="whereList"></div></div>';
     h += '<div class="row f"><div><label>쪽</label><input id="qPage" value="' + esc(q ? q.page : "") + '"></div>';
@@ -1671,22 +1892,26 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     h += '<div class="f"><label>태그 (쉼표로 구분)</label><input id="qTags" value="' + esc(q && q.tags ? q.tags.join(", ") : "") + '"></div>';
     h += '<button class="save" data-act="saveQuote">저장</button>';
     openModal(q && q.id ? "구절 고치기" : "구절 옮겨 적기", h, "mj");
-    setTimeout(function () { var t = document.getElementById("qText"); if (t) t.focus(); }, 60);
+    richInit("qText");
+    setTimeout(function () { var t = document.getElementById(richId); if (t) t.focus(); }, 60);
   }
 
   function noteForm(n) {
     form = n ? JSON.parse(JSON.stringify(n)) : { id: null, tags: [], createdAt: today() };
-    var h = '<div class="f"><textarea id="nText" rows="9" placeholder="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 하다 만 생각, 닿지 않는 혼잣말, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자! ♡">' + esc(n ? n.text : "") + "</textarea></div>";
+    var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="boldBtn">진하게</button></label>' +
+      '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 하다 만 생각, 닿지 않는 혼잣말, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자! ♡">' +
+      boldToHtml(n ? n.text : "") + "</div></div>";
     h += '<div class="f"><label>태그 (쉼표로 구분)</label><input id="nTags" value="' +
       esc(n && n.tags ? n.tags.join(", ") : "") + '"></div>';
     h += '<button class="save" data-act="saveNote">저장</button>';
-    openModal(n && n.id ? "심필 고치기" : "심필", h);
+    openModal(n && n.id ? "심필 고치기" : "심필", h, "kb");
+    richInit("nText");
     setTimeout(function () { var t = document.getElementById("nText"); if (t) t.focus(); }, 60);
   }
 
   function noteDetail(n) {
-    var h = '<div class="note-t">' + escKeepIndent(n.text) + "</div>";
-    h += '<div class="note-d">' + noteTime(n) + "</div>";
+    var h = '<div class="note-box paper"><div class="note-t">' + escKeepIndent(n.text) + "</div>";
+    h += '<div class="note-d" style="color:var(--paper)">' + noteTime(n) + "</div></div>";
     if (n.tags && n.tags.length) {
       h += '<div class="tags" style="margin:14px 0 4px">' + n.tags.map(function (t) {
         return '<button class="tag dark" data-act="tag" data-v="' + esc(t) + '">' + esc(t) + "</button>";
@@ -1694,7 +1919,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     }
     h += '<button class="ghost" data-act="editNote" data-id="' + n.id + '">고치기</button>';
     h += '<button class="del" data-act="delNote" data-id="' + n.id + '">지우기</button>';
-    openModal("심필", h);
+    openModal("심필", h, "kb");
   }
 
   function bookDetail(b) {
@@ -1755,7 +1980,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     h += '<button class="ghost" data-act="copyQuote" data-id="' + q.id + '">구절만 복사</button>';
     h += '<button class="ghost" data-act="editQuote" data-id="' + q.id + '">고치기</button>';
     h += '<button class="del" data-act="delQuote" data-id="' + q.id + '">지우기</button>';
-    openModal("옮겨 적은 구절", h);
+    openModal("옮겨 적은 구절", h, "mj");
   }
 
   /* ── 내보내기 ── */
@@ -2000,7 +2225,17 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
       case "editBook": bookForm(bookOf(id)); backToBook = id; break;
       case "toggleDraw":
         var dp = document.getElementById("drawPanel"), dh = document.getElementById("drawHead");
-        if (dp) { dp.hidden = !dp.hidden; if (dh) dh.classList.toggle("up", !dp.hidden); }
+        if (dp) {
+          dp.hidden = !dp.hidden;
+          if (dh) dh.classList.toggle("up", !dp.hidden);
+          if (!dp.hidden) {
+            var mm = mroot.querySelector(".modal");
+            if (mm) setTimeout(function () {
+              try { mm.scrollTo({ top: mm.scrollHeight, behavior: "smooth" }); }
+              catch (e) { mm.scrollTop = mm.scrollHeight; }
+            }, 30);
+          }
+        }
         break;
       case "dwColor":
         draw.color = v; draw.erase = false;
@@ -2140,7 +2375,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 
   function saveQuote() {
     devLog("구절 저장 시도");
-    var text = trimEnd(document.getElementById("qText").value);
+    var text = trimEnd(htmlToBold(document.getElementById(richId)));
     if (!text.trim()) { toast("구절이 비었어"); return; }
     var where = document.getElementById("qWhere").value.trim();
     var matched = null;
@@ -2168,7 +2403,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 
   function saveNote() {
     devLog("심필 저장 시도");
-    var text = trimEnd(document.getElementById("nText").value);
+    var text = trimEnd(htmlToBold(document.getElementById("nText")));
     if (!text.trim()) { toast("아무것도 안 썼어"); return; }
     var n = {
       id: form.id || uid(),
