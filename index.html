@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="utf-8">
 <meta http-equiv="Cache-Control" content="no-store, max-age=0">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -14,8 +13,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>적바림</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gothic+A1:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Gothic+A1:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
 <style>
 @font-face {
   font-family: 'BookkMyungjo';
@@ -57,6 +56,7 @@ html, body { background-color: #0C2427 !important; }
 ::selection { background: #F2E27E; color: #0C2427; }
 ::-moz-selection { background: #F2E27E; color: #0C2427; }
 input, textarea { caret-color: #F2E27E; }
+input, textarea, .rich { word-break: break-all; overflow-wrap: anywhere; line-break: auto; }
 body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: #0C2427; z-index: 0; }
 html, body { height: 100%; min-height: 100%; overscroll-behavior: none; }
 body {
@@ -90,7 +90,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .sicon { position: absolute; left: 13px; top: 50%; transform: translateY(-48%) scaleX(-1); color: var(--muted); font-size: 23px; pointer-events: none; }
 .sclear { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); color: var(--muted); padding: 5px 10px; font-size: 17px; }
 
-.body { flex: 1 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 18px 16px 34px; }
+.body { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 18px 16px 34px; }
 .sec { font-size: 10.5px; letter-spacing: 0.16em; color: var(--muted); margin: 2px 0 13px; }
 .sec b { color: var(--muted); font-weight: 500; }
 
@@ -122,11 +122,11 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 
 .quote { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; background: var(--paper); color: #22282A; border-radius: 1px; padding: 13px 14px 11px; margin-bottom: 11px; box-shadow: 0 5px 18px rgba(0,0,0,0.32); text-align: left; width: 100%; display: block; }
 .quote.flat { transform: none; }
-.qt { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; font-size: 12.5px; line-height: 1.7; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; text-align: justify; text-align-last: left; }
+.qt { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; font-size: 12.5px; line-height: 1.7; word-break: break-all; overflow-wrap: anywhere; text-align: justify; text-align-last: left; }
 .qn { font-size: 11.5px; color: #5C6A6B; margin-top: 10px; line-height: 1.65; }
 .indent { display: inline-block; width: 1em; }
 .mdots { display: inline-block; vertical-align: 0.3em; }
-.qn-line { white-space: pre-wrap; text-align: justify; -webkit-text-align-last: right; text-align-last: right; word-break: keep-all; overflow-wrap: anywhere; }
+.qn-line { text-align: justify; -webkit-text-align-last: right; text-align-last: right; word-break: break-all; overflow-wrap: anywhere; }
 .qn-line:empty { min-height: 1em; }
 .qf { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; margin-top: 11px; padding-top: 10px; border-top: 1px dashed #C6BCA5; font-size: 10.5px; color: #6E7B7C; }
 .qf .src-wrap { flex: 1 1 auto; min-width: 0; }
@@ -154,7 +154,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17.65 6.35A7.96 7.96 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17.65 6.35A7.96 7.96 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z'/%3E%3C/svg%3E");
 }
-.qt.clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-align: left; -webkit-text-align-last: left; text-align-last: left; }
+.qt.clamp { max-height: 3.4em; overflow: hidden; text-align: left; -webkit-text-align-last: left; text-align-last: left; }
 .more-hint { display: block; margin-top: 6px; font-size: 10.5px; color: var(--muted); letter-spacing: 0.04em; }
 .quote-body { display: block; width: 100%; text-align: left; padding: 0; border: none; background: none; color: inherit; font: inherit; }
 .expand-toggle { display: block; margin-top: 7px; padding: 3px 8px 3px 0; border: none; background: none; }
@@ -188,11 +188,11 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .cl-btns .ghost { border: 1px solid var(--line); color: var(--muted); }
 .cl-btns .save { background: var(--paper); color: #1B2A2C; border: 1px solid var(--paper); }
 .guide-body { font-size: 11.5px; color: var(--paper); line-height: 1.8; margin-top: 9px; }
-.review-line { text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: keep-all; overflow-wrap: anywhere; white-space: pre-wrap; }
+.review-line { text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: break-all; overflow-wrap: anywhere; }
 .review-line:empty { min-height: 1em; }
 .extra { margin-bottom: 20px; }
 .extra-l { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 7px; }
-.extra-b { font-size: 14.5px; line-height: 1.85; border-left: 2px solid var(--line); padding-left: 13px; text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: keep-all; overflow-wrap: anywhere; white-space: pre-wrap; }
+.extra-b { font-size: 14.5px; line-height: 1.85; border-left: 2px solid var(--line); padding-left: 13px; text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: break-all; overflow-wrap: anywhere; }
 .ghost.danger { color: #E08A7A; border-color: #6B3A34; }
 .ghost.danger.armed { color: #1B2A2C; background: #E08A7A; border-color: #E08A7A; font-weight: 700; }
 .devbody { margin-top: 10px; }
@@ -259,7 +259,12 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .tab { flex: 1; padding: 20px 0 8px; font-size: 15px; color: var(--muted); letter-spacing: 0.07em; border-top: 2px solid transparent; margin-top: -1px; }
 .tab.on { color: var(--paper); border-top-color: var(--paper); font-weight: 700; }
 
+body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러와"; position: fixed; inset: 0; z-index: 90;
+  display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px;
+  background: rgba(12,36,39,0.86); color: var(--paper); font-size: 14px; letter-spacing: 0.02em;
+  border: 2px dashed var(--paper); }
 .fab { position: absolute; right: 17px; bottom: 60px; z-index: 20; display: flex; flex-direction: column; gap: 9px; align-items: flex-end; }
+.scrollBottomBtn.inbody { right: 17px; bottom: calc(64px + env(safe-area-inset-bottom)); }
 .fab button { background: var(--paper); color: #1B2A2C; font-weight: 700; font-size: 13px; padding: 10px 15px; border-radius: 999px; box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
 .fab button.alt { background: var(--paper); color: #1F2B2C; }
 .scrollBottomBtn { position: fixed; right: 20px; bottom: calc(24px + env(safe-area-inset-bottom)); width: 42px; height: 42px; border-radius: 50%; background: var(--ink); border: 1px solid var(--line); color: var(--paper); font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.4); z-index: 30; }
@@ -328,22 +333,25 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .star.half::before { content: '★'; position: absolute; left: 3px; top: 0; width: calc(50% - 3px); overflow: hidden; color: var(--lemon); }
 #fStars { display: inline-flex; touch-action: none; user-select: none; cursor: pointer; }
 .f label .hint { color: var(--muted); font-weight: 400; opacity: 0.8; letter-spacing: 0; font-size: 11px; }
-.boldbtn { float: right; font-size: 12px; font-weight: 700; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 2px; padding: 5px 13px; margin-top: -12px; letter-spacing: 0; }
+.boldbtn { float: right; font-size: 12px; font-weight: 700; color: var(--paper); background: none; border: 1px solid var(--paper); border-radius: 2px; padding: 5px 13px; margin-top: -12px; letter-spacing: 0; }
 .boldbtn.on { background: var(--paper); color: #22282A; border-color: var(--paper); }
 .rich { font-size: 16px; width: 100%; background: rgba(0,0,0,0.22); color: var(--text);
   border: 1px solid var(--line); border-radius: 2px; padding: 10px 11px; outline: none;
-  min-height: 150px; line-height: 1.65; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere;
+  min-height: 150px; line-height: 1.65; white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere;
   caret-color: #F2E27E; -webkit-user-select: text; user-select: text; }
 .rich:focus { border-color: var(--paper); }
 .rich b { font-weight: 700; }
 /* 서체 4종이 굵기가 하나뿐이라 브라우저가 굵게 만들어주지 않음.
-   그래서 글자 테두리를 살짝 덧그려 직접 굵게 보이게 함. */
+   그래서 글자 테두리를 살짝 덧그려 직접 굵게 보이게 함.
+   덧그린 만큼 잉크가 늘어나 더 검게 보이므로, 색을 조금 덜어 무게를 맞춤. */
 .qt b, .qn b, .qn-line b, .review-line b, .extra-b b, .note-t b, .rich b {
   font-weight: 700;
-  -webkit-text-stroke: 0.6px currentColor;
-  text-stroke: 0.6px currentColor;
+  -webkit-text-stroke: 0.5px currentColor;
+  text-stroke: 0.5px currentColor;
   paint-order: stroke fill;
 }
+/* 밝은 바탕에 어두운 글자인 곳만 잉크를 덜어냄 (어두운 바탕에서는 덜면 오히려 연해짐) */
+.qt b, .qn b, .qn-line b { opacity: 0.82; }
 .starrow2 { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
 .starzero { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; }
 .starzero.on { color: #1B2A2C; background: var(--paper); border-color: var(--paper); font-weight: 700; }
@@ -359,24 +367,26 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 
 .note { display: block; width: 100%; text-align: left; padding: 15px 0 16px; border-bottom: 1px solid var(--line); }
 /* 심필 탭: 크기가 같은 포스트잇 판 */
-.note-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-@media (min-width: 560px) { .note-grid { grid-template-columns: 1fr 1fr 1fr; } }
-.note-grid .note { padding: 12px 12px 10px; border: 1px solid var(--paper); border-bottom: 1px solid var(--paper); aspect-ratio: 1 / 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+.note-grid { display: flex; align-items: flex-start; gap: 9px; }
+.note-col { flex: 1 1 0; min-width: 0; }
+/* 판 높이는 글 길이에 따라 달라짐. 아주 길면 잘리고 흐려짐. */
+.note-grid .note { display: block; width: 100%; padding: 12px 12px 10px; border: 1px solid var(--paper);
+  margin: 0 0 9px; overflow: hidden; min-height: 78px;
+}
 .note-grid .note:first-of-type { padding-top: 12px; }
-.note-grid .note-row, .note-grid .tagrow { display: flex; flex-direction: column; height: 100%; min-height: 0; }
-.note-grid .note-t { flex: 1; min-height: 0; overflow: hidden; font-size: 12.5px; line-height: 1.7; }
-.note-grid .note-d { margin-top: 6px; flex: none; color: var(--paper); }
-.note-grid .tags { max-height: 22px; overflow: hidden; }
-.note-grid .note-t { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent);
-  mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent); }
-.note-grid .note-t.short { -webkit-mask-image: none; mask-image: none; }
+.note-grid .note-row { display: block; }
+.note-grid .note-row .note-d { margin-left: 0; margin-top: 6px; padding-bottom: 0; }
+.note-grid .tagrow { display: flex; align-items: flex-end; margin-top: 8px; }
+.note-grid .note-t { font-size: 12.5px; line-height: 1.7; }
+.note-grid .note-d { margin-top: 6px; color: var(--paper); }
+.note-grid .tags, .note-grid .note-d { display: none; }
 /* 첫 심필은 위에 구분선이 없어서 라벨 아래 여백과 겹쳐 보임 */
 .note:first-of-type { padding-top: 0; }
 .note-d { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 10.5px; color: var(--muted); letter-spacing: 0.08em; text-align: right; margin-top: 12px; }
 .note-box { border: 1px solid var(--line); padding: 14px 15px; }
 .note-box.paper { border-color: var(--paper); margin-bottom: 4px; }
 .note-box .note { border-bottom: none; padding: 0; }
-.note-t { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 14.5px; line-height: 1.88; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; color: var(--paper); }
+.note-t { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 14.5px; line-height: 1.88; word-break: break-all; overflow-wrap: anywhere; color: var(--paper); text-align: justify; -webkit-text-align-last: left; text-align-last: left; }
 .note .tags { margin-top: 10px; }
 .note .tag { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
 #nText { font-family: 'KkuBulLim', 'Pretendard', sans-serif; font-size: 16px; line-height: 1.8; min-height: 230px; }
@@ -407,13 +417,13 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     </div>
   </div>
   <div class="body" id="body"></div>
-  <div class="fab" id="fab"></div>
+  <div class="fab hide" id="fab"></div>
   <div class="tabs">
-    <button class="tab on" data-tab="shelf">서가</button>
+    <button class="tab" data-tab="shelf">서가</button>
     <button class="tab" data-tab="quotes">필사</button>
     <button class="tab" data-tab="simpil">심필</button>
     <button class="tab" data-tab="flow">흐름</button>
-    <button class="tab" data-tab="stats">자취</button>
+    <button class="tab on" data-tab="stats">자취</button>
   </div>
 </div>
 <div id="modalRoot"></div>
@@ -425,7 +435,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
   var KEY = "jeokbarim-v2";
   var STATUS = { reading: "읽는 중", done: "완독", paused: "덮어둠" };
   var state = { books: [], quotes: [], notes: [] };
-  var tab = "shelf", filter = "all", sortMode = "recent", qSortMode = "recent", nSortMode = "recent", query = "", shuffleSeed = null, dailyExpanded = false, guideOpen = false, devOpen = false, consoleOpen = false, backToBook = null, backToBookBottom = false, storageOk = true;
+  var tab = "shelf", filter = "all", sortMode = "recent", qSortMode = "recent", nSortMode = "recent", query = "", shuffleSeed = null, dailyExpanded = false, dailyMore = false, guideOpen = false, devOpen = false, consoleOpen = false, backToBook = null, backToBookBottom = false, storageOk = true;
 
   /* ── 저장 ── */
   function load() {
@@ -728,13 +738,14 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     out = out.replace(/^[ \t]+/gm, function (m) {
       return new Array(m.length + 1).join('<span class="indent"></span>');
     });
+    // 줄바꿈은 pre-wrap 대신 <br>로 (pre-wrap이 있으면 양끝정렬이 안 걸림)
     // 마침표 3개 묶음마다 가운데 높이로 올림 (나머지는 그대로)
     out = out.replace(/\.{3,}/g, function (m) {
       var g = Math.floor(m.length / 3), r = m.length % 3;
       return new Array(g + 1).join('<span class="mdots">...</span>') +
         (r ? new Array(r + 1).join(".") : "");
     });
-    return out;
+    return out.replace(/\n/g, "<br>");
   }
   function trimEnd(v) { return String(v == null ? "" : v).replace(/[ \t]+$/gm, "").replace(/\s+$/, ""); }
   function srcLine(src, page) {
@@ -788,7 +799,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
   }
 
   function noteCard(n) {
-    var h = '<button class="note" data-act="openNote" data-id="' + n.id + '">';
+    var h = '<button class="note" data-act="openNote" data-id="' + n.id +
+      '" data-asc="' + (noteAsc[n.id] || 0) + '">';
     if (n.tags && n.tags.length) {
       h += '<div class="note-t">' + escKeepIndent(n.text) + "</div>";
       h += '<div class="tagrow"><div class="tags">' +
@@ -832,14 +844,10 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.33.6";
+  var BUILD = "1.40.2";
   var SEEN_KEY = "jeokbarim-seen-version";
-  var CHANGES = [
-    "1. 책과 어울리는 노래, 내가 주인공이라면 어떻게 했을지 적어볼 수 있는 기능이 추가되었어.\n(책 올리거나 수정할 때 감상 칸 밑에서 볼 수 있어.)",
-    "2. 책마다 그림 딱 하나씩 그릴 수 있게 \u2018한 장 끄적이기\u2019 버튼도 만들었어.\n(책 올리거나 수정할 때 맨 밑에서 볼 수 있어.)",
-    "\uD83D\uDC69\uD83C\uDFFB\u200D\uD83C\uDFA4 참고로, 내가 시집을 읽고 나면 어울리는 색으로 그림을 그리는 때가 종종 있어서 추가한 기능이야.",
-    "3. 원하는 색상이 더 있다면 말해줘\uD83C\uDFA8!"
-  ];
+  // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
+  var CHANGES = [];
   var DAILY_KEY = "jeokbarim-daily-pick";
   function pickDailyQuote(forceNew) {
     var d = today(), stored = null;
@@ -870,8 +878,9 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
       h += '<div class="qt">' + escKeepIndent(q.text) + "</div>";
       if (q.note) h += '<div class="qn">' + noteHtml(q.note) + "</div>";
     } else {
-      var combined = q.text + (q.note ? "\n" + trimEnd(q.note) : "");
-      h += '<div class="qt clamp" id="dailyClampBox">' + escKeepIndent(combined) + "</div>";
+      // 미리보기는 무조건 2줄. 브라우저 접기 기능은 행갈이가 있으면 안 먹어서 직접 재서 자름.
+      dailyMore = !!q.note;   // 내 생각은 미리보기에 안 보이니, 있으면 펼치기 버튼을 띄움
+      h += '<div class="qt clamp" id="dailyClampBox">' + escKeepIndent(q.text) + "</div>";
     }
     var meta = [];
     var sv = srcOf(q);
@@ -900,7 +909,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     var btn = document.getElementById("dailyToggleBtn");
     if (!btn) return;
     if (dailyExpanded) { btn.style.display = "block"; return; }
-    if (box && box.scrollHeight > box.clientHeight + 1) btn.style.display = "block";
+    if (dailyMore || (box && box.dataset.trimmed)) btn.style.display = "block";
     else btn.style.display = "none";
   }
 
@@ -989,6 +998,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
       });
       h += sorted.length ? sorted.map(function (q, i) { return quoteCard(q, i); }).join("")
         : '<div class="empty mj"><b>휑•••</b></div>';
+      if (sorted.length > 4) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "simpil") {
       h += '<div class="sec sec-row kb" style="border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:15px"><span>모아둔 마음 <b>' +
         state.notes.length + '</b></span>' +
@@ -999,11 +1009,13 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
         if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
         return ts(b) - ts(a);
       }
+      rebuildNoteAsc();
       var ns2 = state.notes.slice().sort(function (a, b) {
         return nSortMode === "oldest" ? -nRecent(a, b) : nRecent(a, b);
       });
       h += ns2.length ? '<div class="note-grid">' + ns2.map(noteCard).join("") + "</div>"
         : '<div class="empty kb"><b>휑•••</b></div>';
+      if (ns2.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "flow") {
       var ev = [];
       state.books.forEach(function (b) {
@@ -1035,6 +1047,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
           h += "</div>";
         });
         h += "</div>";
+        if (ev.length > 4) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
       }
     } else {
       h += stats();
@@ -1044,29 +1057,130 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     el.innerHTML = h;
     if (keepScroll !== null) el.scrollTop = keepScroll;
     else if (tab === "stats" && !query) el.scrollTop = 0;
+    clampDaily();
     checkDailyClamp();
-    clampNotes();
+    clampNotesSoon();
     watchScrollBtn();
   }
 
-  // 심필 판에서 글이 넘치면 마지막 글자 뒤에 한 칸 띄고 … 을 붙임
-  function clampNotes() {
-    var els = document.querySelectorAll(".note-grid .note-t");
-    for (var i = 0; i < els.length; i++) {
-      var el = els[i];
-      var full = el.getAttribute("data-full");
-      if (full === null) { full = el.textContent; el.setAttribute("data-full", full); }
-      else if (el.textContent !== full) { el.textContent = full; el.classList.remove("short"); }
-      if (el.scrollHeight <= el.clientHeight + 1) { el.classList.add("short"); continue; }
-      el.classList.remove("short");
-      var lo = 0, hi = full.length;
-      while (lo < hi) {
-        var mid = Math.ceil((lo + hi) / 2);
-        el.textContent = full.slice(0, mid).replace(/\s+$/, "") + " \u2026";
-        if (el.scrollHeight <= el.clientHeight + 1) lo = mid; else hi = mid - 1;
+  // 오늘의 구절 미리보기를 딱 2줄에서 자름 (행갈이가 있어도 정확히 2줄)
+  function clampDaily() {
+    var el = document.getElementById("dailyClampBox");
+    if (!el) return;
+    var full = el.getAttribute("data-full");
+    if (full === null) { full = el.innerHTML; el.setAttribute("data-full", full); }
+    else if (el.innerHTML !== full) el.innerHTML = full;
+    el.removeAttribute("data-trimmed");
+    var box = el.clientHeight;
+    if (!box) return;
+    if (el.scrollHeight <= box + 1) return;
+    // 진한 표시 같은 서식을 지키면서 자르려면, 글자 마디마다 뒤에서부터 지워 나감
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+    var nodes = [], t;
+    while ((t = walker.nextNode())) nodes.push({ node: t, text: t.nodeValue });
+    var total = 0;
+    nodes.forEach(function (n) { total += n.text.length; });
+    function showFirst(k) {
+      var left = k;
+      nodes.forEach(function (n) {
+        if (left <= 0) { n.node.nodeValue = ""; return; }
+        if (n.text.length <= left) { n.node.nodeValue = n.text; left -= n.text.length; }
+        else { n.node.nodeValue = n.text.slice(0, left); left = 0; }
+      });
+      // 끝에 말줄임표
+      for (var i = nodes.length - 1; i >= 0; i--) {
+        if (nodes[i].node.nodeValue) {
+          nodes[i].node.nodeValue = nodes[i].node.nodeValue.replace(/\s+$/, "") + " \u2026";
+          break;
+        }
       }
-      el.textContent = full.slice(0, lo).replace(/\s+$/, "") + " \u2026";
     }
+    var lo = 0, hi = total;
+    while (lo < hi) {
+      var mid = Math.ceil((lo + hi) / 2);
+      showFirst(mid);
+      if (el.scrollHeight <= box + 1) lo = mid; else hi = mid - 1;
+    }
+    if (lo > 0) { showFirst(lo); el.dataset.trimmed = "1"; }
+    else el.innerHTML = full;
+  }
+  // 심필 판 배치: 각 심필이 자기 칸을 계속 지키게 함.
+  // 크기를 재서 빈 곳에 끼워 넣으면 하나만 늘어도 전부 자리가 바뀌어 어지러움.
+  var noteAsc = {};   // 심필 id → 오래된 것부터 센 번호 (칸 안 순서용)
+  function rebuildNoteAsc() {
+    noteAsc = {};
+    state.notes.slice().sort(function (a, b) {
+      if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? -1 : 1;
+      return ts(a) - ts(b);
+    }).forEach(function (n, i) { noteAsc[n.id] = i; });
+  }
+
+  /* 심필 판 배치
+     한 번 정해진 칸은 계속 지킴. 새로 쓴 심필만 그때 더 짧은 칸으로 들어감.
+     그래서 하나 늘어도 기존 판들이 안 움직이고, 높이도 대충 맞아 감. */
+  function colKey(n) { return "col" + n; }
+  function layoutNotes() {
+    var grid = document.querySelector(".note-grid");
+    if (!grid) return;
+    var cards = [].slice.call(grid.querySelectorAll(".note"));
+    if (!cards.length) return;
+    cards.forEach(function (c, i) { if (!c.dataset.ord) c.dataset.ord = i + 1; });
+    var n = grid.clientWidth >= 560 ? 3 : 2;
+    var key = colKey(n);
+    // 판이 아직 칸 안에 안 들어가 있으면 폭이 달라 높이를 못 믿음 → 이번엔 저장하지 않음
+    var trustworthy = !!grid.querySelector(".note-col");
+
+    var hs = {}, any = false;
+    cards.forEach(function (c) {
+      hs[c.dataset.id] = c.offsetHeight || 0;
+      if (hs[c.dataset.id] > 0) any = true;
+    });
+    if (!any) return;
+
+    var buckets = [], sums = [];
+    for (var i = 0; i < n; i++) { buckets.push([]); sums.push(0); }
+
+    var noteById = {};
+    state.notes.forEach(function (x) { noteById[x.id] = x; });
+
+    var fresh = [];
+    cards.forEach(function (c) {
+      var nt = noteById[c.dataset.id];
+      var col = nt && typeof nt[key] === "number" ? nt[key] : -1;
+      if (col >= 0 && col < n) { buckets[col].push(c); sums[col] += hs[c.dataset.id] + 9; }
+      else fresh.push(c);
+    });
+
+    // 아직 칸이 없는 것만 큰 것부터 더 짧은 칸에 넣음
+    if (trustworthy) fresh.sort(function (a, b) { return hs[b.dataset.id] - hs[a.dataset.id]; });
+    else fresh.sort(function (a, b) { return (+a.dataset.ord) - (+b.dataset.ord); });
+    var changed = false;
+    fresh.forEach(function (c, i) {
+      var min = 0;
+      if (trustworthy) { for (var k = 1; k < n; k++) if (sums[k] < sums[min]) min = k; }
+      else min = i % n;
+      buckets[min].push(c);
+      sums[min] += hs[c.dataset.id] + 9;
+      if (trustworthy) {
+        var nt = noteById[c.dataset.id];
+        if (nt) { nt[key] = min; changed = true; }
+      }
+    });
+    if (changed) persist();
+
+    grid.innerHTML = "";
+    buckets.forEach(function (b) {
+      b.sort(function (x, y) { return (+x.dataset.ord) - (+y.dataset.ord); });
+      var d = document.createElement("div");
+      d.className = "note-col";
+      for (var m = 0; m < b.length; m++) d.appendChild(b[m]);
+      grid.appendChild(d);
+    });
+  }
+  function clampNotesSoon() {
+    layoutNotes();
+    if (window.requestAnimationFrame) requestAnimationFrame(function () { clampDaily(); checkDailyClamp(); layoutNotes(); });
+    setTimeout(function () { clampDaily(); checkDailyClamp(); layoutNotes(); }, 120);
   }
 
   function bytesOf(obj) {
@@ -1394,11 +1508,14 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
     setTimeout(function () { syncScrollBtn(el, btn); }, 420);
   }
   function watchScrollBtn() {
-    [[document.querySelector(".modal"), '[data-act="scrollBottom"]']].forEach(function (p) {
-      var el = p[0], btn = document.querySelector(p[1]);
-      if (!el || !btn || el.dataset.scrollWatch) return;
-      el.dataset.scrollWatch = "1";
-      el.addEventListener("scroll", function () { syncScrollBtn(el, document.querySelector(p[1])); });
+    [[document.querySelector(".modal"), '[data-act="scrollBottom"]'],
+     [document.getElementById("body"), '[data-act="scrollBody"]']].forEach(function (p) {
+      var el = p[0], sel = p[1], btn = document.querySelector(sel);
+      if (!el || !btn) return;
+      if (!el.dataset.scrollWatch) {
+        el.dataset.scrollWatch = "1";
+        el.addEventListener("scroll", function () { syncScrollBtn(el, document.querySelector(sel)); });
+      }
       syncScrollBtn(el, btn);
     });
   }
@@ -1604,8 +1721,9 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
   var DRAW_DEFAULT = "#1A1A1A";
   var DRAW_COLORS = ["#E5484D", "#F76B15", "#FBBE8E", "#F5D90A", "#F2E27E", "#BADB94",
                      "#46A758", "#216E4E", "#235055", "#45CAD9", "#8FD8F5", "#2F6FF7",
-                     "#2451D6", "#2F3B8C", "#8E4EC6", "#C4A7F0", "#E0D0F8", "#D6409F",
-                     "#F5A8D0", "#8A5A32", "#1A1A1A", "#FFFFFF"];
+                     "#2451D6", "#2F3B8C", "#5E2A5B", "#8E4EC6", "#C4A7F0", "#E0D0F8",
+                     "#D6409F", "#F5A8D0", "#F8CBD8", "#5A3620", "#8A5A32", "#E3CFAE",
+                     "#1A1A1A", "#FFFFFF"];
   var DRAW_SIZES = [3, 6, 12];
   var DRAW_BG = "#F2ECDC";
   var CV = 600;     // 그리는 해상도
@@ -2329,6 +2447,9 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
       case "scrollBottom":
         scrollToggle(document.querySelector(".modal"), t);
         break;
+      case "scrollBody":
+        scrollToggle(document.getElementById("body"), t);
+        break;
       case "saveSelf": saveSelf(); break;
       case "exportJson":
         devLog("백업 내려받기");
@@ -2435,11 +2556,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
   }
 
   /* 불러오기 */
-  document.addEventListener("change", function (e) {
-    var input = e.target;
-    if (!input || input.id !== "fileIn") return;
-    var f = input.files && input.files[0];
-    if (!f) return;
+  // 백업 파일을 읽어 복원하는 공통 처리
+  function readBackupFile(f, done) {
     var r = new FileReader();
     r.onload = function () {
       try {
@@ -2450,10 +2568,44 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
         delete d.draws;
         if (!checkRestore(d, draws)) applyRestore(d, draws);
       } catch (err) { devLog("!! 백업 불러오기 실패"); toast("이 파일은 읽을 수 없어"); }
-      try { input.value = ""; } catch (e2) {}
+      if (done) done();
     };
-    r.onerror = function () { toast("이 파일은 읽을 수 없어"); };
+    r.onerror = function () { toast("이 파일은 읽을 수 없어"); if (done) done(); };
     r.readAsText(f);
+  }
+
+  document.addEventListener("change", function (e) {
+    var input = e.target;
+    if (!input || input.id !== "fileIn") return;
+    var f = input.files && input.files[0];
+    if (!f) return;
+    readBackupFile(f, function () { try { input.value = ""; } catch (e2) {} });
+  });
+
+  // 맥 독 앱에서는 파일 선택 창이 안 열림. 그래서 창에 끌어다 놓는 길도 열어 둠.
+  ["dragenter", "dragover"].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      if (!e.dataTransfer) return;
+      e.preventDefault();
+      try { e.dataTransfer.dropEffect = "copy"; } catch (e2) {}
+      document.body.classList.add("dropping");
+    });
+  });
+  ["dragleave", "dragend"].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      if (e.relatedTarget) return;
+      document.body.classList.remove("dropping");
+    });
+  });
+  document.addEventListener("drop", function (e) {
+    if (!e.dataTransfer) return;
+    e.preventDefault();
+    document.body.classList.remove("dropping");
+    var f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!f) return;
+    if (!/\.json$/i.test(f.name)) { toast("이 파일은 읽을 수 없어"); return; }
+    devLog("끌어다 놓기로 불러오기: " + f.name);
+    readBackupFile(f);
   });
 
   document.addEventListener("keydown", function (e) {
@@ -2466,11 +2618,26 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
   showWarn();
   render();
   showChangelog();
+  // 서체가 다 준비된 뒤에 한 번 더 맞춤 (서체에 따라 글 길이가 달라짐)
+  try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { clampDaily(); checkDailyClamp(); layoutNotes(); }); } catch (e) {}
+  // 1.39.0에서 잘못 저장된 심필 칸 배정을 한 번 지움
+  try {
+    if (localStorage.getItem("jeokbarim-colfix") !== "1") {
+      var touched = false;
+      state.notes.forEach(function (n) {
+        if (n.col2 !== undefined) { delete n.col2; touched = true; }
+        if (n.col3 !== undefined) { delete n.col3; touched = true; }
+      });
+      localStorage.setItem("jeokbarim-colfix", "1");
+      if (touched) persist();
+    }
+  } catch (e) {}
   drawStoreLoadAll(function () {
     migrateDraws();
     askQuota(function () { render(); });
   });
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
