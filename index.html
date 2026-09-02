@@ -178,6 +178,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .guide-head.devhead { color: var(--muted); }
 .guide-head.devhead .chev { background-color: var(--muted); }
 .ov.center { align-items: center; padding: 20px; }
+.modal.bare { padding-top: 20px; }
 .ov.center .modal { max-width: 400px; max-height: 80%; border-top: none; border: 1px solid var(--paper); border-radius: 4px; padding: 20px 18px 20px; }
 .changelog { font-size: 14px; color: var(--paper); line-height: 1.8; }
 .changelog li { list-style: none; margin-bottom: 14px; padding-left: 0; white-space: pre-wrap; }
@@ -297,6 +298,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .restore-cmp .rc-less { color: #E5484D; font-weight: 700; }
 .rc-warn { font-size: 12px; line-height: 1.7; color: var(--paper); margin-top: 13px; word-break: keep-all; }
 .f { margin-bottom: 13px; }
+.tagwrap { position: relative; }
+.taglist { position: absolute; left: 0; right: 0; top: 100%; z-index: 45; margin-top: 4px;
+  background: var(--panel); border: 1px solid var(--paper); border-radius: 2px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.5);
+  display: flex; gap: 6px; padding: 6px;
+  overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+.taglist::-webkit-scrollbar { display: none; }
+.tagpick { flex: 0 0 auto; white-space: nowrap; font-size: 13px; color: var(--paper);
+  background: none; border: 1px solid var(--line); border-radius: 2px; padding: 7px 12px; }
 .draw-head { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--paper); padding: 0; border: none; background: none; margin: 2px 0 10px; text-decoration: underline; text-underline-offset: 4px; }
 .draw-head .chev { display: block; width: 9px; height: 7px; background-color: var(--paper);
   -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 7'><path d='M0.6 1.2 L4.5 5.4 L8.4 1.2' fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center/contain;
@@ -308,14 +318,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .dw-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 11px; }
 .dw-c { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; padding: 0; box-shadow: inset 0 0 0 1px rgba(34,40,42,0.28); }
 .dw-c.on { border-color: #22282A; }
-.dw-s { width: 30px; height: 26px; border: none; background: none; display: flex; align-items: center; justify-content: center; padding: 0; }
-.dw-s i { display: block; border-radius: 50%; background: #22282A; opacity: .35; }
+.dw-s { width: 26px; height: 26px; border: none; background: none; display: flex; align-items: center; justify-content: center; padding: 0; }
+.dw-s i { display: block; width: 20px; border-radius: 0; background: #22282A; opacity: .3; }
 .dw-s.on i { opacity: 1; }
 .dw-b { font-size: 11.5px; color: #22282A; background: none; border: none; padding: 4px 2px; text-decoration: underline; text-underline-offset: 3px; }
-.dw-t { font-size: 11px; color: #22282A; background: none; border: 1px solid rgba(34,40,42,0.3); border-radius: 2px; padding: 4px 9px; opacity: .55; }
+.dw-t { font-size: 10.5px; color: #22282A; background: none; border: 1px solid rgba(34,40,42,0.3); border-radius: 2px; padding: 4px 7px; opacity: .55; }
 .dw-t.on { opacity: 1; background: #22282A; color: var(--paper); border-color: #22282A; }
 .dw-t + .dw-t { margin-left: -2px; }
-#dwCrayonBtn { margin-left: auto; }
+#dwEraseBtn { margin-left: auto; }
+.dw-t { flex: 0 0 auto; }
 .book-draw { width: 100%; max-width: 300px; display: block; border-radius: 2px; }
 .datewrap { position: relative; }
 .datewrap input[type="text"] { padding-right: 58px; }
@@ -406,6 +417,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .note-grid .note-row .note-d { margin-left: 0; margin-top: 6px; padding-bottom: 0; }
 .note-grid .tagrow { display: flex; align-items: flex-end; margin-top: 8px; }
 .note-grid .note-t { font-size: 12.5px; line-height: 1.7; }
+.note-detail-img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 1px; margin-bottom: 12px; }
+.note-img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 1px; margin-bottom: 9px; }
 .note-grid .note-d { margin-top: 6px; color: var(--paper); }
 .note-grid .tags, .note-grid .note-d { display: none; }
 /* 첫 심필은 위에 구분선이 없어서 라벨 아래 여백과 겹쳐 보임 */
@@ -463,7 +476,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   var KEY = "jeokbarim-v2";
   var STATUS = { reading: "읽는 중", done: "완독", paused: "덮어둠" };
   var state = { books: [], quotes: [], notes: [] };
-  var tab = "shelf", filter = "all", sortMode = "recent", qSortMode = "recent", nSortMode = "recent", query = "", shuffleSeed = null, dailyExpanded = false, dailyMore = false, guideOpen = false, devOpen = false, consoleOpen = false, backToBook = null, backToBookBottom = false, storageOk = true;
+  var tab = "shelf", filter = "all", sortMode = "recent", qSortMode = "recent", nSortMode = "recent", query = "", shuffleSeed = null, dailyExpanded = false, dailyMore = false, bqSortMode = "add", guideOpen = false, devOpen = false, consoleOpen = false, backToBook = null, backToBookBottom = false, storageOk = true;
 
   /* ── 저장 ── */
   function load() {
@@ -694,6 +707,103 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  /* ── 태그 자동완성 ──
+     이미 쓴 태그를 모아, 치고 있는 마디에 맞는 것만 보여 줌 */
+  function allTags() {
+    var seen = {}, out = [];
+    function add(arr) {
+      (arr || []).forEach(function (t) {
+        var k = String(t).trim();
+        if (!k || seen[k]) return;
+        seen[k] = 1; out.push(k);
+      });
+    }
+    state.books.forEach(function (x) { add(x.tags); });
+    state.quotes.forEach(function (x) { add(x.tags); });
+    state.notes.forEach(function (x) { add(x.tags); });
+    return out.sort();
+  }
+  // "시집" → "ㅅㅈ" 처럼 첫 자음만 뽑음 (ㅅ 만 쳐도 찾게)
+  function chosung(str) {
+    var L = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ", out = "";
+    for (var i = 0; i < str.length; i++) {
+      var c = str.charCodeAt(i);
+      out += (c >= 0xAC00 && c <= 0xD7A3) ? L.charAt(Math.floor((c - 0xAC00) / 588)) : str.charAt(i);
+    }
+    return out;
+  }
+  // 한글은 쓰다 만 글자도 맞춰 봄 ("처" 는 "철학" 에 걸림)
+  var CHO_LIST = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
+  function decomp(ch) {
+    var c = ch.charCodeAt(0);
+    if (c < 0xAC00 || c > 0xD7A3) return null;
+    var i = c - 0xAC00;
+    return { cho: Math.floor(i / 588), jung: Math.floor((i % 588) / 28), jong: i % 28 };
+  }
+  function tagMatch(tag, q) {
+    tag = String(tag); q = String(q);
+    if (!q) return false;
+    if (q.length > tag.length) return false;
+    for (var i = 0; i < q.length; i++) {
+      var qc = q.charAt(i), tc = tag.charAt(i);
+      var qi = CHO_LIST.indexOf(qc), td = decomp(tc);
+      if (qi > -1) {                       // 홑자음 (ㅅ, ㅊ …)
+        if (!td || td.cho !== qi) return false;
+        continue;
+      }
+      var qd = decomp(qc);
+      if (qd && td) {                      // 둘 다 한글 글자
+        if (qd.cho !== td.cho || qd.jung !== td.jung) return false;
+        if (qd.jong !== 0 && qd.jong !== td.jong) return false;
+        continue;
+      }
+      if (qc.toLowerCase() !== tc.toLowerCase()) return false;
+    }
+    return true;
+  }
+  function tagTyping(el) {
+    // 커서 앞쪽의 마지막 마디 (쉼표 뒤부터)
+    var v = el.value, pos = el.selectionStart == null ? v.length : el.selectionStart;
+    var head = v.slice(0, pos);
+    var start = head.lastIndexOf(",") + 1;
+    return { start: start, end: pos, word: head.slice(start).trim().replace(/^#/, "") };
+  }
+  function renderTagList(el) {
+    var wrap = el.parentNode;
+    var old = wrap.querySelector(".taglist");
+    if (old) wrap.removeChild(old);
+    var cur = tagTyping(el);
+    if (!cur.word) return;
+    var used = {};
+    parseTags(el.value.slice(0, cur.start) + el.value.slice(cur.end)).forEach(function (t) { used[t] = 1; });
+    var hits = allTags().filter(function (t) {
+      return !used[t] && t !== cur.word && tagMatch(t, cur.word);
+    }).slice(0, 12);
+    if (!hits.length) return;
+    var box = document.createElement("div");
+    box.className = "taglist";
+    box.innerHTML = hits.map(function (t) {
+      return '<button type="button" class="tagpick" data-act="tagPick" data-v="' + esc(t) + '" data-id="' + el.id + '">' + esc(t) + "</button>";
+    }).join("");
+    wrap.appendChild(box);
+  }
+  function pickTag(elId, tag) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    var cur = tagTyping(el);
+    var before = el.value.slice(0, cur.start).replace(/\s+$/, "");
+    var after = el.value.slice(cur.end);
+    if (before && !/,$/.test(before)) before += ",";
+    var mid = (before ? " " : "") + tag + ", ";
+    el.value = before + mid + after.replace(/^[\s,]+/, "");
+    var caret = (before + mid).length;
+    el.focus();
+    try { el.setSelectionRange(caret, caret); } catch (e) {}
+    renderTagList(el);
+  }
+  function isTagField(el) {
+    return !!el && (el.id === "fTags" || el.id === "qTags" || el.id === "nTags");
+  }
   function parseTags(s) {
     return String(s || "").split(",").map(function (t) { return t.trim().replace(/^#/, ""); }).filter(Boolean);
   }
@@ -834,6 +944,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   function noteCard(n) {
     var h = '<button class="note" data-act="openNote" data-id="' + n.id +
       '" data-asc="' + (noteAsc[n.id] || 0) + '">';
+    if (n.drawId && drawCache[n.drawId]) {
+      h += '<img class="note-img" src="' + drawCache[n.drawId] + '" alt="">';
+    }
     if (n.tags && n.tags.length) {
       h += '<div class="note-t">' + escKeepIndent(n.text) + "</div>";
       h += '<div class="tagrow"><div class="tags">' +
@@ -877,7 +990,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.44.0";
+  var BUILD = "1.49.6";
   var SEEN_KEY = "jeokbarim-seen-version";
   // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
   var CHANGES = [];
@@ -1582,8 +1695,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   var form = {};
   function openModal(title, inner, cls) {
     var ovCls = (cls && cls.indexOf("center") !== -1) ? "ov center" : "ov";
+    var bare = cls && cls.indexOf("bare") !== -1;
     mroot.innerHTML = '<div class="' + ovCls + '" data-act="ovClose"><div class="modal' + (cls ? " " + cls : "") + '">' +
-      '<div class="mh"><h2>' + esc(title) + '</h2><button class="x" data-act="close" aria-label="닫기">×</button></div>' +
+      (bare ? "" : '<div class="mh"><h2>' + esc(title) + '</h2><button class="x" data-act="close" aria-label="닫기">×</button></div>') +
       inner + "</div></div>";
     disableSpellcheck(mroot);
     initModalDrag();
@@ -1633,6 +1747,102 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       els[i].setAttribute("autocapitalize", "off");
     }
   }
+  /* ── 임시 저장 ──
+     쓰던 게 있는데 그냥 닫으려 하면 물어보고, 다음에 그 화면을 열 때 되살림 */
+  var DRAFT_KEY = "jeokbarim-drafts";
+  var draftBase = null, draftKind = null;
+  function draftsGet() {
+    try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"); } catch (e) { return {}; }
+  }
+  function draftsSet(o) {
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(o)); } catch (e) {}
+  }
+  function draftDrop(kind) {
+    var d = draftsGet();
+    if (d[kind]) { delete d[kind]; draftsSet(d); }
+  }
+  function val(id) {
+    var el = document.getElementById(id);
+    return el ? el.value : "";
+  }
+  function formKind() {
+    if (document.getElementById("qText")) return "quote";
+    if (document.getElementById("nText")) return "note";
+    if (document.getElementById("fTitle")) return "book";
+    return null;
+  }
+  function snapForm(kind) {
+    if (!kind) return null;
+    if (kind === "quote") return {
+      id: form.id || null, text: htmlToBold(document.getElementById("qText")),
+      where: val("qWhere"), page: val("qPage"), note: val("qNote"),
+      tags: val("qTags"), date: readDate("qDate")
+    };
+    if (kind === "note") return {
+      id: form.id || null, text: htmlToBold(document.getElementById("nText")),
+      tags: val("nTags"), draw: form.draw || ""
+    };
+    return {
+      id: form.id || null, title: val("fTitle"), author: val("fAuthor"),
+      start: readDate("fStart"), finish: readDate("fFinish"),
+      review: val("fReview"), song: val("fSong"), imagine: val("fImagine"),
+      tags: val("fTags"), status: form.status, rating: form.rating,
+      starPlus: !!form.starPlus, draw: form.draw || ""
+    };
+  }
+  function markDraftBase() {
+    draftKind = formKind();
+    draftBase = draftKind ? JSON.stringify(snapForm(draftKind)) : null;
+  }
+  function draftChanged() {
+    if (!draftKind) return false;
+    var now = snapForm(draftKind);
+    return now && JSON.stringify(now) !== draftBase;
+  }
+  function applyDraft(kind, d) {
+    if (!d) return;
+    if (kind === "quote") {
+      var q = document.getElementById("qText"); if (q) q.innerHTML = boldToHtml(d.text || "");
+      ["qWhere", "qPage", "qNote", "qTags"].forEach(function (id, i) {
+        var el = document.getElementById(id);
+        if (el) el.value = [d.where, d.page, d.note, d.tags][i] || "";
+      });
+      var qd = document.getElementById("qDate"); if (qd && d.date) qd.value = dateLabel(d.date);
+    } else if (kind === "note") {
+      var n = document.getElementById("nText"); if (n) n.innerHTML = boldToHtml(d.text || "");
+      var nt = document.getElementById("nTags"); if (nt) nt.value = d.tags || "";
+      if (d.draw) { form.draw = d.draw; drawInit(); }
+    } else {
+      [["fTitle", d.title], ["fAuthor", d.author], ["fReview", d.review],
+       ["fSong", d.song], ["fImagine", d.imagine], ["fTags", d.tags]].forEach(function (pr) {
+        var el = document.getElementById(pr[0]); if (el) el.value = pr[1] || "";
+      });
+      var fs = document.getElementById("fStart"); if (fs && d.start) fs.value = dateLabel(d.start);
+      var ff = document.getElementById("fFinish"); if (ff && d.finish) ff.value = dateLabel(d.finish);
+      if (d.draw) { form.draw = d.draw; drawInit(); }
+    }
+    toast("임시 저장한 것을 불러왔어");
+  }
+  function restoreDraft(kind) {
+    var d = draftsGet()[kind];
+    if (!d) return;
+    // 새로 쓰는 화면에서만 되살림 (고치던 것은 원래 글이 이미 들어 있으므로)
+    if (form.id || d.id) return;
+    applyDraft(kind, d);
+  }
+  var pendingClose = false, pendingSnap = null;
+  function requestClose() {
+    if (!pendingClose && draftChanged()) {
+      pendingClose = true;
+      pendingSnap = { kind: draftKind, snap: snapForm(draftKind) };
+      var h = '<div class="cl-btns" style="margin-top:0"><button class="ghost" data-act="draftDiscard">닫기</button>' +
+        '<button class="save" data-act="draftKeep">임시 저장</button></div>';
+      openModal("", h, "center bare");
+      return;
+    }
+    pendingClose = false;
+    animateCloseModal();
+  }
   function animateCloseModal() {
     var modal = mroot.querySelector(".modal");
     var ov = mroot.querySelector(".ov");
@@ -1675,7 +1885,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       if (!dragging) return;
       dragging = false;
       modal.classList.remove("dragging");
-      if (raw > 170) { animateCloseModal(); return; }
+      if (raw > 170) { requestClose(); return; }
       modal.classList.add("snapback");
       modal.style.transform = "";
       setTimeout(function () { modal.classList.remove("snapback"); }, 360);
@@ -1703,6 +1913,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   }
   function closeModal() {
     closeCal();
+    draftKind = null; draftBase = null;
     var back = backToBook;
     backToBook = null;
     mroot.innerHTML = "";
@@ -1772,7 +1983,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     ctx.fillStyle = DRAW_BG; ctx.fillRect(0, 0, CV, CV);
     ctx.lineCap = "round"; ctx.lineJoin = "round";
     draw.cv = cv; draw.ctx = ctx; draw.undo = [];
-    draw.color = DRAW_DEFAULT; draw.size = 6; draw.erase = false; draw.crayon = false;
+    draw.color = DRAW_DEFAULT; draw.size = 6; draw.erase = false; draw.pen = "plain";
     if (form.draw) {
       var im = new Image();
       im.onload = function () { ctx.drawImage(im, 0, 0, CV, CV); };
@@ -1804,8 +2015,58 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       }
       ctx.globalAlpha = 1;
     }
+    // 도트: 일정 간격마다 동그란 점을 찍음
+    var dotCarry = 0;
+    function dotted(a, b) {
+      var w = draw.size;
+      var gap = w * 2.6 + 4;
+      var dx = b.x - a.x, dy = b.y - a.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (!dist) return;
+      ctx.fillStyle = draw.erase ? DRAW_BG : draw.color;
+      var d = dotCarry;
+      while (d <= dist) {
+        var t = d / dist;
+        ctx.beginPath();
+        ctx.arc(a.x + dx * t, a.y + dy * t, w * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+        d += gap;
+      }
+      dotCarry = d - dist;
+    }
+    // 마커: 획 하나를 통째로 다시 그림. 조각마다 그리면 겹친 자리만 진해져 점처럼 보임
+    var mkBase = null, mkPts = [];
+    function markerBegin(p) {
+      try { mkBase = ctx.getImageData(0, 0, CV, CV); } catch (e) { mkBase = null; }
+      mkPts = [p];
+      markerDraw();
+    }
+    function markerDraw() {
+      if (!mkPts.length) return;
+      if (mkBase) { try { ctx.putImageData(mkBase, 0, 0); } catch (e) {} }
+      ctx.save();
+      ctx.globalAlpha = 0.3;
+      ctx.strokeStyle = draw.color;
+      ctx.fillStyle = draw.color;
+      ctx.lineWidth = draw.size;
+      ctx.lineCap = "butt"; ctx.lineJoin = "bevel";
+      if (mkPts.length === 1) {
+        var hw = draw.size / 2;
+        ctx.fillRect(mkPts[0].x - hw, mkPts[0].y - hw, draw.size, draw.size);
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(mkPts[0].x, mkPts[0].y);
+        for (var i = 1; i < mkPts.length; i++) ctx.lineTo(mkPts[i].x, mkPts[i].y);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+    function markerEnd() { mkBase = null; mkPts = []; }
+    function isMarker() { return draw.pen === "marker" && !draw.erase; }
     function stroke(a, b) {
-      if (draw.crayon) { crayon(a, b); return; }
+      if (draw.pen === "crayon") { crayon(a, b); return; }
+      if (draw.pen === "dot") { dotted(a, b); return; }
+
       ctx.strokeStyle = draw.erase ? DRAW_BG : draw.color;
       ctx.lineWidth = draw.erase ? draw.size * 2.2 : draw.size;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
@@ -1813,17 +2074,20 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     function begin(e) {
       if (e.cancelable) e.preventDefault();
       pushUndo();
+      dotCarry = 0;
       drawing = true; last = pt(e);
-      stroke(last, { x: last.x + 0.1, y: last.y + 0.1 });
+      if (isMarker()) markerBegin(last);
+      else stroke(last, { x: last.x + 0.1, y: last.y + 0.1 });
     }
     function moveTo(e) {
       if (!drawing) return;
       if (e.cancelable) e.preventDefault();
       var p = pt(e);
-      stroke(last, p);
+      if (isMarker()) { mkPts.push(p); markerDraw(); }
+      else stroke(last, p);
       last = p;
     }
-    function done() { if (!drawing) return; drawing = false; drawSync(); }
+    function done() { if (!drawing) return; drawing = false; markerEnd(); drawSync(); }
     cv.addEventListener("touchstart", begin, { passive: false });
     cv.addEventListener("touchmove", moveTo, { passive: false });
     cv.addEventListener("touchend", done);
@@ -1865,6 +2129,29 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     form.draw = "";
   }
 
+  function drawPanelHtml() {
+    var h = '<button type="button" class="draw-head" id="drawHead" data-act="toggleDraw">한 장 끄적이기<span class="chev"></span></button>';
+    h += '<div class="drawpanel" id="drawPanel" hidden><canvas id="drawCv"></canvas>' +
+      '<div class="dw-row" id="dwColors">' +
+      DRAW_COLORS.map(function (c) {
+        return '<button type="button" class="dw-c' + (c === DRAW_DEFAULT ? " on" : "") + '" data-act="dwColor" data-v="' + c + '" style="background:' + c + '"></button>';
+      }).join("") + "</div>" +
+      '<div class="dw-row" id="dwPens">' +
+      DRAW_SIZES.map(function (s, i) {
+        return '<button type="button" class="dw-s' + (i === 1 ? " on" : "") + '" data-act="dwSize" data-v="' + s + '"><i style="height:' + s + 'px"></i></button>';
+      }).join("") +
+      '<button type="button" class="dw-t on" data-act="dwPen" data-v="plain">펜</button>' +
+      '<button type="button" class="dw-t" data-act="dwPen" data-v="crayon">크레파스</button>' +
+      '<button type="button" class="dw-t" data-act="dwPen" data-v="dot">도트</button>' +
+      '<button type="button" class="dw-t" data-act="dwPen" data-v="marker">마커</button>' +
+      '<button type="button" class="dw-t" id="dwEraseBtn" data-act="dwErase">지우개</button>' +
+      "</div>" +
+      '<div class="dw-row">' +
+      '<button type="button" class="dw-b" data-act="dwUndo">되돌리기</button>' +
+      '<button type="button" class="dw-b" data-act="dwClear" style="margin-left:9px">전체 지우기</button>' +
+      "</div></div>";
+    return h;
+  }
   function bookForm(b) {
     form = b ? JSON.parse(JSON.stringify(b)) : { id: null, status: "reading", rating: null, startedAt: today(), finishedAt: "" };
     form.draw = (b && b.drawId && drawCache[b.drawId]) ? drawCache[b.drawId] : "";
@@ -1889,27 +2176,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += '<div class="f"><label>감상</label><textarea id="fReview" rows="5">' + esc(b ? b.review : "") + "</textarea></div>";
     h += '<div class="f"><label>어울리는 노래</label><input id="fSong" value="' + esc(b && b.song ? b.song : "") + '"></div>';
     h += '<div class="f"><label>내가 주인공이라면?</label><textarea id="fImagine" rows="2">' + esc(b && b.imagine ? b.imagine : "") + "</textarea></div>";
-    h += '<div class="f"><label>태그 (쉼표로 구분)</label><input id="fTags" value="' + esc(b && b.tags ? b.tags.join(", ") : "") + '"></div>';
-    h += '<button type="button" class="draw-head" id="drawHead" data-act="toggleDraw">한 장 끄적이기<span class="chev"></span></button>';
-    h += '<div class="drawpanel" id="drawPanel" hidden><canvas id="drawCv"></canvas>' +
-      '<div class="dw-row" id="dwColors">' +
-      DRAW_COLORS.map(function (c) {
-        return '<button type="button" class="dw-c' + (c === DRAW_DEFAULT ? " on" : "") + '" data-act="dwColor" data-v="' + c + '" style="background:' + c + '"></button>';
-      }).join("") + "</div>" +
-      '<div class="dw-row" id="dwSizes">' +
-      DRAW_SIZES.map(function (s, i) {
-        return '<button type="button" class="dw-s' + (i === 1 ? " on" : "") + '" data-act="dwSize" data-v="' + s + '"><i style="width:' + (s + 3) + "px;height:" + (s + 3) + 'px"></i></button>';
-      }).join("") +
-      '<button type="button" class="dw-t" id="dwCrayonBtn" data-act="dwCrayon">크레파스</button>' +
-      '<button type="button" class="dw-t" id="dwEraseBtn" data-act="dwErase">지우개</button>' +
-      "</div>" +
-      '<div class="dw-row">' +
-      '<button type="button" class="dw-b" data-act="dwUndo">되돌리기</button>' +
-      '<button type="button" class="dw-b" data-act="dwClear" style="margin-left:9px">전체 지우기</button>' +
-      "</div></div>";
+    h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="fTags" autocomplete="off" value="' + esc(b && b.tags ? b.tags.join(", ") : "") + '"></div>';
+    h += drawPanelHtml();
     h += '<button class="save" data-act="saveBook">저장</button>';
     openModal(b ? "책 고치기" : "책 올리기", h);
     drawInit();
+    restoreDraft("book");
+    markDraftBase();
     setTimeout(function () { var t = document.getElementById("fTitle"); if (t) t.focus(); }, 60);
   }
 
@@ -2063,28 +2336,39 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       '<input type="text" id="qDate" readonly data-act="openCal" data-v="qDate" value="' + esc(dateLabel(form.createdAt)) + '">' +
       '<button type="button" class="datetype" data-act="dateType" data-v="qDate" aria-label="직접 입력"></button></div></div>';
     h += '<div class="f"><label>내 생각</label><textarea id="qNote" rows="4">' + esc(q ? q.note : "") + "</textarea></div>";
-    h += '<div class="f"><label>태그 (쉼표로 구분)</label><input id="qTags" value="' + esc(q && q.tags ? q.tags.join(", ") : "") + '"></div>';
+    h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="qTags" autocomplete="off" value="' + esc(q && q.tags ? q.tags.join(", ") : "") + '"></div>';
     h += '<button class="save" data-act="saveQuote">저장</button>';
     openModal(q && q.id ? "구절 고치기" : "구절 옮겨 적기", h, "mj");
     richInit("qText");
+    restoreDraft("quote");
+    markDraftBase();
     setTimeout(function () { var t = document.getElementById(richId); if (t) t.focus(); }, 60);
   }
 
   function noteForm(n) {
     form = n ? JSON.parse(JSON.stringify(n)) : { id: null, tags: [], createdAt: today() };
+    form.draw = (n && n.drawId && drawCache[n.drawId]) ? drawCache[n.drawId] : "";
     var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="italBtn">기울임</button><button type="button" class="boldbtn" id="uLineBtn">밑줄</button><button type="button" class="boldbtn" id="boldBtn">진하게</button></label>' +
       '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 하다 만 생각, 닿지 않는 혼잣말, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자! ♡">' +
       boldToHtml(n ? n.text : "") + "</div></div>";
-    h += '<div class="f"><label>태그 (쉼표로 구분)</label><input id="nTags" value="' +
+    h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="nTags" autocomplete="off" value="' +
       esc(n && n.tags ? n.tags.join(", ") : "") + '"></div>';
+    h += drawPanelHtml();
     h += '<button class="save" data-act="saveNote">저장</button>';
     openModal(n && n.id ? "심필 고치기" : "심필", h, "kb");
     richInit("nText");
+    drawInit();
+    restoreDraft("note");
+    markDraftBase();
     setTimeout(function () { var t = document.getElementById("nText"); if (t) t.focus(); }, 60);
   }
 
   function noteDetail(n) {
-    var h = '<div class="note-box paper"><div class="note-t">' + escKeepIndent(n.text) + "</div>";
+    var h = '<div class="note-box paper">';
+    if (n.drawId && drawCache[n.drawId]) {
+      h += '<img class="note-detail-img" src="' + drawCache[n.drawId] + '" alt="">';
+    }
+    if (n.text && n.text.trim()) h += '<div class="note-t">' + escKeepIndent(n.text) + "</div>";
     h += '<div class="note-d" style="color:var(--paper)">' + noteTime(n) + "</div></div>";
     if (n.tags && n.tags.length) {
       h += '<div class="tags" style="margin:14px 0 4px">' + n.tags.map(function (t) {
@@ -2096,11 +2380,35 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     openModal("심필", h, "kb");
   }
 
+  // 쪽 순으로 놓을 때 쓰는 자리값
+  // 책 앞부분(머리말 등)은 맨 앞, 뒷부분(해설 등)은 맨 뒤, 숫자가 있으면 그 쪽수
+  var PAGE_FRONT = ["머리말", "서문", "들어가며", "들어가는", "여는", "프롤로그", "서시", "헌사", "서장", "시작하며"];
+  var PAGE_BACK = ["맺음말", "닫는", "후기", "에필로그", "옮긴이", "해설", "발문", "나가며", "끝으로", "마치며"];
+  function pageNum(q) {
+    var raw = String(q && q.page || "");
+    var m = raw.match(/\d+/);
+    if (m) return parseInt(m[0], 10);
+    var t = raw.replace(/\s/g, "");
+    if (!t) return null;
+    for (var i = 0; i < PAGE_FRONT.length; i++) if (t.indexOf(PAGE_FRONT[i]) > -1) return -1;
+    for (var j = 0; j < PAGE_BACK.length; j++) if (t.indexOf(PAGE_BACK[j]) > -1) return 1e9;
+    return null;
+  }
   function bookDetail(b) {
     backToBook = null;
-    var qs = state.quotes.filter(function (x) { return x.bookId === b.id; }).sort(function (a, c) {
+    function byAdded(a, c) {
       if (a.createdAt !== c.createdAt) return a.createdAt < c.createdAt ? -1 : 1;
       return ts(a) - ts(c);
+    }
+    var qs = state.quotes.filter(function (x) { return x.bookId === b.id; }).sort(function (a, c) {
+      if (bqSortMode === "page") {
+        var pa = pageNum(a), pc = pageNum(c);
+        // 쪽을 안 적은 것은 맨 뒤로
+        if (pa === null && pc !== null) return 1;
+        if (pa !== null && pc === null) return -1;
+        if (pa !== null && pc !== null && pa !== pc) return pa - pc;
+      }
+      return byAdded(a, c);
     });
     var h = "";
     if (b.author) h += '<div style="color:var(--paper);font-size:13.5px;margin:-10px 0 12px">' + esc(b.author) + "</div>";
@@ -2135,7 +2443,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (b.drawId && drawCache[b.drawId]) {
       h += '<div class="extra"><img class="book-draw" src="' + drawCache[b.drawId] + '" alt=""></div>';
     }
-    h += '<div class="sec">이 책에서 옮긴 구절 <b>' + qs.length + "</b></div>";
+    h += '<div class="sec sec-row">이 책에서 옮긴 구절 <b>' + qs.length + "</b>" +
+      (qs.length > 1
+        ? '<button class="sorttoggle" data-act="bqSort" data-id="' + b.id + '" style="margin-left:auto">' +
+          '<span class="ar">\u21C5</span> ' + (bqSortMode === "page" ? "쪽 순" : "옮긴 순") + "</button>"
+        : "") + "</div>";
     h += qs.map(function (q, i) { return quoteCard(q, i, { src: b.title }); }).join("");
     h += '<button class="ghost" data-act="quoteFromBook" data-id="' + b.id + '">＋ 이 책에서 구절 옮기기</button>';
     h += '<button class="ghost" data-act="editBook" data-id="' + b.id + '">고치기</button>';
@@ -2326,7 +2638,21 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (act === "ovClose" && pressedInsideModal) { pressedInsideModal = false; return; }
 
     switch (act) {
-      case "ovClose": case "close": animateCloseModal(); break;
+      case "ovClose": case "close": requestClose(); break;
+      case "draftKeep":
+        if (pendingSnap && pendingSnap.kind && pendingSnap.snap) {
+          var all = draftsGet();
+          all[pendingSnap.kind] = pendingSnap.snap;
+          draftsSet(all);
+        }
+        pendingSnap = null; draftBase = null; draftKind = null; pendingClose = false;
+        closeModal();
+        break;
+      case "draftDiscard":
+        if (pendingSnap && pendingSnap.kind) draftDrop(pendingSnap.kind);
+        pendingSnap = null; draftBase = null; draftKind = null; pendingClose = false;
+        closeModal();
+        break;
       case "filter": filter = v; render(); break;
       case "nSortCycle":
         nSortMode = nSortMode === "recent" ? "oldest" : "recent";
@@ -2401,6 +2727,12 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
           applyRestore(pr.d, pr.draws);
         }
         break;
+      case "tagPick": pickTag(id, v); break;
+      case "bqSort":
+        bqSortMode = bqSortMode === "page" ? "add" : "page";
+        var bqBook = bookOf(id);
+        if (bqBook) bookDetail(bqBook);
+        break;
       case "editBook": bookForm(bookOf(id)); backToBook = id; break;
       case "toggleDraw":
         var dp = document.getElementById("drawPanel"), dh = document.getElementById("drawHead");
@@ -2427,13 +2759,19 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         draw.erase = !draw.erase;
         t.classList.toggle("on", draw.erase);
         break;
-      case "dwCrayon":
-        draw.crayon = !draw.crayon;
-        t.classList.toggle("on", draw.crayon);
+      case "dwPen":
+        draw.pen = (v === "plain" || draw.pen === v) ? "plain" : v;
+        draw.erase = false;   // 붓을 고르면 지우개는 저절로 꺼짐
+        var eb1 = document.getElementById("dwEraseBtn");
+        if (eb1) eb1.classList.remove("on");
+        var pr = document.getElementById("dwPens");
+        if (pr) [].forEach.call(pr.children, function (x) {
+          if (x.dataset.act === "dwPen") x.classList.toggle("on", x.dataset.v === draw.pen);
+        });
         break;
       case "dwSize":
         draw.size = parseInt(v, 10);
-        var ss = document.getElementById("dwSizes");
+        var ss = document.getElementById("dwPens");
         if (ss) [].forEach.call(ss.children, function (x) { if (x.dataset.act === "dwSize") x.classList.toggle("on", x.dataset.v === v); });
         break;
       case "dwUndo": drawUndo(); break;
@@ -2524,6 +2862,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         break;
       case "delNote":
         if (t.dataset.armed) {
+          var delNt = noteOf(id);
+          if (delNt && delNt.drawId) drawStoreDel(delNt.drawId);
           state.notes = state.notes.filter(function (x) { return x.id !== id; });
           persist(); closeModal(); render();
         } else {
@@ -2683,6 +3023,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     wrap.appendChild(pop);
   }
   function saveBook() {
+    draftDrop("book"); draftKind = null; draftBase = null;
     devLog("책 저장 시도");
     var title = document.getElementById("fTitle").value.trim();
     if (!title) { toast("제목은 있어야 해"); return; }
@@ -2718,6 +3059,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   }
 
   function saveQuote() {
+    draftDrop("quote"); draftKind = null; draftBase = null;
     devLog("구절 저장 시도");
     var text = trimEnd(htmlToBold(document.getElementById(richId)));
     if (!text.trim()) { toast("구절이 비었어"); return; }
@@ -2746,16 +3088,24 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   }
 
   function saveNote() {
+    draftDrop("note"); draftKind = null; draftBase = null;
     devLog("심필 저장 시도");
     var text = trimEnd(htmlToBold(document.getElementById("nText")));
-    if (!text.trim()) { toast("아무것도 안 썼어"); return; }
+    if (!text.trim() && !form.draw) { toast("아무것도 안 썼어"); return; }
     var n = {
       id: form.id || uid(),
       text: text,
       createdAt: form.createdAt || today(),
       savedAt: form.savedAt || new Date().toISOString(),
-      tags: parseTags(document.getElementById("nTags").value)
+      tags: parseTags(document.getElementById("nTags").value),
+      drawId: form.drawId || ""
     };
+    if (form.draw) {
+      if (!n.drawId) n.drawId = uid();
+      drawStorePut(n.drawId, form.draw);
+    } else if (n.drawId) {
+      drawStoreDel(n.drawId); n.drawId = "";
+    }
     if (form.id) {
       state.notes = state.notes.map(function (x) { return x.id === n.id ? n : x; });
     } else {
@@ -2832,7 +3182,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   });
 
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && mroot.innerHTML) closeModal();
+    if (e.key === "Escape" && mroot.innerHTML) requestClose();
     if (e.key === "Enter" && isDateField(e.target) && !e.target.readOnly) {
       e.preventDefault();
       normalizeDateField(e.target);
@@ -2842,6 +3192,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   // 칸에서 손을 떼면 정리
   document.addEventListener("focusout", function (e) {
     if (isDateField(e.target)) normalizeDateField(e.target);
+    if (isTagField(e.target)) setTimeout(function () {
+      var w = e.target.parentNode, l = w && w.querySelector(".taglist");
+      if (l && document.activeElement !== e.target) w.removeChild(l);
+    }, 150);
+  });
+  ["input", "click", "keyup"].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      if (isTagField(e.target)) renderTagList(e.target);
+    });
   });
 
   load();
