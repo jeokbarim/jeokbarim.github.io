@@ -321,6 +321,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .dw-s { width: 26px; height: 26px; border: none; background: none; display: flex; align-items: center; justify-content: center; padding: 0; }
 .dw-s i { display: block; width: 20px; border-radius: 0; background: #22282A; opacity: .3; }
 .dw-s.on i { opacity: 1; }
+.dw-b:disabled { opacity: .35; }
 .dw-b { font-size: 11.5px; color: #22282A; background: none; border: none; padding: 4px 2px; text-decoration: underline; text-underline-offset: 3px; }
 .dw-t { font-size: 10.5px; color: #22282A; background: none; border: 1px solid rgba(34,40,42,0.3); border-radius: 2px; padding: 4px 7px; opacity: .55; }
 .dw-t.on { opacity: 1; background: #22282A; color: var(--paper); border-color: #22282A; }
@@ -990,10 +991,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.49.6";
+  var BUILD = "1.51.2";
   var SEEN_KEY = "jeokbarim-seen-version";
   // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
-  var CHANGES = [];
+  var CHANGES = [
+    "1. 필사나 심필 등록할 때 맨 밑 \u2018한 장 끄적이기\u2019 누르면 나오는 캔버스에 펜 도구 \u2018도트, 마커, 자수\u2019 스타일을 추가했어.",
+    "2. 필사나 심필 쓸 때 \u2018진하게, 밑줄, 기울임\u2019 선택 가능해.",
+    "3. 심필 탭이 메모지 판 모양으로 바뀌었어.",
+    "4. 임시 저장 기능을 추가했어. 쓰다가 닫으면 그냥 닫을지 임시 저장할지 선택할 수 있고, 임시 저장을 하면 새로 쓸 때 자동으로 불러와져."
+  ];
   var DAILY_KEY = "jeokbarim-daily-pick";
   function pickDailyQuote(forceNew) {
     var d = today(), stored = null;
@@ -1973,7 +1979,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   var DRAW_BG = "#F2ECDC";
   var CV = 600;     // 그리는 해상도
   var CV_OUT = 600; // 저장 해상도 (줄이지 않음 — 줄이면 화질이 상함)
-  var draw = { cv: null, ctx: null, color: "#1A1A1A", size: 6, undo: [] };
+  var draw = { cv: null, ctx: null, color: "#1A1A1A", size: 6, undo: [], redo: [] };
 
   function drawInit() {
     var cv = document.getElementById("drawCv");
@@ -1982,8 +1988,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var ctx = cv.getContext("2d");
     ctx.fillStyle = DRAW_BG; ctx.fillRect(0, 0, CV, CV);
     ctx.lineCap = "round"; ctx.lineJoin = "round";
-    draw.cv = cv; draw.ctx = ctx; draw.undo = [];
+    draw.cv = cv; draw.ctx = ctx; draw.undo = []; draw.redo = [];
     draw.color = DRAW_DEFAULT; draw.size = 6; draw.erase = false; draw.pen = "plain";
+    syncDrawBtns();
     if (form.draw) {
       var im = new Image();
       im.onload = function () { ctx.drawImage(im, 0, 0, CV, CV); };
@@ -2063,9 +2070,47 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     }
     function markerEnd() { mkBase = null; mkPts = []; }
     function isMarker() { return draw.pen === "marker" && !draw.erase; }
+    // 자수: X 자를 일정 간격으로 찍음. 곡선에서도 X는 기울지 않고, 한 획 안에서는 안 겹침
+    var stitchDone = [];
+    function stampX(x, y, half, span) {
+      // 이미 놓인 X 와 네모 범위가 조금이라도 닿으면 건너뜀
+      var from = Math.max(0, stitchDone.length - 40);
+      for (var i = stitchDone.length - 1; i >= from; i--) {
+        var q = stitchDone[i];
+        if (Math.abs(q.x - x) < span && Math.abs(q.y - y) < span) return;
+      }
+      stitchDone.push({ x: x, y: y });
+      ctx.save();
+      ctx.strokeStyle = draw.erase ? DRAW_BG : draw.color;
+      ctx.lineWidth = Math.max(1.2, draw.size * 0.45);
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(x - half, y - half); ctx.lineTo(x + half, y + half);
+      ctx.moveTo(x + half, y - half); ctx.lineTo(x - half, y + half);
+      ctx.stroke();
+      ctx.restore();
+    }
+    function stitch(a, b) {
+      var w = draw.size * 2, half = w / 2;
+      var lw = Math.max(1.2, draw.size * 0.45);
+      var span = w + lw + 2;          // X 하나가 실제로 차지하는 폭
+      // 촘촘히 훑으면서 놓을 수 있는 자리마다 바로 놓음 (곡선에서 사이가 벌어지지 않게)
+      var step = Math.max(1, span * 0.14);
+      var dx = b.x - a.x, dy = b.y - a.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (!dist) { stampX(a.x, a.y, half, span); return; }
+      var d = dotCarry;
+      while (d <= dist) {
+        var t = d / dist;
+        stampX(a.x + dx * t, a.y + dy * t, half, span);
+        d += step;
+      }
+      dotCarry = d - dist;
+    }
     function stroke(a, b) {
       if (draw.pen === "crayon") { crayon(a, b); return; }
       if (draw.pen === "dot") { dotted(a, b); return; }
+      if (draw.pen === "stitch") { stitch(a, b); return; }
 
       ctx.strokeStyle = draw.erase ? DRAW_BG : draw.color;
       ctx.lineWidth = draw.erase ? draw.size * 2.2 : draw.size;
@@ -2074,7 +2119,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     function begin(e) {
       if (e.cancelable) e.preventDefault();
       pushUndo();
-      dotCarry = 0;
+      dotCarry = 0; stitchDone = [];
       drawing = true; last = pt(e);
       if (isMarker()) markerBegin(last);
       else stroke(last, { x: last.x + 0.1, y: last.y + 0.1 });
@@ -2100,6 +2145,14 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (!draw.ctx) return;
     try { draw.undo.push(draw.ctx.getImageData(0, 0, CV, CV)); } catch (e) {}
     if (draw.undo.length > 12) draw.undo.shift();
+    draw.redo = [];        // 새로 그리면 '다시 실행' 은 없어짐
+    syncDrawBtns();
+  }
+  function syncDrawBtns() {
+    var u = document.querySelector('[data-act="dwUndo"]');
+    var r = document.querySelector('[data-act="dwRedo"]');
+    if (u) u.disabled = !(draw.undo && draw.undo.length);
+    if (r) r.disabled = !(draw.redo && draw.redo.length);
   }
   // 그린 것을 form.draw에 담아 둠 (저장은 저장 버튼을 눌러야 됨)
   function drawSync() {
@@ -2119,7 +2172,17 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   }
   function drawUndo() {
     if (!draw.ctx || !draw.undo.length) return;
+    try { draw.redo.push(draw.ctx.getImageData(0, 0, CV, CV)); } catch (e) {}
+    if (draw.redo.length > 12) draw.redo.shift();
     draw.ctx.putImageData(draw.undo.pop(), 0, 0);
+    syncDrawBtns();
+    drawSync();
+  }
+  function drawRedo() {
+    if (!draw.ctx || !draw.redo || !draw.redo.length) return;
+    try { draw.undo.push(draw.ctx.getImageData(0, 0, CV, CV)); } catch (e) {}
+    draw.ctx.putImageData(draw.redo.pop(), 0, 0);
+    syncDrawBtns();
     drawSync();
   }
   function drawClear() {
@@ -2144,11 +2207,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       '<button type="button" class="dw-t" data-act="dwPen" data-v="crayon">크레파스</button>' +
       '<button type="button" class="dw-t" data-act="dwPen" data-v="dot">도트</button>' +
       '<button type="button" class="dw-t" data-act="dwPen" data-v="marker">마커</button>' +
+      '<button type="button" class="dw-t" data-act="dwPen" data-v="stitch">자수</button>' +
       '<button type="button" class="dw-t" id="dwEraseBtn" data-act="dwErase">지우개</button>' +
       "</div>" +
       '<div class="dw-row">' +
       '<button type="button" class="dw-b" data-act="dwUndo">되돌리기</button>' +
-      '<button type="button" class="dw-b" data-act="dwClear" style="margin-left:9px">전체 지우기</button>' +
+      '<button type="button" class="dw-b" data-act="dwRedo" style="margin-left:9px">다시 실행</button>' +
+      '<button type="button" class="dw-b" data-act="dwClear" style="margin-left:auto">전체 지우기</button>' +
       "</div></div>";
     return h;
   }
@@ -2775,6 +2840,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         if (ss) [].forEach.call(ss.children, function (x) { if (x.dataset.act === "dwSize") x.classList.toggle("on", x.dataset.v === v); });
         break;
       case "dwUndo": drawUndo(); break;
+      case "dwRedo": drawRedo(); break;
       case "dwClear": drawClear(); break;
       case "editQuote": quoteForm(quoteOf(id)); break;
       case "quoteFromBook": quoteForm(null, id); backToBook = id; backToBookBottom = true; break;
