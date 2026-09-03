@@ -1000,7 +1000,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.52.4";
+  var BUILD = "1.53.2";
   var SEEN_KEY = "jeokbarim-seen-version";
   // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
   var CHANGES = [
@@ -2418,8 +2418,20 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   }
   function unwrapSpan(sp) {
     var par = sp.parentNode;
+    var first = sp.firstChild, last = sp.lastChild;
     while (sp.firstChild) par.insertBefore(sp.firstChild, sp);
     par.removeChild(sp);
+    return { first: first, last: last };
+  }
+  // 껍데기를 벗긴 뒤에도 고른 상태가 풀리지 않게 다시 잡아 줌
+  function selectNodes(a, b) {
+    if (!a || !b) return;
+    try {
+      var r = document.createRange();
+      r.setStartBefore(a); r.setEndAfter(b);
+      var sel = window.getSelection();
+      sel.removeAllRanges(); sel.addRange(r);
+    } catch (e) {}
   }
   function applySize(kind) {
     var el = document.getElementById(richId);
@@ -2432,8 +2444,16 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var cur = sizeSpanAt(r.startContainer, el);
 
     if (!r.collapsed) {                       // 글자를 골랐을 때
-      if (cur && cur.className === want) { unwrapSpan(cur); syncBoldBtn(); return; }
-      if (cur) unwrapSpan(cur);
+      if (cur && cur.className === want) {
+        var m1 = unwrapSpan(cur);
+        selectNodes(m1.first, m1.last);
+        syncBoldBtn();
+        return;
+      }
+      if (cur) {
+        var m2 = unwrapSpan(cur);
+        selectNodes(m2.first, m2.last);
+      }
       try {
         var sp = document.createElement("span");
         sp.className = want;
@@ -2483,6 +2503,16 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         }, { passive: false });
       });
     });
+    [["fzLargeBtn", "large"], ["fzSmallBtn", "small"]].forEach(function (pair) {
+      var fb = document.getElementById(pair[0]);
+      if (!fb) return;
+      ["touchstart", "mousedown"].forEach(function (ev) {
+        fb.addEventListener(ev, function (e) {
+          if (e.cancelable) e.preventDefault();
+          applySize(pair[1]);
+        }, { passive: false });
+      });
+    });
     if (!richHooked) {
       richHooked = true;
       document.addEventListener("selectionchange", syncBoldBtn);
@@ -2494,7 +2524,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (q) { whereInit = q.bookId ? ((bookOf(q.bookId) || {}).title || "") : (q.source || ""); }
     else if (presetBookId) { whereInit = (bookOf(presetBookId) || {}).title || ""; }
 
-    var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="fzSmallBtn" data-act="fzSet" data-v="small">작게</button><button type="button" class="boldbtn" id="fzLargeBtn" data-act="fzSet" data-v="large">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
+    var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
       '<div id="qText" class="rich" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off">' +
       boldToHtml(q ? q.text : "") + "</div></div>";
     h += '<div class="f wherewrap"><label>어디서</label><input id="qWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
@@ -2516,7 +2546,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   function noteForm(n) {
     form = n ? JSON.parse(JSON.stringify(n)) : { id: null, tags: [], createdAt: today() };
     form.draw = (n && n.drawId && drawCache[n.drawId]) ? drawCache[n.drawId] : "";
-    var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="fzSmallBtn" data-act="fzSet" data-v="small">작게</button><button type="button" class="boldbtn" id="fzLargeBtn" data-act="fzSet" data-v="large">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
+    var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
       '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 하다 만 생각, 닿지 않는 혼잣말, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자! ♡">' +
       boldToHtml(n ? n.text : "") + "</div></div>";
     h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="nTags" autocomplete="off" value="' +
@@ -2631,6 +2661,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         return '<button class="tag dark" data-act="tag" data-v="' + esc(t) + '">' + esc(t) + "</button>";
       }).join("") + "</div>";
     }
+    h += '<button class="ghost" data-act="toBook" data-id="' + q.id + '">책 정보 보기</button>';
     h += '<button class="ghost" data-act="copyQuote" data-id="' + q.id + '">구절만 복사</button>';
     h += '<button class="ghost" data-act="editQuote" data-id="' + q.id + '">고치기</button>';
     h += '<button class="del" data-act="delQuote" data-id="' + q.id + '">지우기</button>';
@@ -2895,7 +2926,12 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
           applyRestore(pr.d, pr.draws);
         }
         break;
-      case "fzSet": applySize(v); break;
+      case "toBook":
+        var tq = quoteOf(id);
+        var tb = tq && tq.bookId ? bookOf(tq.bookId) : null;
+        if (tb) { closeCal(); bookDetail(tb); }
+        else toast("책 정보가 없어");
+        break;
       case "tagPick": pickTag(id, v); break;
       case "bqSort":
         bqSortMode = bqSortMode === "page" ? "add" : "page";
