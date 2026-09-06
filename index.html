@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko"><head>
+<html lang="ko">
+<head>
 <meta charset="utf-8">
 <meta http-equiv="Cache-Control" content="no-store, max-age=0">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -13,8 +14,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>적바림</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Gothic+A1:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gothic+A1:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 @font-face {
   font-family: 'BookkMyungjo';
@@ -85,9 +86,14 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .top { flex: 0 0 auto; padding: 14px 16px 12px; border-bottom: 1px solid var(--line); padding-top: max(32px, calc(env(safe-area-inset-top) + 18px)); }
 .brand h1 { font-family: 'Neurimbo', 'Pretendard', sans-serif; font-size: 28px; font-weight: 400; letter-spacing: 0.06em; line-height: 1.15; color: var(--paper); }
 .brand p { font-size: 13.5px; color: var(--paper); letter-spacing: 0.03em; margin-top: 3px; opacity: 0.72; }
+.searchrow { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.searchrow .searchwrap { flex: 1 1 auto; margin-top: 0; }
+.infobtn { flex: 0 0 auto; width: 31px; height: 31px; margin: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--paper); border-radius: 50%; background: none; color: var(--paper);
+  font-family: 'BookkMyungjo', 'Gowun Batang', serif; font-size: 16px; font-weight: 400; line-height: 1; padding-top: 2px; }
 .searchwrap { position: relative; margin-top: 12px; }
 .searchwrap input { padding-left: 36px; border-radius: 999px; background: rgba(0,0,0,0.3); font-size: 16px; height: 36px; }
-.sicon { position: absolute; left: 13px; top: 50%; transform: translateY(-48%) scaleX(-1); color: var(--muted); font-size: 23px; pointer-events: none; }
+.sicon { position: absolute; left: 12px; top: 50%; transform: translateY(-52%) scaleX(-1); color: var(--muted); font-size: 27px; pointer-events: none; }
 .sclear { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); color: var(--muted); padding: 5px 10px; font-size: 17px; }
 
 .body { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 8px 16px 34px; }
@@ -101,11 +107,12 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .sec.kb { font-size: 11.5px; }
 .addbtn.mj { font-size: 12px; }
 .addbtn.kb { font-size: 12px; padding-top: 2px; }
-.addbtn { display: inline-flex; align-items: center; justify-content: center; height: 27px; min-width: 70px; padding: 0 8px; font-size: 12px; line-height: 1; color: var(--paper); border: 1px solid var(--paper); border-radius: 999px; white-space: nowrap; letter-spacing: 0; }
+.addbtn { position: relative; top: -3px; display: inline-flex; align-items: center; justify-content: center; height: 27px; min-width: 70px; padding: 0 8px; font-size: 12px; line-height: 1; color: var(--paper); border: 1px solid var(--paper); border-radius: 999px; white-space: nowrap; letter-spacing: 0; }
 .filters { display: flex; align-items: center; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
 .sorttoggle { margin-left: auto; font-size: 11.5px; color: var(--muted); padding: 5px 2px; white-space: nowrap; }
 .sorttoggle .ar { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 11.5px; letter-spacing: 0; }
 .sec-row .sorttoggle { margin-left: 0; padding-left: 11px; border-left: 1px solid var(--line); }
+.sec-row .sorttoggle[data-act="bqSort"] { padding-left: 0; border-left: none; }
 .chip { font-size: 12.5px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
 .chip.on { border-color: var(--paper); color: #1B2A2C; background: var(--paper); font-weight: 700; }
 
@@ -168,7 +175,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 11'%3E%3Cpath d='M1.5 1.5L10 9l8.5-7.5' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 .expand-toggle.up .chev { transform: rotate(180deg); }
-.guide-head { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--paper); padding: 0; border: none; background: none; margin-top: 12px; }
+.guide-head { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--paper); padding: 0; border: none; background: none; margin-top: 12px; }
 .guide-head .chev { display: block; width: 9px; height: 7px; background-color: var(--paper);
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: contain; mask-size: contain;
   -webkit-mask-position: center; mask-position: center;
@@ -180,6 +187,10 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .ov.center { align-items: center; padding: 20px; }
 .modal.bare { padding-top: 20px; }
 .ov.center .modal { max-width: 400px; max-height: 80%; border-top: none; border: 1px solid var(--paper); border-radius: 4px; padding: 20px 18px 20px; }
+.hello { font-size: 14.5px; color: var(--paper); line-height: 2.1; text-align: center; padding: 6px 0 2px; }
+.markchip { display: inline-flex; align-items: center; justify-content: center; width: 23px; height: 23px;
+  border: 1px solid var(--paper); border-radius: 50%; vertical-align: middle; margin: 0 2px;
+  font-family: 'BookkMyungjo', 'Gowun Batang', serif; font-size: 12.5px; line-height: 1; padding: 2px 0 0 0; }
 .changelog { font-size: 14px; color: var(--paper); line-height: 1.8; }
 .changelog li { list-style: none; margin-bottom: 14px; padding-left: 0; white-space: pre-wrap; }
 .changelog li:last-child { margin-bottom: 0; }
@@ -187,8 +198,14 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .cl-btns { display: flex; gap: 8px; margin-top: 20px; }
 .cl-btns button { flex: 1 1 0; width: auto; margin-top: 0; padding: 13px 0; border-radius: 2px; font-size: 14px; font-weight: 400; }
 .cl-btns .ghost { border: 1px solid var(--line); color: var(--muted); }
+.cl-btns .ghost[data-act="hideChangelog"] { border-color: var(--paper); color: var(--paper); }
 .cl-btns .save { background: var(--paper); color: #1B2A2C; border: 1px solid var(--paper); }
-.guide-body { font-size: 11.5px; color: var(--paper); line-height: 1.8; margin-top: 9px; }
+.guidemodal .mh { margin-bottom: 11px; }
+.guideline { border-top: 1px solid var(--paper); }
+.guidemodal .guide-body { font-size: 14.5px; margin-top: 0; }
+.guide-body .gitem { padding: 15px 0; }
+.guide-body .gsub { display: block; padding-left: 15px; margin-top: 14px; }
+.guide-body { text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: break-all; overflow-wrap: anywhere; font-size: 13px; color: var(--paper); line-height: 1.8; margin-top: 9px; }
 .review-line { text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: break-all; overflow-wrap: anywhere; }
 .review-line:empty { min-height: 1em; }
 .extra { margin-bottom: 20px; }
@@ -206,6 +223,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .devconsole { margin-top: 8px; max-height: 190px; overflow-y: auto; background: rgba(0,0,0,0.35); border: 1px solid var(--line); border-radius: 2px; padding: 9px 10px; font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; line-height: 1.7; color: var(--muted); white-space: pre-wrap; word-break: break-all; }
 .devconsole .err { color: #E08A7A; }
 .pastelink { display: block; margin-left: auto; margin-top: 8px; padding: 6px 0; font-size: 11px; color: var(--muted); border: none; background: none; text-decoration: underline; text-underline-offset: 3px; }
+.iorow { display: flex; gap: 8px; }
+.iorow .ghost { flex: 1 1 0; width: auto; min-width: 0; padding-left: 4px; padding-right: 4px; white-space: nowrap; }
 .importlabel { display: block; position: relative; text-align: center; cursor: pointer; }
 .importlabel input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .wherewrap { position: relative; }
@@ -476,19 +495,22 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       <h1>적바림</h1>
       <p>유록: 흐르는 것들을 기록하여 머물게 하다</p>
     </div>
-    <div class="searchwrap">
-      <span class="sicon">⌕</span>
-      <input id="search" placeholder="" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
-      <button id="sclear" class="sclear hide" aria-label="검색어 지우기">×</button>
+    <div class="searchrow">
+      <div class="searchwrap">
+        <span class="sicon">⌕</span>
+        <input id="search" placeholder="" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
+        <button id="sclear" class="sclear hide" aria-label="검색어 지우기">×</button>
+      </div>
+      <button class="infobtn" data-act="openGuide" aria-label="일러두기">※</button>
     </div>
   </div>
-  <div class="body" id="body" data-scroll-watch="1"></div>
-  <div class="fab hide" id="fab"></div>
+  <div class="body" id="body"></div>
+  <div class="fab" id="fab"></div>
   <div class="tabs">
-    <button class="tab" data-tab="shelf">서가</button>
+    <button class="tab on" data-tab="shelf">서가</button>
     <button class="tab" data-tab="quotes">필사</button>
     <button class="tab" data-tab="simpil">심필</button>
-    <button class="tab on" data-tab="stats">자취</button>
+    <button class="tab" data-tab="stats">자취</button>
   </div>
 </div>
 <div id="modalRoot"></div>
@@ -689,6 +711,85 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     openModal("불러오기 전에", h, "center");
     return true;
   }
+  /* ── 백업 합치기 ── */
+  var pendingMerge = null;
+  // id가 없으면 새로 넣고, 있으면 editedAt이 더 최근인 쪽을 남김
+  function mergeList(mine, incoming) {
+    var byId = {}, order = [], added = 0, updated = 0, drawIds = [];
+    (mine || []).forEach(function (x) {
+      if (!x || !x.id) return;
+      if (!byId[x.id]) order.push(x.id);
+      byId[x.id] = x;
+    });
+    (incoming || []).forEach(function (x) {
+      if (!x || !x.id) return;
+      if (!byId[x.id]) {
+        byId[x.id] = x; order.push(x.id); added++;
+        if (x.drawId) drawIds.push(x.drawId);
+        return;
+      }
+      var a = Date.parse(byId[x.id].editedAt || "");
+      var b = Date.parse(x.editedAt || "");
+      if (!isNaN(a) && !isNaN(b) && b > a) {
+        byId[x.id] = x; updated++;
+        if (x.drawId) drawIds.push(x.drawId);
+      }
+    });
+    return {
+      list: order.map(function (id) { return byId[id]; }),
+      added: added, updated: updated, drawIds: drawIds
+    };
+  }
+  function checkMerge(d, draws) {
+    var pb = mergeList(state.books, d.books);
+    var pq = mergeList(state.quotes, d.quotes);
+    var pn = mergeList(state.notes, d.notes);
+    pendingMerge = { pb: pb, pq: pq, pn: pn, draws: draws || {} };
+    var total = pb.added + pq.added + pn.added + pb.updated + pq.updated + pn.updated;
+    var h = '<div class="restore-cmp">';
+    h += '<div class="rc-row rc-head"><span></span><span>새로 들어옴</span><span>고쳐진 것</span></div>';
+    [["책", pb], ["구절", pq], ["심필", pn]].forEach(function (r) {
+      h += '<div class="rc-row"><span>' + r[0] + "</span><span>" + r[1].added +
+        "</span><span>" + r[1].updated + "</span></div>";
+    });
+    h += "</div>";
+    if (!total) h += '<p class="rc-warn">더할 게 없어. 그 파일에 있는 건 여기에 이미 다 있어.</p>';
+    else h += '<p class="rc-warn">지금 기록은 그대로 두고 위의 것만 더해.<br><span style="opacity:.75">여기서 지운 기록이 그 파일에 남아 있으면 되살아나.</span></p>';
+    h += '<div class="cl-btns"><button class="ghost" data-act="close">취소</button>' +
+      (total ? '<button class="save" data-act="doMerge">합치기</button>' : "") + "</div>";
+    openModal("합치기 전에", h, "center");
+  }
+  function applyMerge() {
+    if (!pendingMerge) return;
+    var m = pendingMerge; pendingMerge = null;
+    state.books = m.pb.list;
+    state.quotes = m.pq.list;
+    state.notes = m.pn.list;
+    var ids = m.pb.drawIds.concat(m.pq.drawIds, m.pn.drawIds);
+    ids.forEach(function (k) { if (m.draws[k]) drawStorePut(k, m.draws[k]); });
+    devLog("합치기 · 책 " + state.books.length + " 구절 " + state.quotes.length +
+      " 심필 " + state.notes.length);
+    persist();
+    closeModal();
+    render();
+  }
+  function readMergeFile(f, done) {
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var d = JSON.parse(r.result);
+        if (!d.books || !d.quotes) throw 0;
+        if (!d.notes) d.notes = [];
+        var draws = d.draws || {};
+        delete d.draws;
+        checkMerge(d, draws);
+      } catch (err) { devLog("!! 합치기 실패"); toast("이 파일은 읽을 수 없어"); }
+      if (done) done();
+    };
+    r.onerror = function () { toast("이 파일은 읽을 수 없어"); if (done) done(); };
+    r.readAsText(f);
+  }
+
   function applyRestore(d, draws) {
     state = d;
     drawStoreReplaceAll(draws || {});
@@ -1203,11 +1304,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         : '<div class="empty kb"><b>휑•••</b></div>';
       if (ns2.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "keep") {
-      h += '<div class="sec sec-row" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>\u2605 아낌</span>' +
-        '<button class="flowx" data-act="tabStats" style="margin-left:auto" aria-label="닫기">\u00d7</button></div>';
-      h += keepAllBody();
       var keepN = state.quotes.filter(function (x) { return x.keep; }).length +
         state.notes.filter(function (x) { return x.keep; }).length;
+      h += '<div class="sec sec-row" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>\u2605 아낌 <b>' + keepN + '</b></span>' +
+        '<button class="flowx" data-act="tabStats" style="margin-left:auto" aria-label="닫기">\u00d7</button></div>';
+      h += keepAllBody();
       if (keepN > 4) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "flow") {
       h += '<div class="sec sec-row" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>흐름</span>' +
@@ -1629,6 +1730,22 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     render();
   }
 
+  // 안내문 본문. 자취 탭과 알아두기 창이 같이 씀.
+  // 안내문 본문. 자취 탭과 일러두기 창이 같이 씀.
+  function guideBody() {
+    return '<div class="gitem">안녕? 먼저, 여기는 그 누구에게도 공유되지 않는 나만의 비밀 공간이라는 점 일러둘게.</div>' +
+      '<div class="gitem">1. 왼쪽 위 적바림이나 유록 글자를 터치하거나, 밑의 서가/필사/심필/자취 글자를 터치하면 화면이 자동으로 맨 위로 올라가. (유록은 내 호!)</div>' +
+      '<div class="gitem">2. 기록은 브라우저(크롬/사파리/앱 등) 안에 저장돼. 브라우저 탭이나 홈 화면에 추가한 앱을 지우면 기록이 사라지니까, 종종 백업해서 저장해 두는 게 좋아.</div>' +
+      '<div class="gitem">3. 모바일과 PC를 오가며 사용하고 싶다면, 자취 탭에서 백업 파일 이용법을 펼쳐봐.</div>' +
+      '<div class="gitem">4. 써 보면서 좋은 점, 불편한 점, 추가했으면 하는 기능 등의 피드백을 주면 너무 기쁘고 고마울 거야. 빠른 반영과 개작을 약속하겠어.</div>' +
+      '<div class="gitem">북적북적한 독서 생활에, 적바림이 부디 곰비임비의 즐거움으로 닿기를 바라.</div>';
+  }
+  // 자취 탭 접이식 항목. 일러두기 3번과 같은 내용.
+  function guideBackup() {
+    return '<div class="gitem">모바일과 PC를 오가며 쓸 수 있어.<br>- 한쪽에서 백업 파일을 받아서 에어드롭이나 메일 첨부 등으로 다른 쪽에 옮긴 다음, 두 가지 중에 고르면 돼.' +
+      '<span class="gsub">1) 백업 파일 합치기: 양쪽 기록을 합쳐. 없던 건 새로 들어오고, 양쪽에 다 있는 건 더 최근에 고친 쪽이 남아. 다만 한쪽에서 지운 기록이 다른 쪽 파일에 남아 있으면 되살아나니까 주의해.</span>' +
+      '<span class="gsub">2) 백업 파일 덮어쓰기: 합치지 않고 그 파일로 통째로 덮어씌워. 지금 이 기기에 있던 기록은 사라져.</span></div>';
+  }
   function keepAllBody() {
     var qs = state.quotes.filter(function (x) { return x.keep; }).sort(function (a, b) {
       if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
@@ -1690,8 +1807,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var keptQ = state.quotes.filter(function (x) { return x.keep; });
     var keptN = state.notes.filter(function (x) { return x.keep; });
     if (keptQ.length + keptN.length) {
-      h += '<button class="ghost" data-act="keepAll" style="margin-bottom:20px">\u2605 아낌 <b>' +
-        (keptQ.length + keptN.length) + "</b></button>";
+      h += '<button class="ghost" data-act="keepAll" style="margin-bottom:20px">\u2605 아낌</button>';
     }
 
     if (top.length) {
@@ -1715,19 +1831,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += "</div>";
 
     h += '<div style="margin-top:22px;padding-top:2px;border-top:1px solid var(--paper)"></div>';
-    h += '<button class="guide-head' + (guideOpen ? " up" : "") + '" data-act="toggleGuide">일러두기<span class="chev"></span></button>';
-    if (guideOpen) {
-      h += '<div class="guide-body"><br>안녕? 먼저, 여기는 그 누구에게도 공유되지 않는 나만의 비밀 공간이라는 점 일러둘게.<br><br>' +
-        '1. 왼쪽 위 적바림이나 유록 글자를 터치하면 화면이 자동으로 맨 위로 올라가니까 참고해. (유록은 내 호!)<br><br>' +
-        '2. 기록은 브라우저(크롬/사파리/앱 등) 안에 저장돼. 기기를 바꾸거나 브라우저 탭을 지우면 기록이 사라지니까, 종종 백업해서 저장해 두면 좋아.<br><br>' +
-        '3. PC로 기록 옮기고 싶다면<br>- 모바일에서 백업 파일을 에어드롭/메일 첨부 등의 방법을 이용해 PC에 저장하고, 백업 파일 불러오기 하면 끝! PC에서 모바일로 옮길 때도 같은 방법으로 하면 돼.<br><br>' +
-        '4. 써 보면서 좋은 점, 불편한 점, 추가했으면 하는 기능 등의 피드백을 주면 너무 기쁘고 고마울 거야. 빠른 반영과 개작을 약속하겠어.<br><br>' +
-        '북적북적한 독서 생활에, 적바림이 부디 곰비임비의 즐거움으로 닿기를 바라.</div>';
-    }
+    h += '<button class="guide-head' + (guideOpen ? " up" : "") + '" data-act="toggleGuide">백업 파일 이용법<span class="chev"></span></button>';
+    if (guideOpen) h += '<div class="guide-body">' + guideBackup() + '</div>';
     h += '<div style="height:14px"></div>';
     h += '<button class="ghost" data-act="exportJson">백업하기 (.json)</button>';
-    h += '<label class="ghost importlabel">백업 파일 불러오기' +
-      '<input type="file" id="fileIn" accept=".json,application/json"></label>';
+    h += '<div class="iorow">' +
+      '<label class="ghost importlabel">백업 파일 합치기' +
+      '<input type="file" id="mergeIn" accept=".json,application/json"></label>' +
+      '<label class="ghost importlabel">백업 파일 덮어쓰기' +
+      '<input type="file" id="fileIn" accept=".json,application/json"></label></div>';
     h += '<button class="ghost danger" data-act="wipeAll">모든 기록 삭제하기</button>';
     h += '<button class="pastelink" data-act="pasteRestore">파일 불러오기가 안 될 때</button>';
     var si = storageInfo();
@@ -1792,10 +1904,26 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     openModal("적바림 " + BUILD, h, "center");
   }
 
+  // 기록이 하나도 없는 사람에게 딱 한 번 뜨는 첫 인사
+  var HELLO_KEY = "jeokbarim-hello";
+  function showHello() {
+    if (state.books.length || state.quotes.length || state.notes.length) return false;
+    try { if (localStorage.getItem(HELLO_KEY) === "1") return false; } catch (e) {}
+    try { localStorage.setItem(HELLO_KEY, "1"); } catch (e) {}
+    openHello();
+    return true;
+  }
+  function openHello() {
+    var h = '<div class="hello">안녕? 어서 와.<br>시작하기 전에 오른쪽 위 <span class="markchip">\u203b</span> 눌러 보렴.</div>';
+    h += '<div class="cl-btns"><button class="save" data-act="close">확인</button></div>';
+    openModal("", h, "center bare");
+  }
+
   /* ── 모달 ── */
   var mroot = document.getElementById("modalRoot");
   var form = {};
   var modalKind = "";
+  var backToQuote = null;
   function openModal(title, inner, cls) {
     var ovCls = (cls && cls.indexOf("center") !== -1) ? "ov center" : "ov";
     var bare = cls && cls.indexOf("bare") !== -1;
@@ -1962,10 +2090,23 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (!modal) return;
     var startY = 0, curY = 0, raw = 0, dragging = false;
 
+    // 글자를 잡고 끄는 중이면 창을 닫지 않음
+    function picking() {
+      try {
+        var sel = window.getSelection();
+        return !!sel && !sel.isCollapsed && String(sel).length > 0;
+      } catch (e) { return false; }
+    }
     function canStart(target) {
       if (modal.scrollTop > 0) return false;
+      if (picking()) return false;
       if (target.closest("textarea, input, select, .wherelist, canvas, .drawpanel, .rich, .calpop, .datewrap")) return false;
       return true;
+    }
+    function cancelDrag() {
+      dragging = false;
+      modal.classList.remove("dragging");
+      modal.style.transform = "";
     }
     function begin(y) {
       dragging = true; startY = y; curY = 0; raw = 0;
@@ -2004,8 +2145,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     modal.addEventListener("touchmove", function (e) {
       if (!dragging) return;
       var y = e.touches[0].clientY;
+      if (picking()) { cancelDrag(); return; }
       if (y - startY <= 0) { move(y); return; }
-      if (modal.scrollTop > 0) { dragging = false; modal.style.transform = ""; return; }
+      if (modal.scrollTop > 0) { cancelDrag(); return; }
       if (e.cancelable) e.preventDefault();
       move(y);
     }, { passive: false });
@@ -2019,8 +2161,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     draftKind = null; draftBase = null;
     var back = backToBook;
     backToBook = null;
+    var backQ = backToQuote;
+    backToQuote = null;
     mroot.innerHTML = "";
     form = {};
+    // 구절을 고치고 나면 책 정보가 아니라 그 구절 화면으로 되돌아감
+    if (backQ) {
+      var bq = quoteOf(backQ);
+      if (bq) { quoteDetail(bq); backToBook = back; return; }
+    }
     if (back) {
       var toBottom = backToBookBottom;
       backToBookBottom = false;
@@ -2731,7 +2880,6 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       }).join("") + "</div>";
     }
     h += '<button class="ghost" data-act="toBook" data-id="' + q.id + '">책 정보 보기</button>';
-    h += '<button class="ghost" data-act="copyQuote" data-id="' + q.id + '">구절만 복사</button>';
     h += '<button class="ghost" data-act="editQuote" data-id="' + q.id + '">고치기</button>';
     h += '<button class="del" data-act="delQuote" data-id="' + q.id + '">지우기</button>';
     openModal("옮겨 적은 구절", h, "mj");
@@ -2901,9 +3049,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (t.dataset.tab) {
       tab = t.dataset.tab; query = ""; syncSearch(); render();
       // 탭을 누르면 늘 맨 위부터 보이게
-      var bodyEl = document.getElementById("body");
-      if (bodyEl) bodyEl.scrollTop = 0;
-      if (tab === "stats") askQuota(function () { render(); });
+      var toTop = function () {
+        var b = document.getElementById("body");
+        if (b) b.scrollTop = 0;
+      };
+      toTop();
+      requestAnimationFrame(toTop);
+      if (tab === "stats") askQuota(function () { render(); toTop(); requestAnimationFrame(toTop); });
       return;
     }
     if (act === "ovClose" && e.target !== t) return;
@@ -2939,6 +3091,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         render();
         break;
       case "toggleDaily": dailyExpanded = !dailyExpanded; render(); break;
+      case "openGuide":
+        openModal("일러두기", '<div class="guideline"></div><div class="guide-body">' + guideBody() + "</div>", "guidemodal");
+        break;
       case "toggleGuide": guideOpen = !guideOpen; keepScrollOnce = true; render(); break;
       case "toggleDev": devOpen = !devOpen; keepScrollOnce = true; render(); break;
       case "toggleConsole": consoleOpen = !consoleOpen; keepScrollOnce = true; render(); break;
@@ -3077,7 +3232,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       case "dwUndo": drawUndo(); break;
       case "dwRedo": drawRedo(); break;
       case "dwClear": drawClear(); break;
-      case "editQuote": quoteForm(quoteOf(id)); break;
+      case "editQuote": backToQuote = (modalKind === "quote") ? id : null; quoteForm(quoteOf(id)); break;
       case "quoteFromBook": quoteForm(null, id); backToBook = id; backToBookBottom = true; break;
       case "status":
         form.status = v;
@@ -3181,10 +3336,6 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
           t.textContent = "정말 지울까? 한 번 더 눌러";
         }
         break;
-      case "copyQuote":
-        var q = quoteOf(id);
-        if (navigator.clipboard) navigator.clipboard.writeText(q.text);
-        break;
       case "scrollBottom":
         scrollToggle(document.querySelector(".modal"), t);
         break;
@@ -3192,6 +3343,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         scrollToggle(document.getElementById("body"), t);
         break;
       case "saveSelf": saveSelf(); break;
+      case "doMerge": applyMerge(); break;
       case "exportJson":
         devLog("백업 내려받기");
         var pack = { books: state.books, quotes: state.quotes, notes: state.notes, draws: drawCache };
@@ -3342,7 +3494,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       imagine: document.getElementById("fImagine").value,
       tags: parseTags(document.getElementById("fTags").value),
       drawId: form.drawId || "",
-      createdAt: form.createdAt || today()
+      createdAt: form.createdAt || today(),
+      editedAt: new Date().toISOString()
     };
     if (form.draw) {
       if (!b.drawId) b.drawId = uid();
@@ -3377,7 +3530,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       savedAt: form.savedAt || new Date().toISOString(),
       note: trimEnd(document.getElementById("qNote").value),
       tags: parseTags(document.getElementById("qTags").value),
-      keep: !!form.keep
+      keep: !!form.keep,
+      editedAt: new Date().toISOString()
     };
     if (form.id) {
       state.quotes = state.quotes.map(function (x) { return x.id === q.id ? q : x; });
@@ -3401,7 +3555,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       savedAt: form.savedAt || new Date().toISOString(),
       tags: parseTags(document.getElementById("nTags").value),
       keep: !!form.keep,
-      drawId: form.drawId || ""
+      drawId: form.drawId || "",
+      editedAt: new Date().toISOString()
     };
     if (form.draw) {
       if (!n.drawId) n.drawId = uid();
@@ -3452,10 +3607,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 
   document.addEventListener("change", function (e) {
     var input = e.target;
-    if (!input || input.id !== "fileIn") return;
+    if (!input || (input.id !== "fileIn" && input.id !== "mergeIn")) return;
     var f = input.files && input.files[0];
     if (!f) return;
-    readBackupFile(f, function () { try { input.value = ""; } catch (e2) {} });
+    var reader = input.id === "mergeIn" ? readMergeFile : readBackupFile;
+    reader(f, function () { try { input.value = ""; } catch (e2) {} });
   });
 
   // 맥 독 앱에서는 파일 선택 창이 안 열림. 그래서 창에 끌어다 놓는 길도 열어 둠.
@@ -3511,7 +3667,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     " 구절 " + state.quotes.length + " 심필 " + state.notes.length);
   showWarn();
   render();
-  showChangelog();
+  if (!showHello()) showChangelog();
   // 서체가 다 준비된 뒤에 한 번 더 맞춤 (서체에 따라 글 길이가 달라짐)
   try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { clampDaily(); checkDailyClamp(); layoutNotes(); }); } catch (e) {}
   // 1.39.0에서 잘못 저장된 심필 칸 배정을 한 번 지움
@@ -3532,6 +3688,5 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   });
 })();
 </script>
-
-
-</body></html>
+</body>
+</html>
