@@ -268,7 +268,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   background: rgba(12,36,39,0.86); color: var(--paper); font-size: 14px; letter-spacing: 0.02em;
   border: 2px dashed var(--paper); }
 .fab { position: absolute; right: 17px; bottom: 60px; z-index: 20; display: flex; flex-direction: column; gap: 9px; align-items: flex-end; }
-.scrollBottomBtn.inbody { right: 17px; bottom: calc(72px + env(safe-area-inset-bottom)); }
+.scrollBottomBtn.inbody { right: 17px; bottom: calc(58px + env(safe-area-inset-bottom)); }
 .fab button { background: var(--paper); color: #1B2A2C; font-weight: 700; font-size: 13px; padding: 10px 15px; border-radius: 999px; box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
 .fab button.alt { background: var(--paper); color: #1F2B2C; }
 .scrollBottomBtn { position: fixed; right: 20px; bottom: calc(24px + env(safe-area-inset-bottom)); width: 42px; height: 42px; border-radius: 50%; background: var(--ink); border: 1px solid var(--line); color: var(--paper); font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.4); z-index: 30; }
@@ -1019,7 +1019,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.57.0";
+  var BUILD = "1.57.1";
   var SEEN_KEY = "jeokbarim-seen-version";
   // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
   var CHANGES = [
@@ -1205,8 +1205,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       if (ns2.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "keep") {
       h += '<div class="sec sec-row" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>\u2605 아낌</span>' +
-        '<button class="flowx" data-act="tabShelf" style="margin-left:auto" aria-label="닫기">\u00d7</button></div>';
+        '<button class="flowx" data-act="tabStats" style="margin-left:auto" aria-label="닫기">\u00d7</button></div>';
       h += keepAllBody();
+      var keepN = state.quotes.filter(function (x) { return x.keep; }).length +
+        state.notes.filter(function (x) { return x.keep; }).length;
+      if (keepN > 4) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "flow") {
       h += '<div class="sec sec-row" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>흐름</span>' +
         '<button class="flowx" data-act="tabShelf" style="margin-left:auto" aria-label="닫기">\u00d7</button></div>';
@@ -2996,6 +2999,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
           closeModal();
           applyRestore(pr.d, pr.draws);
         }
+        break;
+      case "tabStats":
+        tab = "stats"; render();
+        var sb3 = document.getElementById("body");
+        if (sb3) sb3.scrollTop = 0;
         break;
       case "tabShelf": tab = "shelf"; render(); var sb2 = document.getElementById("body"); if (sb2) sb2.scrollTop = 0; break;
       case "goFlow":
