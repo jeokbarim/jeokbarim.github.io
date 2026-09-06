@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="utf-8">
 <meta http-equiv="Cache-Control" content="no-store, max-age=0">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -14,8 +13,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>적바림</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gothic+A1:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Gothic+A1:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
 <style>
 @font-face {
   font-family: 'BookkMyungjo';
@@ -483,13 +482,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       <button id="sclear" class="sclear hide" aria-label="검색어 지우기">×</button>
     </div>
   </div>
-  <div class="body" id="body"></div>
-  <div class="fab" id="fab"></div>
+  <div class="body" id="body" data-scroll-watch="1"></div>
+  <div class="fab hide" id="fab"></div>
   <div class="tabs">
-    <button class="tab on" data-tab="shelf">서가</button>
+    <button class="tab" data-tab="shelf">서가</button>
     <button class="tab" data-tab="quotes">필사</button>
     <button class="tab" data-tab="simpil">심필</button>
-    <button class="tab" data-tab="stats">자취</button>
+    <button class="tab on" data-tab="stats">자취</button>
   </div>
 </div>
 <div id="modalRoot"></div>
@@ -3533,5 +3532,6 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   });
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
