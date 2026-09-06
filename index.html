@@ -191,7 +191,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .markchip { display: inline-flex; align-items: center; justify-content: center; width: 23px; height: 23px;
   border: 1px solid var(--paper); border-radius: 50%; vertical-align: middle; margin: 0 2px;
   font-family: 'BookkMyungjo', 'Gowun Batang', serif; font-size: 12.5px; line-height: 1; padding: 2px 0 0 0; }
-.changelog { font-size: 14px; color: var(--paper); line-height: 1.8; }
+.changelog { font-size: 14px; color: var(--paper); line-height: 2; }
 .changelog li { list-style: none; margin-bottom: 14px; padding-left: 0; white-space: pre-wrap; }
 .changelog li:last-child { margin-bottom: 0; }
 .changelog a { color: var(--lemon); text-decoration: underline; text-underline-offset: 3px; word-break: break-all; }
@@ -1119,13 +1119,14 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
     if (devLogs.length > 120) devLogs.shift();
   }
-  var BUILD = "1.57.1";
+  var BUILD = "1.58.0";
   var SEEN_KEY = "jeokbarim-seen-version";
   // 비워 두면 업데이트 안내창이 안 뜸. 다시 띄우려면 문장을 넣으면 됨.
   var CHANGES = [
+    "\u00b7 상단 \u203b 누르면 일러두기가 떠.",
+    "\u00b7 백업 파일 불러오는 법을 추가했어. 자취 탭 \u2018백업 파일 이용법\u2019을 펼쳐서 봐줘.",
     "\u00b7 흐름 탭을 지웠어.",
-    "\u00b7 필사나 심필 중 특별히 좋은 건 \u2018아낌\u2019 버튼 누르면 따로 모아 볼 수 있어. 자취 탭에서는 필사와 심필 모두 모은 화면을 볼 수 있어.",
-    "\u00b7 스크롤을 조금 내린 상태에서, 밑의 서가/필사/심필/자취 글자를 누르면 맨 위로 올라가."
+    "\u00b7 필사나 심필 중 특별히 좋은 건 \u2018아낌\u2019 버튼 누르면 따로 모아 볼 수 있어."
   ];
   var DAILY_KEY = "jeokbarim-daily-pick";
   function pickDailyQuote(forceNew) {
@@ -1895,7 +1896,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 
     var h = '<ul class="changelog">';
     CHANGES.forEach(function (c, i) {
-      h += "<li>" + linkify(esc(c)) + "</li>";
+      h += "<li>" + linkify(esc(c)).replace(/\u203b/g, '<span class="markchip">\u203b</span>') + "</li>";
     });
     h += "</ul>";
     h += '<div class="cl-btns">' +
