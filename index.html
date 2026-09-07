@@ -101,8 +101,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .sec b { color: var(--muted); font-weight: 500; }
 
 .sec-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 27px; }
-.sec.mj, .addbtn.mj { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; }
-.sec.kb, .addbtn.kb { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
+.sec.mj, .addbtn.mj, .filters.mj { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; }
+.sec.kb, .addbtn.kb, .filters.kb { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
 .sec.mj { font-size: 11.5px; }
 .sec.kb { font-size: 11.5px; }
 .addbtn.mj { font-size: 12px; }
@@ -110,6 +110,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .addbtn { position: relative; top: -3px; display: inline-flex; align-items: center; justify-content: center; height: 27px; min-width: 70px; padding: 0 8px; font-size: 12px; line-height: 1; color: var(--paper); border: 1px solid var(--paper); border-radius: 999px; white-space: nowrap; letter-spacing: 0; }
 .filters { display: flex; align-items: center; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
 .sorttoggle { margin-left: auto; font-size: 11.5px; color: var(--muted); padding: 5px 2px; white-space: nowrap; }
+.keeptoggle.on { color: var(--paper); }
 .sorttoggle .ar { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 11.5px; letter-spacing: 0; }
 .sec-row .sorttoggle { margin-left: 0; padding-left: 11px; border-left: 1px solid var(--line); }
 .sec-row .sorttoggle[data-act="bqSort"] { padding-left: 0; border-left: none; }
@@ -1260,11 +1261,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       h += '<div class="sec sec-row mj" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>모은 구절 <b>' +
         (qKeep ? state.quotes.filter(function (x) { return x.keep; }).length : state.quotes.length) + '</b></span>' +
         '<button class="sorttoggle" data-act="qSortCycle"><span class="ar">⇅</span> ' + qSortLabel2 + "</button>" +
+        '<button class="sorttoggle keeptoggle' + (qKeep ? " on" : "") + '" data-act="qKeep" data-v="' +
+        (qKeep ? "" : "1") + '"><span class="ar">\u2605</span> 아낌</button>' +
         '<button class="addbtn mj" data-act="newQuote" style="margin-left:auto">＋ 필사</button></div>';
-      h += '<div class="filters mj"><button class="chip' + (qKeep ? "" : " on") + '" data-act="qKeep" data-v="">전체</button>' +
-        '<button class="chip' + (qKeep ? " on" : "") + '" data-act="qKeep" data-v="1">아낌</button></div>';
-      h += dailyQuote();
-      h += '<div style="margin:0 -16px 15px;border-top:1px solid var(--line)"></div>';
+      if (!qKeep) {
+        h += dailyQuote();
+        h += '<div style="margin:0 -16px 15px;border-top:1px solid var(--line)"></div>';
+      }
       function qRecent(a, b) {
         if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
         return ts(b) - ts(a);
@@ -1290,9 +1293,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         (nKeep ? state.notes.filter(function (x) { return x.keep; }).length : state.notes.length) + '</b></span>' +
         '<button class="sorttoggle" data-act="nSortCycle"><span class="ar">⇅</span> ' +
         (nSortMode === "oldest" ? "오래된 순" : "최근순") + "</button>" +
+        '<button class="sorttoggle keeptoggle' + (nKeep ? " on" : "") + '" data-act="nKeep" data-v="' +
+        (nKeep ? "" : "1") + '"><span class="ar">\u2605</span> 아낌</button>' +
         '<button class="addbtn kb" data-act="newNote" style="margin-left:auto">＋ 심필</button></div>';
-      h += '<div class="filters kb"><button class="chip' + (nKeep ? "" : " on") + '" data-act="nKeep" data-v="">전체</button>' +
-        '<button class="chip' + (nKeep ? " on" : "") + '" data-act="nKeep" data-v="1">아낌</button></div>';
       function nRecent(a, b) {
         if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
         return ts(b) - ts(a);
