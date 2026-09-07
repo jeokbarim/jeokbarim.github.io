@@ -2765,7 +2765,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     form = n ? JSON.parse(JSON.stringify(n)) : { id: null, tags: [], createdAt: today() };
     form.draw = (n && n.drawId && drawCache[n.drawId]) ? drawCache[n.drawId] : "";
     var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
-      '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 하다 만 생각, 닿지 않는 혼잣말, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자! ♡">' +
+      '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 모르는 단어의 뜻, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자!">' +
       boldToHtml(n ? n.text : "") + "</div></div>";
     h += '<button type="button" class="keepbtn' + (form.keep ? " on" : "") + '" data-act="keepToggle"><i>\u2605</i> 아낌</button>';
     h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="nTags" autocomplete="off" value="' +
