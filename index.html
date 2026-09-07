@@ -153,7 +153,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .quote { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; background: var(--paper); color: #22282A; border-radius: 1px; padding: 13px 14px 11px; margin-bottom: 11px; box-shadow: 0 5px 18px rgba(0,0,0,0.32); text-align: left; width: 100%; display: block; }
 .quote.flat { transform: none; }
 .qt { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; font-size: 12.5px; line-height: 1.7; word-break: break-all; overflow-wrap: anywhere; text-align: justify; text-align-last: left; }
-.qn { font-size: 11.5px; color: #5C6A6B; margin-top: 10px; line-height: 1.65; }
+.qn { font-size: 11.5px; color: #5C6A6B; margin-top: 16px; line-height: 1.65; }
 .indent { display: inline-block; width: 1em; }
 .mdots { display: inline-block; vertical-align: 0.3em; }
 .qn-line { text-align: justify; -webkit-text-align-last: right; text-align-last: right; word-break: break-all; overflow-wrap: anywhere; }
@@ -737,7 +737,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   /* ── 백업 합치기 ── */
   var pendingMerge = null;
   // id가 없으면 새로 넣고, 있으면 editedAt이 더 최근인 쪽을 남김
-  function mergeList(mine, incoming) {
+  function mergeList(mine, incoming, force) {
     var byId = {}, order = [], added = 0, updated = 0, drawIds = [];
     (mine || []).forEach(function (x) {
       if (!x || !x.id) return;
@@ -753,7 +753,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       }
       var a = Date.parse(byId[x.id].editedAt || "");
       var b = Date.parse(x.editedAt || "");
-      if (!isNaN(a) && !isNaN(b) && b > a) {
+      if (force || (!isNaN(a) && !isNaN(b) && b > a)) {
         byId[x.id] = x; updated++;
         if (x.drawId) drawIds.push(x.drawId);
       }
@@ -764,20 +764,30 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     };
   }
   function checkMerge(d, draws) {
-    var pb = mergeList(state.books, d.books);
-    var pq = mergeList(state.quotes, d.quotes);
-    var pn = mergeList(state.notes, d.notes);
-    pendingMerge = { pb: pb, pq: pq, pn: pn, draws: draws || {} };
+    pendingMerge = { d: d, draws: draws || {}, force: false };
+    showMergeModal();
+  }
+  function showMergeModal() {
+    var m = pendingMerge;
+    if (!m) return;
+    var pb = mergeList(state.books, m.d.books, m.force);
+    var pq = mergeList(state.quotes, m.d.quotes, m.force);
+    var pn = mergeList(state.notes, m.d.notes, m.force);
+    m.pb = pb; m.pq = pq; m.pn = pn;
     var total = pb.added + pq.added + pn.added + pb.updated + pq.updated + pn.updated;
-    var h = '<div class="restore-cmp">';
-    h += '<div class="rc-row rc-head"><span></span><span>새로 들어옴</span><span>고쳐진 것</span></div>';
+    var h = '<div class="filters" style="margin-bottom:14px">' +
+      '<button class="chip' + (m.force ? "" : " on") + '" data-act="mergeMode" data-v="">최근 고친 쪽</button>' +
+      '<button class="chip' + (m.force ? " on" : "") + '" data-act="mergeMode" data-v="1">불러온 파일 쪽</button></div>';
+    h += '<div class="restore-cmp">';
+    h += '<div class="rc-row rc-head"><span></span><span>새로 들어옴</span><span>바뀌는 것</span></div>';
     [["책", pb], ["구절", pq], ["심필", pn]].forEach(function (r) {
       h += '<div class="rc-row"><span>' + r[0] + "</span><span>" + r[1].added +
         "</span><span>" + r[1].updated + "</span></div>";
     });
     h += "</div>";
     if (!total) h += '<p class="rc-warn">더할 게 없어. 그 파일에 있는 건 여기에 이미 다 있어.</p>';
-    else h += '<p class="rc-warn">지금 기록은 그대로 두고 위의 것만 더해.<br><span style="opacity:.75">여기서 지운 기록이 그 파일에 남아 있으면 되살아나.</span></p>';
+    else if (m.force) h += '<p class="rc-warn">양쪽에 다 있는 건 불러온 파일 쪽으로 바꿔.<br><span style="opacity:.75">여기서만 고친 게 있으면 그게 밀려나니까 조심해.</span></p>';
+    else h += '<p class="rc-warn">양쪽에 다 있는 건 더 최근에 고친 쪽을 남겨.<br><span style="opacity:.75">고친 시각이 없는 옛 기록은 여기 것을 그대로 둬.</span></p>';
     h += '<div class="cl-btns"><button class="ghost" data-act="close">취소</button>' +
       (total ? '<button class="save" data-act="doMerge">합치기</button>' : "") + "</div>";
     openModal("합치기 전에", h, "center");
@@ -3387,6 +3397,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         break;
       case "saveSelf": saveSelf(); break;
       case "doMerge": applyMerge(); break;
+      case "mergeMode":
+        if (pendingMerge) { pendingMerge.force = v === "1"; showMergeModal(); }
+        break;
       case "exportJson":
         devLog("백업 내려받기");
         var pack = { books: state.books, quotes: state.quotes, notes: state.notes, draws: drawCache };
