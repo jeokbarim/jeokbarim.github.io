@@ -100,20 +100,42 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .sec { font-size: 11.5px; letter-spacing: 0.16em; color: var(--muted); margin: 0 0 13px; }
 .sec b { color: var(--muted); font-weight: 500; }
 
-.sec-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 27px; }
+.sec-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 27px; }
 .sec.mj, .addbtn.mj, .filters.mj { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; }
 .sec.kb, .addbtn.kb, .filters.kb { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
-.sec.mj { font-size: 11.5px; }
+.sec.mj { font-size: 11px; }
+/* 화면 왼쪽 끝(본문 여백 16px 포함)부터 첫 세로선까지의 한가운데 */
+.sec-row.head > span { text-align: center; padding-left: 0; padding-right: 10px; }
+/* 폰트별 글자 앉는 높이 보정. 폰트 파일에서 잰 값 */
+.sec-row.head.mj > span { position: relative; top: -1.13px; }
+.sec-row.head.kb > span { position: relative; top: -0.9px; }
+/* 폰트별 눈높이 보정. 선은 안 움직이고 글자만 */
+.sec-row.mj .sorttoggle { padding-bottom: 2px; }
+.sec-row.kb .sorttoggle { padding-bottom: 1px; }
+/* 정렬 글자를 두 세로선 사이 한가운데로. 6px은 다음 칸까지의 간격 몫 */
+.sec-row.head .sorttoggle[data-act$="SortCycle"],
+.sec-row.head .sorttoggle[data-act="sortCycle"] { justify-content: center; padding-left: 6px; padding-right: 0; }
+.sec.mj .sorttoggle { font-size: 11px; }
 .sec.kb { font-size: 11.5px; }
-.addbtn.mj { font-size: 12px; }
+.addbtn.mj { font-size: 11.5px; }
 .addbtn.kb { font-size: 12px; padding-top: 2px; }
-.addbtn { position: relative; top: -3px; display: inline-flex; align-items: center; justify-content: center; height: 27px; min-width: 70px; padding: 0 8px; font-size: 12px; line-height: 1; color: var(--paper); border: 1px solid var(--paper); border-radius: 999px; white-space: nowrap; letter-spacing: 0; }
+.addbtn { position: relative; top: -2px; display: inline-flex; align-items: center; justify-content: center; height: 27px; min-width: 70px; padding: 0 8px; font-size: 12px; line-height: 1; color: var(--paper); border: 1px solid var(--paper); border-radius: 999px; white-space: nowrap; letter-spacing: 0; }
 .filters { display: flex; align-items: center; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
 .sorttoggle { margin-left: auto; font-size: 11.5px; color: var(--muted); padding: 5px 2px; white-space: nowrap; }
 .keeptoggle.on { color: var(--paper); }
+.keeptoggle .ar { margin-right: 4px; }
+/* 세로선 좌우 여백을 같게 */
+.sec-row.head .keeptoggle { padding-left: 16px; }
+.sorttoggle .ar { margin-right: 4px; }
 .sorttoggle .ar { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 11.5px; letter-spacing: 0; }
-.sec-row .sorttoggle { margin-left: 0; padding-left: 11px; border-left: 1px solid var(--line); }
+.sec-row .sorttoggle { margin-left: 0; display: inline-flex; align-items: center; align-self: center;
+  height: 21px; margin-bottom: 3px; padding: 0 2px 0 11px; border-left: 1px solid var(--line); }
 .sec-row .sorttoggle[data-act="bqSort"] { padding-left: 0; border-left: none; }
+/* 탭을 바꿔도 세로선 자리가 안 흔들리게 폭을 고정 */
+.sec-row > span { min-width: 88px; }
+/* 서가는 ‘모은 책’으로 한 글자 짧아 그만큼 칸을 좁힘 */
+.sec-row.head:not(.mj):not(.kb) > span { min-width: 75px; }
+.sec-row .sorttoggle[data-act$="SortCycle"], .sec-row .sorttoggle[data-act="sortCycle"] { min-width: 78px; }
 .chip { font-size: 12.5px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
 .chip.on { border-color: var(--paper); color: #1B2A2C; background: var(--paper); font-weight: 700; }
 
@@ -205,8 +227,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .guideline { border-top: 1px solid var(--paper); }
 .guidemodal .guide-body { font-size: 14.5px; margin-top: 0; }
 .guide-body .gitem { padding: 15px 0; }
-.guide-body .gsub { display: block; padding-left: 15px; margin-top: 14px; }
-.guide-body { text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: break-all; overflow-wrap: anywhere; font-size: 13px; color: var(--paper); line-height: 1.8; margin-top: 9px; }
+.guide-body .gsub { display: block; margin-top: 20px; }
+.guide-body { text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: break-all; overflow-wrap: anywhere; font-size: 13px; color: var(--paper); line-height: 1.8; margin-top: 20px; }
 .review-line { text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: break-all; overflow-wrap: anywhere; }
 .review-line:empty { min-height: 1em; }
 .extra { margin-bottom: 20px; }
@@ -1048,16 +1070,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (sv) meta.push("<b>" + esc(sv) + "</b>");
     if (q.page) meta.push(esc(q.page) + "쪽");
     var dateStr = opt.noDate ? "" : fmt(q.createdAt);
-    var hasTags = q.tags && q.tags.length;
     h += '<div class="qf"><span class="src-wrap">' + srcLine(sv, q.page) + "</span>";
-    if (!hasTags && dateStr) h += "<span>" + (q.keep ? '<span class="keepstar">\u2605</span> ' : "") + dateStr + "</span>";
+    if (dateStr) h += "<span>" + (q.keep ? '<span class="keepstar">\u2605</span> ' : "") + dateStr + "</span>";
     h += "</div>";
-    if (hasTags) {
-      h += '<div class="tagrow"><div class="tags">' +
-        (q.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("") + "</div>";
-      if (dateStr) h += '<span class="qdate">' + (q.keep ? '<span class="keepstar">\u2605</span> ' : "") + dateStr + "</span>";
-      h += "</div>";
-    }
     return h + "</button>";
   }
 
@@ -1115,6 +1130,10 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   })();
 
   var keepScrollOnce = false;
+  // 자취 탭에서 태그를 눌렀을 때만 켜짐. 본문은 빼고 태그만 맞춰 봄.
+  var tagOnly = false;
+  // 상세 화면에서 태그를 눌러 검색으로 넘어왔을 때, 돌아갈 곳
+  var tagBack = null;
   var sampleUndo = null;
   function devLog(msg) {
     devLogs.push({ kind: "log", t: new Date(), msg: msg });
@@ -1206,14 +1225,23 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (query) {
       var k = query.toLowerCase();
       var hit = function (s) { return String(s || "").toLowerCase().indexOf(k) > -1; };
+      var tagHit = function (tags) {
+        return (tags || []).some(function (t) { return String(t).toLowerCase() === k; });
+      };
       var bs = state.books.filter(function (b) {
+        if (tagOnly) return tagHit(b.tags);
         return hit(b.title) || hit(b.author) || hit(b.review) || b.tags.some(hit);
       });
       var qs = state.quotes.filter(function (x) {
+        if (tagOnly) return tagHit(x.tags);
         return hit(x.text) || hit(x.note) || hit(srcOf(x)) || x.tags.some(hit);
       });
-      var ns = state.notes.filter(function (n) { return hit(n.text) || n.tags.some(hit); });
-      h += '<div class="sec">검색 결과 · 책 <b>' + bs.length + "</b> · 구절 <b>" + qs.length + "</b> · 심필 <b>" + ns.length + "</b></div>";
+      var ns = state.notes.filter(function (n) {
+        if (tagOnly) return tagHit(n.tags);
+        return hit(n.text) || n.tags.some(hit);
+      });
+      h += '<div class="sec">' + (tagOnly ? "태그 " + esc(query) : "검색 결과") +
+        ' · 책 <b>' + bs.length + "</b> · 구절 <b>" + qs.length + "</b> · 심필 <b>" + ns.length + "</b></div>";
       h += bs.map(bookRow).join("");
       if (bs.length && qs.length) h += '<div style="height:18px"></div>';
       h += qs.map(function (q, i) { return quoteCard(q, i); }).join("");
@@ -1224,7 +1252,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       }
     } else if (tab === "shelf") {
       var sortLabel = { recent: "최근순", ratingDesc: "별점 높은 순", ratingAsc: "별점 낮은 순" }[sortMode];
-      h += '<div class="sec sec-row" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>모은 책 <b>' +
+      h += '<div class="sec sec-row head" style="border-bottom:1px solid var(--line);padding:5px 0;margin-bottom:19px"><span>모은 책 <b>' +
         state.books.length + '</b></span>' +
         '<button class="sorttoggle" data-act="sortCycle"><span class="ar">⇅</span> ' + sortLabel + "</button>" +
         '<button class="addbtn" data-act="newBook" style="margin-left:auto">＋ 책</button></div>';
@@ -1258,7 +1286,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       if (shelf.length > 4) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "quotes") {
       var qSortLabel2 = { recent: "최근순", oldest: "오래된 순", book: "책 이름순" }[qSortMode];
-      h += '<div class="sec sec-row mj" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>모은 구절 <b>' +
+      h += '<div class="sec sec-row mj head" style="border-bottom:1px solid var(--line);padding:5px 0;margin-bottom:19px"><span>모은 구절 <b>' +
         (qKeep ? state.quotes.filter(function (x) { return x.keep; }).length : state.quotes.length) + '</b></span>' +
         '<button class="sorttoggle" data-act="qSortCycle"><span class="ar">⇅</span> ' + qSortLabel2 + "</button>" +
         '<button class="sorttoggle keeptoggle' + (qKeep ? " on" : "") + '" data-act="qKeep" data-v="' +
@@ -1289,7 +1317,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         : '<div class="empty mj"><b>휑•••</b></div>';
       if (sorted.length > 4) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "simpil") {
-      h += '<div class="sec sec-row kb" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>모은 마음 <b>' +
+      h += '<div class="sec sec-row kb head" style="border-bottom:1px solid var(--line);padding:5px 0;margin-bottom:19px"><span>모은 마음 <b>' +
         (nKeep ? state.notes.filter(function (x) { return x.keep; }).length : state.notes.length) + '</b></span>' +
         '<button class="sorttoggle" data-act="nSortCycle"><span class="ar">⇅</span> ' +
         (nSortMode === "oldest" ? "오래된 순" : "최근순") + "</button>" +
@@ -1746,7 +1774,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   }
   // 자취 탭 접이식 항목. 일러두기 3번과 같은 내용.
   function guideBackup() {
-    return '<div class="gitem">모바일과 PC를 오가며 쓸 수 있어.<br>- 한쪽에서 백업 파일을 받아서 에어드롭이나 메일 첨부 등으로 다른 쪽에 옮긴 다음, 두 가지 중에 고르면 돼.' +
+    return '<div class="gitem">모바일과 PC를 오가며 쓸 수 있어.' +
+      '<span class="gsub">- 한쪽에서 백업 파일을 받아서 에어드롭이나 메일 첨부 등으로 다른 쪽에 옮긴 다음, 두 가지 중에 고르면 돼.</span>' +
       '<span class="gsub">1) 백업 파일 합치기: 양쪽 기록을 합쳐. 없던 건 새로 들어오고, 양쪽에 다 있는 건 더 최근에 고친 쪽이 남아. 다만 한쪽에서 지운 기록이 다른 쪽 파일에 남아 있으면 되살아나니까 주의해.</span>' +
       '<span class="gsub">2) 백업 파일 덮어쓰기: 합치지 않고 그 파일로 통째로 덮어씌워. 지금 이 기기에 있던 기록은 사라져.</span></div>';
   }
@@ -1817,7 +1846,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (top.length) {
       h += '<div class="sec" style="margin-top:0">태그</div><div class="tags">';
       top.forEach(function (p) {
-        h += '<button class="tag dark" data-act="tag" data-v="' + esc(p[0]) + '">' +
+        h += '<button class="tag dark" data-act="tagOnly" data-v="' + esc(p[0]) + '">' +
           esc(p[0]) + ' <span style="opacity:.55">' + p[1] + "</span></button>";
       });
       h += "</div>";
@@ -2790,7 +2819,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       (n.keep ? '<span class="keepstar">\u2605</span> ' : "") + noteTime(n) + "</div></div>";
     if (n.tags && n.tags.length) {
       h += '<div class="tags" style="margin:14px 0 4px">' + n.tags.map(function (t) {
-        return '<button class="tag dark" data-act="tag" data-v="' + esc(t) + '">' + esc(t) + "</button>";
+        return '<button class="tag dark" data-act="tag" data-back="note" data-id="' + n.id + '" data-v="' + esc(t) + '">' + esc(t) + "</button>";
       }).join("") + "</div>";
     }
     h += '<button class="ghost" data-act="editNote" data-id="' + n.id + '">고치기</button>';
@@ -2840,7 +2869,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += "</div>";
     if (b.tags && b.tags.length) {
       h += '<div class="tags" style="margin-bottom:16px">' + b.tags.map(function (t) {
-        return '<button class="tag dark" data-act="tag" data-v="' + esc(t) + '">' + esc(t) + "</button>";
+        return '<button class="tag dark" data-act="tag" data-back="book" data-id="' + b.id + '" data-v="' + esc(t) + '">' + esc(t) + "</button>";
       }).join("") + "</div>";
     }
     if (b.review) {
@@ -2880,7 +2909,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var h = quoteCard(q, 0, { flat: true });
     if (q.tags && q.tags.length) {
       h += '<div class="tags" style="margin:12px 0 4px">' + q.tags.map(function (t) {
-        return '<button class="tag dark" data-act="tag" data-v="' + esc(t) + '">' + esc(t) + "</button>";
+        return '<button class="tag dark" data-act="tag" data-back="quote" data-id="' + q.id + '" data-v="' + esc(t) + '">' + esc(t) + "</button>";
       }).join("") + "</div>";
     }
     h += '<button class="ghost" data-act="toBook" data-id="' + q.id + '">책 정보 보기</button>';
@@ -3051,7 +3080,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var act = t.dataset.act, id = t.dataset.id, v = t.dataset.v;
 
     if (t.dataset.tab) {
-      tab = t.dataset.tab; query = ""; syncSearch(); render();
+      tab = t.dataset.tab; tagOnly = false; tagBack = null; query = ""; syncSearch(); render();
       // 탭을 누르면 늘 맨 위부터 보이게
       var toTop = function () {
         var b = document.getElementById("body");
@@ -3138,7 +3167,17 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         break;
       case "shuffle":
         dailyExpanded = false; pickDailyQuote(true); render(); break;
-      case "tag": query = v; syncSearch(); closeModal(); render(); break;
+      case "tag":
+        tagOnly = true;
+        tagBack = t.dataset.back && id ? { kind: t.dataset.back, id: id } : null;
+        backToBook = null; backToQuote = null;
+        query = v; syncSearch(); closeModal(); render();
+        break;
+      case "tagOnly":
+        tagOnly = true; tagBack = null;
+        backToBook = null; backToQuote = null;
+        query = v; syncSearch(); closeModal(); render();
+        break;
       case "newBook": bookForm(null); break;
       case "newQuote": quoteForm(null, null); break;
       case "newNote": noteForm(null); break;
@@ -3580,11 +3619,19 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   /* 검색 */
   var si = document.getElementById("search"), sc = document.getElementById("sclear");
   si.addEventListener("input", function () {
+    tagOnly = false; tagBack = null;
     query = si.value.trim();
     sc.className = query ? "sclear" : "sclear hide";
     render();
   });
-  sc.addEventListener("click", function () { query = ""; syncSearch(); render(); });
+  sc.addEventListener("click", function () {
+    var back = tagBack;
+    tagBack = null; tagOnly = false; query = ""; syncSearch(); render();
+    if (!back) return;
+    if (back.kind === "book") { var bb = bookOf(back.id); if (bb) bookDetail(bb); }
+    else if (back.kind === "quote") { var qq = quoteOf(back.id); if (qq) quoteDetail(qq); }
+    else if (back.kind === "note") { var nn = noteOf(back.id); if (nn) noteDetail(nn); }
+  });
   function syncSearch() {
     si.value = query;
     sc.className = query ? "sclear" : "sclear hide";
