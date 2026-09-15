@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="utf-8">
 <meta http-equiv="Cache-Control" content="no-store, max-age=0">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -14,8 +13,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>적바림</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gothic+A1:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Gothic+A1:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
 <style>
 @font-face {
   font-family: 'BookkMyungjo';
@@ -527,13 +526,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       <button class="infobtn" data-act="openGuide" aria-label="일러두기">※</button>
     </div>
   </div>
-  <div class="body" id="body"></div>
-  <div class="fab" id="fab"></div>
+  <div class="body" id="body" data-scroll-watch="1"></div>
+  <div class="fab hide" id="fab"></div>
   <div class="tabs">
-    <button class="tab on" data-tab="shelf">서가</button>
+    <button class="tab" data-tab="shelf">서가</button>
     <button class="tab" data-tab="quotes">필사</button>
     <button class="tab" data-tab="simpil">심필</button>
-    <button class="tab" data-tab="stats">자취</button>
+    <button class="tab on" data-tab="stats">자취</button>
   </div>
 </div>
 <div id="modalRoot"></div>
@@ -1142,6 +1141,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   var keepScrollOnce = false;
   // 자취 탭에서 태그를 눌렀을 때만 켜짐. 본문은 빼고 태그만 맞춰 봄.
   var tagOnly = false;
+  var pendingDropData = null;
   // 상세 화면에서 태그를 눌러 검색으로 넘어왔을 때, 돌아갈 곳
   var tagBack = null;
   var sampleUndo = null;
@@ -1995,23 +1995,34 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   function pasteRestoreForm() {
     var h = '<div class="f">' +
       '<textarea id="pasteBox" rows="8" placeholder=\'{"books":[...],"quotes":[...],"notes":[...]}\'></textarea></div>';
-    h += '<button class="save" data-act="doPasteRestore">불러오기</button>';
+    h += '<div class="cl-btns">' +
+      '<button class="ghost" data-act="doPasteMerge">합치기</button>' +
+      '<button class="save" data-act="doPasteRestore">덮어쓰기</button></div>';
     openModal("백업 파일(.json) 내용 전체 선택 후 복사하고 여기에 붙여넣기", h);
   }
-  function doPasteRestore() {
+  function parsePasteBox() {
     var box = document.getElementById("pasteBox");
-    if (!box) return;
+    if (!box) return null;
     var raw = box.value.trim();
-    if (!raw) { toast("아무것도 안 붙여넣었어"); return; }
+    if (!raw) { toast("아무것도 안 붙여넣었어"); return null; }
     try {
       var d = JSON.parse(raw);
       if (!d.books || !d.quotes) throw 0;
       if (!d.notes) d.notes = [];
-      var draws2 = d.draws || {};
-      delete d.draws;
-      closeModal();
-      if (!checkRestore(d, draws2)) applyRestore(d, draws2);
-    } catch (err) { devLog("!! 붙여넣기 복원 실패"); toast("이 내용은 읽을 수 없어"); }
+      return d;
+    } catch (err) { devLog("!! 붙여넣기 파싱 실패"); toast("이 내용은 읽을 수 없어"); return null; }
+  }
+  function doPasteRestore() {
+    var d = parsePasteBox(); if (!d) return;
+    var draws2 = d.draws || {}; delete d.draws;
+    closeModal();
+    if (!checkRestore(d, draws2)) applyRestore(d, draws2);
+  }
+  function doPasteMerge() {
+    var d = parsePasteBox(); if (!d) return;
+    var draws2 = d.draws || {}; delete d.draws;
+    closeModal();
+    checkMerge(d, draws2);
   }
   function disableSpellcheck(root) {
     var els = root.querySelectorAll("input, textarea, .rich");
@@ -3397,6 +3408,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         break;
       case "saveSelf": saveSelf(); break;
       case "doMerge": applyMerge(); break;
+      case "doPasteMerge": doPasteMerge(); break;
+      case "doDropMerge":
+        if (pendingDropData) { closeModal(); checkMerge(pendingDropData.d, pendingDropData.draws); pendingDropData = null; }
+        break;
+      case "doDropRestore":
+        if (pendingDropData) { var pd = pendingDropData; pendingDropData = null; closeModal(); if (!checkRestore(pd.d, pd.draws)) applyRestore(pd.d, pd.draws); }
+        break;
       case "mergeMode":
         if (pendingMerge) { pendingMerge.force = v === "1"; showMergeModal(); }
         break;
@@ -3701,7 +3719,24 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (!f) return;
     if (!/\.json$/i.test(f.name)) { toast("이 파일은 읽을 수 없어"); return; }
     devLog("끌어다 놓기로 불러오기: " + f.name);
-    readBackupFile(f);
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var d = JSON.parse(r.result);
+        if (!d.books || !d.quotes) throw 0;
+        if (!d.notes) d.notes = [];
+        var draws2 = d.draws || {}; delete d.draws;
+        // 선택창: 합치기 vs 덮어쓰기
+        var h = '<p style="margin-bottom:16px;line-height:1.7">' + esc(f.name) + '</p>' +
+          '<div class="cl-btns">' +
+          '<button class="ghost" data-act="doDropMerge">합치기</button>' +
+          '<button class="save" data-act="doDropRestore">덮어쓰기</button></div>';
+        pendingDropData = { d: d, draws: draws2 };
+        openModal("어떻게 할까?", h, "center");
+      } catch (err) { devLog("!! 끌어다 놓기 파싱 실패"); toast("이 파일은 읽을 수 없어"); }
+    };
+    r.onerror = function () { toast("이 파일은 읽을 수 없어"); };
+    r.readAsText(f);
   });
 
   document.addEventListener("keydown", function (e) {
@@ -3752,5 +3787,6 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   });
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
