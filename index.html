@@ -1036,6 +1036,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     out = out.replace(/_([^_\n][^_]*?)_/g, "<i>$1</i>");
     out = out.replace(/\{\{([^{}\n]+?)\}\}/g, '<span class="fz-l">$1</span>');
     out = out.replace(/\[\[([^\[\]\n]+?)\]\]/g, '<span class="fz-s">$1</span>');
+    // 여는 따옴표·괄호는 뒷글자에, 닫는 것은 앞글자에 달라붙게 (보이지 않는 붙임표)
+    out = out.replace(/([\u201C\u2018\u300C\u300E([{])(?=[^\s<])/g, "$1\u2060");
+    out = out.replace(/([^\s>])([\u201D\u2019\u300D\u300F)\]}])/g, "$1\u2060$2");
     // 줄 맨 앞 들여쓰기
     out = out.replace(/^[ \t]+/gm, function (m) {
       return new Array(m.length + 1).join('<span class="indent"></span>');
