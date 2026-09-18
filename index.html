@@ -425,6 +425,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   height: 150px; overflow-y: auto; -webkit-overflow-scrolling: touch;
   line-height: 1.65; white-space: pre-wrap; word-break: break-all; line-break: strict; overflow-wrap: anywhere;
   caret-color: #F2E27E; -webkit-user-select: text; user-select: text; }
+.rich.short { height: 96px; }
 .rich:focus { border-color: var(--paper); }
 .rich b { font-weight: 700; }
 .qt .fz-l, .qn .fz-l, .qn-line .fz-l, .review-line .fz-l, .extra-b .fz-l, .note-t .fz-l, .rich .fz-l { font-size: 1.18em; }
@@ -2072,7 +2073,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (!kind) return null;
     if (kind === "quote") return {
       id: form.id || null, text: htmlToBold(document.getElementById("qText")),
-      where: val("qWhere"), page: val("qPage"), note: val("qNote"),
+      where: val("qWhere"), page: val("qPage"),
+      note: htmlToBold(document.getElementById("qNote")),
       tags: val("qTags"), date: readDate("qDate")
     };
     if (kind === "note") return {
@@ -2100,10 +2102,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (!d) return;
     if (kind === "quote") {
       var q = document.getElementById("qText"); if (q) q.innerHTML = boldToHtml(d.text || "");
-      ["qWhere", "qPage", "qNote", "qTags"].forEach(function (id, i) {
+      ["qWhere", "qPage", "qTags"].forEach(function (id, i) {
         var el = document.getElementById(id);
-        if (el) el.value = [d.where, d.page, d.note, d.tags][i] || "";
+        if (el) el.value = [d.where, d.page, d.tags][i] || "";
       });
+      var qn = document.getElementById("qNote"); if (qn) qn.innerHTML = boldToHtml(d.note || "");
       var qd = document.getElementById("qDate"); if (qd && d.date) qd.value = dateLabel(d.date);
     } else if (kind === "note") {
       var n = document.getElementById("nText"); if (n) n.innerHTML = boldToHtml(d.text || "");
@@ -2647,8 +2650,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     return out.replace(/\u00a0/g, " ").replace(/\u200B/g, "").replace(/\*\*\*\*/g, "").replace(/____/g, "");
   }
   var richId = "qText";
+  var richPrefixOf = {};
+  function rp() { return richPrefixOf[richId] || ""; }
   function syncBoldBtn() {
-    var b = document.getElementById("boldBtn"), u = document.getElementById("uLineBtn");
+    var pf = rp();
+    var b = document.getElementById(pf + "boldBtn"), u = document.getElementById(pf + "uLineBtn");
     if (b) {
       var on = false;
       try { on = document.queryCommandState("bold"); } catch (e) {}
@@ -2661,10 +2667,12 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     }
     var el2 = document.getElementById(richId), sel2 = window.getSelection();
     var curSp = (el2 && sel2 && sel2.rangeCount) ? sizeSpanAt(sel2.getRangeAt(0).startContainer, el2) : null;
-    var lb = document.getElementById("fzLargeBtn"), sb = document.getElementById("fzSmallBtn");
+    var lb = document.getElementById(pf + "fzLargeBtn"), sb = document.getElementById(pf + "fzSmallBtn");
+    var ub = document.getElementById(pf + "fzUpBtn");
     if (lb) lb.classList.toggle("on", !!curSp && curSp.className === "fz-l");
     if (sb) sb.classList.toggle("on", !!curSp && curSp.className === "fz-s");
-    var it = document.getElementById("italBtn");
+    if (ub) ub.classList.toggle("on", !!curSp && curSp.className === "fz-up");
+    var it = document.getElementById(pf + "italBtn");
     if (it) {
       var io = false;
       try { io = document.queryCommandState("italic"); } catch (e3) {}
@@ -2806,17 +2814,21 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     syncBoldBtn();
   }
   var richHooked = false;
-  function richInit(id) {
+  function richInit(id, prefix) {
     richId = id || "qText";
+    var pf = prefix || "";
+    richPrefixOf[richId] = pf;
     var el = document.getElementById(richId);
     if (!el) return;
+    // 칸이 둘 이상이면, 손이 닿은 칸을 현재 칸으로 삼음
+    el.addEventListener("focus", function () { richId = id; syncBoldBtn(); });
     try { document.execCommand("styleWithCSS", false, false); } catch (e) {}
     ["keyup", "mouseup", "input", "focus"].forEach(function (ev) {
       el.addEventListener(ev, syncBoldBtn);
     });
     // 버튼은 누르는 순간 처리함. 그래야 커서가 편집칸에서 안 빠져나감.
     [["boldBtn", "bold"], ["uLineBtn", "underline"], ["italBtn", "italic"]].forEach(function (pair) {
-      var bb = document.getElementById(pair[0]);
+      var bb = document.getElementById(pf + pair[0]);
       if (!bb) return;
       ["touchstart", "mousedown"].forEach(function (ev) {
         bb.addEventListener(ev, function (e) {
@@ -2826,7 +2838,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       });
     });
     [["fzLargeBtn", "large"], ["fzSmallBtn", "small"], ["fzUpBtn", "sup"]].forEach(function (pair) {
-      var fb = document.getElementById(pair[0]);
+      var fb = document.getElementById(pf + pair[0]);
       if (!fb) return;
       ["touchstart", "mousedown"].forEach(function (ev) {
         fb.addEventListener(ev, function (e) {
@@ -2855,11 +2867,20 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += '<div class="datewrap"><label>적은 날</label>' +
       '<input type="text" id="qDate" readonly data-act="openCal" data-v="qDate" value="' + esc(dateLabel(form.createdAt)) + '">' +
       '<button type="button" class="datetype" data-act="dateType" data-v="qDate" aria-label="직접 입력"></button></div></div>';
-    h += '<div class="f"><label>내 생각</label><textarea id="qNote" rows="4">' + esc(q ? q.note : "") + "</textarea></div>";
+    h += '<div class="f"><label>내 생각' +
+      '<button type="button" class="boldbtn" id="nqfzUpBtn">각주</button>' +
+      '<button type="button" class="boldbtn" id="nqfzSmallBtn">작게</button>' +
+      '<button type="button" class="boldbtn" id="nqfzLargeBtn">크게</button>' +
+      '<button type="button" class="boldbtn bi fz-gap" id="nqitalBtn" aria-label="기울임">가</button>' +
+      '<button type="button" class="boldbtn bu" id="nquLineBtn" aria-label="밑줄">가</button>' +
+      '<button type="button" class="boldbtn bb" id="nqboldBtn" aria-label="진하게">가</button></label>' +
+      '<div id="qNote" class="rich short" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off">' +
+      boldToHtml(q ? q.note : "") + "</div></div>";
     h += '<button type="button" class="keepbtn' + (form.keep ? " on" : "") + '" data-act="keepToggle"><i>\u2605</i> 아낌</button>';
     h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="qTags" autocomplete="off" value="' + esc(q && q.tags ? q.tags.join(", ") : "") + '"></div>';
     h += '<button class="save" data-act="saveQuote">저장</button>';
     openModal(q && q.id ? "구절 고치기" : "구절 옮겨 적기", h, "mj");
+    richInit("qNote", "nq");
     richInit("qText");
     restoreDraft("quote");
     markDraftBase();
@@ -3664,7 +3685,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       page: document.getElementById("qPage").value.trim(),
       createdAt: readDate("qDate") || today(),
       savedAt: form.savedAt || new Date().toISOString(),
-      note: trimEnd(document.getElementById("qNote").value),
+      note: trimEnd(htmlToBold(document.getElementById("qNote"))),
       tags: parseTags(document.getElementById("qTags").value),
       keep: !!form.keep,
       editedAt: new Date().toISOString()
