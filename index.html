@@ -436,12 +436,14 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 /* 서체 4종이 굵기가 하나뿐이라 브라우저가 굵게 만들어주지 않음.
    그래서 글자 테두리를 살짝 덧그려 직접 굵게 보이게 함.
    덧그린 만큼 잉크가 늘어나 더 검게 보이므로, 색을 조금 덜어 무게를 맞춤. */
-.qt b, .qn b, .qn-line b, .review-line b, .extra-b b, .note-t b, .rich b {
+.qt b, .qn b, .qn-line b, .review-line b, .extra-b b, .note-t b {
   font-weight: 700;
   -webkit-text-stroke: 0.5px currentColor;
   text-stroke: 0.5px currentColor;
   paint-order: stroke fill;
 }
+/* 편집칸은 덧그리지 않음. 덧그리면 진하게를 꺼도 계속 진해 보임 */
+.rich b { -webkit-text-stroke: 0; text-stroke: 0; }
 /* 밝은 바탕에 어두운 글자인 곳만 잉크를 덜어냄 (어두운 바탕에서는 덜면 오히려 연해짐) */
 .qt b, .qn b, .qn-line b { opacity: 0.82; }
 .starrow2 { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
@@ -521,7 +523,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     <div class="searchrow">
       <div class="searchwrap">
         <span class="sicon">⌕</span>
-        <input id="search" placeholder="" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
+        <input id="search" placeholder="" autocomplete="off" spellcheck="false" autocorrect="on" autocapitalize="off">
         <button id="sclear" class="sclear hide" aria-label="검색어 지우기">×</button>
       </div>
       <button class="infobtn" data-act="openGuide" aria-label="일러두기">※</button>
@@ -2029,10 +2031,12 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     checkMerge(d, draws2);
   }
   function disableSpellcheck(root) {
+    // 키보드 위 낱말 제안을 쓰려고 autocorrect를 켜 둠.
+    // 자동 수정이 같이 따라오므로, 거슬리면 아래 "on"들을 "off"로 되돌리면 됨.
     var els = root.querySelectorAll("input, textarea, .rich");
     for (var i = 0; i < els.length; i++) {
       els[i].setAttribute("spellcheck", "false");
-      els[i].setAttribute("autocorrect", "off");
+      els[i].setAttribute("autocorrect", "on");
       els[i].setAttribute("autocapitalize", "off");
     }
   }
@@ -2836,7 +2840,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     else if (presetBookId) { whereInit = (bookOf(presetBookId) || {}).title || ""; }
 
     var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
-      '<div id="qText" class="rich" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off">' +
+      '<div id="qText" class="rich" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off">' +
       boldToHtml(q ? q.text : "") + "</div></div>";
     h += '<div class="f wherewrap"><label>어디서</label><input id="qWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
       esc(whereInit) + '"><span class="where-caret"></span><div id="whereList"></div></div>';
@@ -2859,7 +2863,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     form = n ? JSON.parse(JSON.stringify(n)) : { id: null, tags: [], createdAt: today() };
     form.draw = (n && n.drawId && drawCache[n.drawId]) ? drawCache[n.drawId] : "";
     var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
-      '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 모르는 단어의 뜻, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자!">' +
+      '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 모르는 단어의 뜻, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자!">' +
       boldToHtml(n ? n.text : "") + "</div></div>";
     h += '<button type="button" class="keepbtn' + (form.keep ? " on" : "") + '" data-act="keepToggle"><i>\u2605</i> 아낌</button>';
     h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="nTags" autocomplete="off" value="' +
@@ -3630,10 +3634,17 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     closeModal(); render();
   }
 
+  function markLog(el, t) {
+    try {
+      devLog("[화면] " + String(el.innerHTML).slice(0, 180));
+      devLog("[저장] " + String(t).slice(0, 180));
+    } catch (e) {}
+  }
   function saveQuote() {
     draftDrop("quote"); draftKind = null; draftBase = null;
     devLog("구절 저장 시도");
     var text = trimEnd(htmlToBold(document.getElementById(richId)));
+    markLog(document.getElementById(richId), text);
     if (!text.trim()) { toast("구절이 비었어"); return; }
     var where = document.getElementById("qWhere").value.trim();
     var matched = null;
@@ -3665,6 +3676,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     draftDrop("note"); draftKind = null; draftBase = null;
     devLog("심필 저장 시도");
     var text = trimEnd(htmlToBold(document.getElementById("nText")));
+    markLog(document.getElementById("nText"), text);
     if (!text.trim() && !form.draw) { toast("아무것도 안 썼어"); return; }
     var n = {
       id: form.id || uid(),
