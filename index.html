@@ -429,6 +429,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .rich b { font-weight: 700; }
 .qt .fz-l, .qn .fz-l, .qn-line .fz-l, .review-line .fz-l, .extra-b .fz-l, .note-t .fz-l, .rich .fz-l { font-size: 1.18em; }
 .qt .fz-s, .qn .fz-s, .qn-line .fz-s, .review-line .fz-s, .extra-b .fz-s, .note-t .fz-s, .rich .fz-s { font-size: 0.87em; }
+/* 각주 번호: 작게, 글자 위쪽에 */
+.qt .fz-up, .qn .fz-up, .qn-line .fz-up, .review-line .fz-up, .extra-b .fz-up, .note-t .fz-up, .rich .fz-up {
+  font-size: 0.62em; vertical-align: super; line-height: 0; letter-spacing: 0; }
 .qt i, .qn i, .qn-line i, .review-line i, .extra-b i, .note-t i, .rich i { font-style: italic; }
 .qt u, .qn u, .qn-line u, .review-line u, .extra-b u, .note-t u, .rich u {
   text-decoration: underline; text-decoration-color: currentColor;
@@ -1039,6 +1042,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     out = out.replace(/_([^_\n][^_]*?)_/g, "<i>$1</i>");
     out = out.replace(/\{\{([^{}\n]+?)\}\}/g, '<span class="fz-l">$1</span>');
     out = out.replace(/\[\[([^\[\]\n]+?)\]\]/g, '<span class="fz-s">$1</span>');
+    out = out.replace(/\^\^([^^\n]+?)\^\^/g, '<span class="fz-up">$1</span>');
     // 여는 따옴표·괄호는 뒷글자에, 닫는 것은 앞글자에 달라붙게 (보이지 않는 붙임표)
     out = out.replace(/([\u201C\u2018\u300C\u300E([{])(?=[^\s<])/g, "$1\u2060");
     out = out.replace(/([^\s>])([\u201D\u2019\u300D\u300F)\]}])/g, "$1\u2060$2");
@@ -2562,7 +2566,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       .replace(/__([^_\n][^_]*?)__/g, "<u>$1</u>")
       .replace(/_([^_\n][^_]*?)_/g, "<i>$1</i>")
       .replace(/\{\{([^{}\n]+?)\}\}/g, '<span class="fz-l">$1</span>')
-      .replace(/\[\[([^\[\]\n]+?)\]\]/g, '<span class="fz-s">$1</span>');
+      .replace(/\[\[([^\[\]\n]+?)\]\]/g, '<span class="fz-s">$1</span>')
+      .replace(/\^\^([^^\n]+?)\^\^/g, '<span class="fz-up">$1</span>');
   }
   // 글자 하나하나에 실제로 걸린 꾸밈을 봄. 태그 이름만 믿으면
   // 브라우저가 "굵기 보통"을 덧씌워 끈 경우를 놓친다.
@@ -2590,6 +2595,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         if (size === null && nm === "SPAN") {
           if (n.className === "fz-l") size = "l";
           else if (n.className === "fz-s") size = "s";
+          else if (n.className === "fz-up") size = "up";
         }
       }
       n = n.parentNode;
@@ -2635,6 +2641,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       if (r.f.b) w = "**" + w + "**";
       if (r.f.size === "l") w = "{{" + w + "}}";
       else if (r.f.size === "s") w = "[[" + w + "]]";
+      else if (r.f.size === "up") w = "^^" + w + "^^";
       out += w;
     }
     return out.replace(/\u00a0/g, " ").replace(/\u200B/g, "").replace(/\*\*\*\*/g, "").replace(/____/g, "");
@@ -2726,7 +2733,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   // 글자 크기: 큰 / 작은 두 가지. 같은 걸 다시 누르면 기본으로 돌아옴
   function sizeSpanAt(node, el) {
     while (node && node !== el) {
-      if (node.nodeType === 1 && (node.className === "fz-l" || node.className === "fz-s")) return node;
+      if (node.nodeType === 1 && (node.className === "fz-l" || node.className === "fz-s" || node.className === "fz-up")) return node;
       node = node.parentNode;
     }
     return null;
@@ -2755,7 +2762,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     var r = sel.getRangeAt(0);
-    var want = kind === "large" ? "fz-l" : "fz-s";
+    var want = kind === "large" ? "fz-l" : (kind === "sup" ? "fz-up" : "fz-s");
     var cur = sizeSpanAt(r.startContainer, el);
 
     if (!r.collapsed) {                       // 글자를 골랐을 때
@@ -2818,7 +2825,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         }, { passive: false });
       });
     });
-    [["fzLargeBtn", "large"], ["fzSmallBtn", "small"]].forEach(function (pair) {
+    [["fzLargeBtn", "large"], ["fzSmallBtn", "small"], ["fzUpBtn", "sup"]].forEach(function (pair) {
       var fb = document.getElementById(pair[0]);
       if (!fb) return;
       ["touchstart", "mousedown"].forEach(function (ev) {
@@ -2839,7 +2846,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (q) { whereInit = q.bookId ? ((bookOf(q.bookId) || {}).title || "") : (q.source || ""); }
     else if (presetBookId) { whereInit = (bookOf(presetBookId) || {}).title || ""; }
 
-    var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
+    var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="fzUpBtn">각주</button><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
       '<div id="qText" class="rich" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off">' +
       boldToHtml(q ? q.text : "") + "</div></div>";
     h += '<div class="f wherewrap"><label>어디서</label><input id="qWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
@@ -2862,7 +2869,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   function noteForm(n) {
     form = n ? JSON.parse(JSON.stringify(n)) : { id: null, tags: [], createdAt: today() };
     form.draw = (n && n.drawId && drawCache[n.drawId]) ? drawCache[n.drawId] : "";
-    var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
+    var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="fzUpBtn">각주</button><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
       '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 모르는 단어의 뜻, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자!">' +
       boldToHtml(n ? n.text : "") + "</div></div>";
     h += '<button type="button" class="keepbtn' + (form.keep ? " on" : "") + '" data-act="keepToggle"><i>\u2605</i> 아낌</button>';
