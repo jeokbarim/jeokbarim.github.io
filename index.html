@@ -2920,8 +2920,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var nbk = n.bookId ? bookOf(n.bookId) : null;
     if (nbk) h += '<button class="ghost" data-act="toBookFromNote" data-id="' + n.id + '">' + esc(nbk.title) + ' 정보 보기</button>';
     else if (n.source) h += '<div class="extra"><div class="extra-l">어느 책</div><div class="extra-b">' + escKeepIndent(n.source) + '</div></div>';
-    h += '<button class="ghost" data-act="editNote" data-id="' + n.id + '">고치기</button>';
-    h += '<button class="del" data-act="delNote" data-id="' + n.id + '">지우기</button>';
+    h += '<button class="ghost" data-act="editNote" data-id="' + n.id + '">심필 고치기</button>';
+    h += '<button class="del" data-act="delNote" data-id="' + n.id + '">심필 지우기</button>';
     openModal("심필", h, "kb");
     modalKind = "note";
   }
@@ -3000,7 +3000,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += '<div class="sec sec-row kb" style="margin-top:22px">이 책을 읽으며 <b>' + bns.length + "</b></div>";
     h += '<div class="notes-flat">' + bns.map(function (n) { return noteCard(n, { noDate: true }); }).join("") + "</div>";
     h += '<button class="ghost" data-act="noteFromBook" data-id="' + b.id + '">＋ 이 책 읽으며 적기</button>';
-    h += '<button class="ghost" data-act="editBook" data-id="' + b.id + '">고치기</button>';
+    h += '<button class="ghost" data-act="editBook" data-id="' + b.id + '">책 정보 고치기</button>';
     h += '<button class="del" data-act="delBook" data-id="' + b.id + '">서가에서 지우기</button>';
     if (qs.length > 3) h += '<button class="scrollBottomBtn" data-act="scrollBottom" aria-label="맨 아래로">↓</button>';
     openModal(b.title, h);
@@ -3015,8 +3015,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       }).join("") + "</div>";
     }
     h += '<button class="ghost" data-act="toBook" data-id="' + q.id + '">책 정보 보기</button>';
-    h += '<button class="ghost" data-act="editQuote" data-id="' + q.id + '">고치기</button>';
-    h += '<button class="del" data-act="delQuote" data-id="' + q.id + '">지우기</button>';
+    h += '<button class="ghost" data-act="editQuote" data-id="' + q.id + '">구절 고치기</button>';
+    h += '<button class="del" data-act="delQuote" data-id="' + q.id + '">구절 지우기</button>';
     openModal("옮겨 적은 구절", h, "mj");
     modalKind = "quote";
   }
