@@ -251,7 +251,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .importlabel { display: block; position: relative; text-align: center; cursor: pointer; }
 .importlabel input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .wherewrap { position: relative; }
-.wherewrap #qWhere { padding-right: 32px; }
+.wherewrap input { padding-right: 32px; }
 .where-caret { position: absolute; right: 12px; bottom: 15px; width: 11px; height: 7px; pointer-events: none;
   background-color: var(--muted);
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: contain; mask-size: contain;
@@ -467,6 +467,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 /* 심필 탭: 크기가 같은 포스트잇 판 */
 .note-grid { display: flex; align-items: flex-start; gap: 9px; }
 .note-col { flex: 1 1 0; min-width: 0; }
+/* 책 정보 안에서는 한 줄로 쭉 쌓음 */
+.notes-flat { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
+.notes-flat:empty { display: none; }
 /* 판 높이는 글 길이에 따라 달라짐. 아주 길면 잘리고 흐려짐. */
 .note-grid .note { display: block; position: relative; width: 100%; padding: 12px 12px 10px; border: 1px solid var(--paper);
   margin: 0 0 9px; overflow: hidden; min-height: 78px;
@@ -1989,8 +1992,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     watchScrollBtn();
     document.getElementById("fab").className = "fab hide";
   }
+  var whereFor = "qWhere";
   function renderWhereList(show) {
-    var box = document.getElementById("whereList");
+    var box = document.getElementById(whereFor + "List");
     if (!box) return;
     if (!show) { box.innerHTML = ""; return; }
     var h = '<div class="wherelist">';
@@ -2079,7 +2083,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     };
     if (kind === "note") return {
       id: form.id || null, text: htmlToBold(document.getElementById("nText")),
-      tags: val("nTags"), draw: form.draw || ""
+      where: val("nWhere"), tags: val("nTags"), draw: form.draw || ""
     };
     return {
       id: form.id || null, title: val("fTitle"), author: val("fAuthor"),
@@ -2110,6 +2114,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       var qd = document.getElementById("qDate"); if (qd && d.date) qd.value = dateLabel(d.date);
     } else if (kind === "note") {
       var n = document.getElementById("nText"); if (n) n.innerHTML = boldToHtml(d.text || "");
+      var nw = document.getElementById("nWhere"); if (nw) nw.value = d.where || "";
       var nt = document.getElementById("nTags"); if (nt) nt.value = d.tags || "";
       if (d.draw) { form.draw = d.draw; drawInit(); }
     } else {
@@ -2862,7 +2867,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       '<div id="qText" class="rich" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off">' +
       boldToHtml(q ? q.text : "") + "</div></div>";
     h += '<div class="f wherewrap"><label>어디서</label><input id="qWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
-      esc(whereInit) + '"><span class="where-caret"></span><div id="whereList"></div></div>';
+      esc(whereInit) + '"><span class="where-caret"></span><div id="qWhereList"></div></div>';
     h += '<div class="row f"><div><label>쪽</label><input id="qPage" value="' + esc(q ? q.page : "") + '"></div>';
     h += '<div class="datewrap"><label>적은 날</label>' +
       '<input type="text" id="qDate" readonly data-act="openCal" data-v="qDate" value="' + esc(dateLabel(form.createdAt)) + '">' +
@@ -2893,6 +2898,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="fzUpBtn">각주</button><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
       '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 모르는 단어의 뜻, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자!">' +
       boldToHtml(n ? n.text : "") + "</div></div>";
+    var nWhereInit = n ? (n.bookId ? ((bookOf(n.bookId) || {}).title || "") : (n.source || "")) : "";
+    h += '<div class="f wherewrap"><label>어느 책 (없어도 돼)</label><input id="nWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
+      esc(nWhereInit) + '"><span class="where-caret"></span><div id="nWhereList"></div></div>';
     h += '<button type="button" class="keepbtn' + (form.keep ? " on" : "") + '" data-act="keepToggle"><i>\u2605</i> 아낌</button>';
     h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="nTags" autocomplete="off" value="' +
       esc(n && n.tags ? n.tags.join(", ") : "") + '"></div>';
@@ -2919,6 +2927,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         return '<button class="tag dark" data-act="tag" data-back="note" data-id="' + n.id + '" data-v="' + esc(t) + '">' + esc(t) + "</button>";
       }).join("") + "</div>";
     }
+    var nbk = n.bookId ? bookOf(n.bookId) : null;
+    if (nbk) h += '<button class="ghost" data-act="toBookFromNote" data-id="' + n.id + '">' + esc(nbk.title) + ' 정보 보기</button>';
+    else if (n.source) h += '<div class="extra"><div class="extra-l">어느 책</div><div class="extra-b">' + escKeepIndent(n.source) + '</div></div>';
     h += '<button class="ghost" data-act="editNote" data-id="' + n.id + '">고치기</button>';
     h += '<button class="del" data-act="delNote" data-id="' + n.id + '">지우기</button>';
     openModal("심필", h, "kb");
@@ -2995,6 +3006,10 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         : "") + "</div>";
     h += qs.map(function (q, i) { return quoteCard(q, i, { src: b.title }); }).join("");
     h += '<button class="ghost" data-act="quoteFromBook" data-id="' + b.id + '">＋ 이 책에서 구절 옮기기</button>';
+    var bns = state.notes.filter(function (x) { return x.bookId === b.id; }).sort(byAdded);
+    h += '<div class="sec sec-row kb" style="margin-top:22px">이 책을 읽으며 <b>' + bns.length + "</b></div>";
+    h += '<div class="notes-flat">' + bns.map(function (n) { return noteCard(n); }).join("") + "</div>";
+    h += '<button class="ghost" data-act="noteFromBook" data-id="' + b.id + '">＋ 이 책 읽으며 적기</button>';
     h += '<button class="ghost" data-act="editBook" data-id="' + b.id + '">고치기</button>';
     h += '<button class="del" data-act="delBook" data-id="' + b.id + '">서가에서 지우기</button>';
     if (qs.length > 3) h += '<button class="scrollBottomBtn" data-act="scrollBottom" aria-label="맨 아래로">↓</button>';
@@ -3161,7 +3176,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   /* ── 이벤트 ── */
   document.addEventListener("click", function (e) {
     var t = e.target.closest("[data-act], [data-tab]");
-    if (!e.target.closest("#whereList") && !e.target.closest("#qWhere")) renderWhereList(false);
+    if (!e.target.closest(".wherewrap")) renderWhereList(false);
     var wipeBtn = document.querySelector('[data-act="wipeAll"]');
     if (wipeBtn && wipeBtn.dataset.step && !e.target.closest('[data-act="wipeAll"]')) {
       wipeBtn.dataset.step = "";
@@ -3255,10 +3270,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       case "pasteRestore": pasteRestoreForm(); break;
       case "doPasteRestore": doPasteRestore(); break;
       case "openWhereList":
+        whereFor = t.id || "qWhere";
         renderWhereList(state.books.length > 0);
         break;
       case "pickWhere":
-        var wi = document.getElementById("qWhere");
+        var wi = document.getElementById(whereFor);
         if (wi) { wi.value = v; if (!v) wi.focus(); }
         renderWhereList(false);
         break;
@@ -3278,6 +3294,20 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       case "newBook": bookForm(null); break;
       case "newQuote": quoteForm(null, null); break;
       case "newNote": noteForm(null); break;
+      case "toBookFromNote": {
+        var tn = noteOf(id);
+        var tb = tn && tn.bookId ? bookOf(tn.bookId) : null;
+        if (tb) { closeModal(); bookDetail(tb); }
+        break;
+      }
+      case "noteFromBook": {
+        var nb = bookOf(id);
+        noteForm(null);
+        var nwi = document.getElementById("nWhere");
+        if (nwi && nb) nwi.value = nb.title;
+        markDraftBase();
+        break;
+      }
       case "openNote": noteDetail(noteOf(id)); break;
       case "editNote": noteForm(noteOf(id)); break;
       case "openBook": bookDetail(bookOf(id)); break;
@@ -3706,9 +3736,14 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var text = trimEnd(htmlToBold(document.getElementById("nText")));
     markLog(document.getElementById("nText"), text);
     if (!text.trim() && !form.draw) { toast("아무것도 안 썼어"); return; }
+    var nWhere = (document.getElementById("nWhere") || { value: "" }).value.trim();
+    var nMatched = null;
+    state.books.forEach(function (b) { if (b.title === nWhere) nMatched = b; });
     var n = {
       id: form.id || uid(),
       text: text,
+      bookId: nMatched ? nMatched.id : null,
+      source: nMatched ? "" : nWhere,
       createdAt: form.createdAt || today(),
       savedAt: form.savedAt || new Date().toISOString(),
       tags: parseTags(document.getElementById("nTags").value),
