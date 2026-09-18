@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko"><head>
+<html lang="ko">
+<head>
 <meta charset="utf-8">
 <meta http-equiv="Cache-Control" content="no-store, max-age=0">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -13,8 +14,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>적바림</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Gothic+A1:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gothic+A1:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 @font-face {
   font-family: 'BookkMyungjo';
@@ -526,13 +527,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       <button class="infobtn" data-act="openGuide" aria-label="일러두기">※</button>
     </div>
   </div>
-  <div class="body" id="body" data-scroll-watch="1"></div>
-  <div class="fab hide" id="fab"></div>
+  <div class="body" id="body"></div>
+  <div class="fab" id="fab"></div>
   <div class="tabs">
-    <button class="tab" data-tab="shelf">서가</button>
+    <button class="tab on" data-tab="shelf">서가</button>
     <button class="tab" data-tab="quotes">필사</button>
     <button class="tab" data-tab="simpil">심필</button>
-    <button class="tab on" data-tab="stats">자취</button>
+    <button class="tab" data-tab="stats">자취</button>
   </div>
 </div>
 <div id="modalRoot"></div>
@@ -2559,39 +2560,79 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       .replace(/\{\{([^{}\n]+?)\}\}/g, '<span class="fz-l">$1</span>')
       .replace(/\[\[([^\[\]\n]+?)\]\]/g, '<span class="fz-s">$1</span>');
   }
+  // 글자 하나하나에 실제로 걸린 꾸밈을 봄. 태그 이름만 믿으면
+  // 브라우저가 "굵기 보통"을 덧씌워 끈 경우를 놓친다.
+  function richFmtAt(node, root) {
+    var bold = null, ul = null, ital = null, size = null;
+    var n = node;
+    while (n && n !== root) {
+      if (n.nodeType === 1) {
+        var nm = n.nodeName, stl = n.style || {};
+        var fw = String(stl.fontWeight || "").toLowerCase();
+        var fs = String(stl.fontStyle || "").toLowerCase();
+        var td = String(stl.textDecorationLine || stl.textDecoration || "").toLowerCase();
+        if (bold === null) {
+          if (fw) bold = fw === "bold" || fw === "bolder" || /^[6-9]00$/.test(fw);
+          else if (nm === "B" || nm === "STRONG") bold = true;
+        }
+        if (ital === null) {
+          if (fs) ital = fs === "italic" || fs === "oblique";
+          else if (nm === "I" || nm === "EM") ital = true;
+        }
+        if (ul === null) {
+          if (td) ul = td.indexOf("underline") > -1;
+          else if (nm === "U" || nm === "INS") ul = true;
+        }
+        if (size === null && nm === "SPAN") {
+          if (n.className === "fz-l") size = "l";
+          else if (n.className === "fz-s") size = "s";
+        }
+      }
+      n = n.parentNode;
+    }
+    return { b: !!bold, u: !!ul, i: !!ital, size: size || "" };
+  }
   function htmlToBold(el) {
-    var out = "";
+    var runs = [];
+    function push(t, f) {
+      if (!t) return;
+      var last = runs[runs.length - 1];
+      if (last && !last.br && last.k === f.k) { last.t += t; return; }
+      runs.push({ t: t, f: f, k: f.k });
+    }
     (function walk(node) {
       for (var i = 0; i < node.childNodes.length; i++) {
         var c = node.childNodes[i], nm = c.nodeName;
-        if (c.nodeType === 3) { out += c.nodeValue; continue; }
-        if (nm === "BR") { out += "\n"; continue; }
-        if (nm === "SPAN" && (c.className === "fz-l" || c.className === "fz-s")) {
-          var big = c.className === "fz-l";
-          var sv2 = out; out = "";
-          walk(c);
-          var in2 = out; out = sv2;
-          var body2 = in2.replace(/\u200B/g, "").trim();
-          out += body2 ? (big ? "{{" + in2 + "}}" : "[[" + in2 + "]]") : in2;
+        if (c.nodeType === 3) {
+          var f = richFmtAt(c.parentNode, el);
+          f.k = (f.b ? "B" : "") + (f.u ? "U" : "") + (f.i ? "I" : "") + f.size;
+          push(c.nodeValue, f);
           continue;
         }
-        if (nm === "B" || nm === "STRONG" || nm === "U" || nm === "INS" || nm === "I" || nm === "EM") {
-          var mk = (nm === "U" || nm === "INS") ? "__" : ((nm === "I" || nm === "EM") ? "_" : "**");
-          var save = out; out = "";
-          walk(c);
-          var inner = out; out = save;
-          out += inner.replace(/\u200B/g, "").trim() ? mk + inner + mk : inner;
-          continue;
-        }
+        if (c.nodeType !== 1) continue;
+        if (nm === "BR") { runs.push({ br: true }); continue; }
         if (nm === "DIV" || nm === "P") {
-          if (out && !/\n$/.test(out)) out += "\n";
+          if (runs.length) runs.push({ br: true });
           walk(c);
           continue;
         }
         walk(c);
       }
     })(el);
-    // 붙어 있는 진한 덩어리 둘은 하나로 합침 (**가**​**나** → **가나**)
+    var out = "";
+    for (var j = 0; j < runs.length; j++) {
+      var r = runs[j];
+      if (r.br) { if (out && !/\n$/.test(out)) out += "\n"; continue; }
+      var t = r.t;
+      if (!t.replace(/\u200B/g, "").trim()) { out += t; continue; }
+      var w = t;
+      if (r.f.i) w = "_" + w + "_";
+      if (r.f.u) w = "__" + w + "__";
+      if (r.f.b) w = "**" + w + "**";
+      if (r.f.size === "l") w = "{{" + w + "}}";
+      else if (r.f.size === "s") w = "[[" + w + "]]";
+      out += w;
+    }
     return out.replace(/\u00a0/g, " ").replace(/\u200B/g, "").replace(/\*\*\*\*/g, "").replace(/____/g, "");
   }
   var richId = "qText";
@@ -3790,6 +3831,5 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   });
 })();
 </script>
-
-
-</body></html>
+</body>
+</html>
