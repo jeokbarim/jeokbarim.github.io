@@ -425,7 +425,6 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   height: 150px; overflow-y: auto; -webkit-overflow-scrolling: touch;
   line-height: 1.65; white-space: pre-wrap; word-break: break-all; line-break: strict; overflow-wrap: anywhere;
   caret-color: #F2E27E; -webkit-user-select: text; user-select: text; }
-.rich.short { height: 96px; }
 .rich:focus { border-color: var(--paper); }
 .rich b { font-weight: 700; }
 .qt .fz-l, .qn .fz-l, .qn-line .fz-l, .review-line .fz-l, .extra-b .fz-l, .note-t .fz-l, .rich .fz-l { font-size: 1.18em; }
@@ -2077,8 +2076,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (!kind) return null;
     if (kind === "quote") return {
       id: form.id || null, text: htmlToBold(document.getElementById("qText")),
-      where: val("qWhere"), page: val("qPage"),
-      note: htmlToBold(document.getElementById("qNote")),
+      where: val("qWhere"), page: val("qPage"), note: val("qNote"),
       tags: val("qTags"), date: readDate("qDate")
     };
     if (kind === "note") return {
@@ -2106,11 +2104,10 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (!d) return;
     if (kind === "quote") {
       var q = document.getElementById("qText"); if (q) q.innerHTML = boldToHtml(d.text || "");
-      ["qWhere", "qPage", "qTags"].forEach(function (id, i) {
+      ["qWhere", "qPage", "qNote", "qTags"].forEach(function (id, i) {
         var el = document.getElementById(id);
-        if (el) el.value = [d.where, d.page, d.tags][i] || "";
+        if (el) el.value = [d.where, d.page, d.note, d.tags][i] || "";
       });
-      var qn = document.getElementById("qNote"); if (qn) qn.innerHTML = boldToHtml(d.note || "");
       var qd = document.getElementById("qDate"); if (qd && d.date) qd.value = dateLabel(d.date);
     } else if (kind === "note") {
       var n = document.getElementById("nText"); if (n) n.innerHTML = boldToHtml(d.text || "");
@@ -2863,7 +2860,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (q) { whereInit = q.bookId ? ((bookOf(q.bookId) || {}).title || "") : (q.source || ""); }
     else if (presetBookId) { whereInit = (bookOf(presetBookId) || {}).title || ""; }
 
-    var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="fzUpBtn">각주</button><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
+    var h = '<div class="f"><label>구절<button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
       '<div id="qText" class="rich" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off">' +
       boldToHtml(q ? q.text : "") + "</div></div>";
     h += '<div class="f wherewrap"><label>어디서</label><input id="qWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
@@ -2872,20 +2869,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += '<div class="datewrap"><label>적은 날</label>' +
       '<input type="text" id="qDate" readonly data-act="openCal" data-v="qDate" value="' + esc(dateLabel(form.createdAt)) + '">' +
       '<button type="button" class="datetype" data-act="dateType" data-v="qDate" aria-label="직접 입력"></button></div></div>';
-    h += '<div class="f"><label>내 생각' +
-      '<button type="button" class="boldbtn" id="nqfzUpBtn">각주</button>' +
-      '<button type="button" class="boldbtn" id="nqfzSmallBtn">작게</button>' +
-      '<button type="button" class="boldbtn" id="nqfzLargeBtn">크게</button>' +
-      '<button type="button" class="boldbtn bi fz-gap" id="nqitalBtn" aria-label="기울임">가</button>' +
-      '<button type="button" class="boldbtn bu" id="nquLineBtn" aria-label="밑줄">가</button>' +
-      '<button type="button" class="boldbtn bb" id="nqboldBtn" aria-label="진하게">가</button></label>' +
-      '<div id="qNote" class="rich short" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off">' +
-      boldToHtml(q ? q.note : "") + "</div></div>";
+    h += '<div class="f"><label>내 생각</label><textarea id="qNote" rows="4">' + esc(q ? q.note : "") + "</textarea></div>";
     h += '<button type="button" class="keepbtn' + (form.keep ? " on" : "") + '" data-act="keepToggle"><i>\u2605</i> 아낌</button>';
     h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="qTags" autocomplete="off" value="' + esc(q && q.tags ? q.tags.join(", ") : "") + '"></div>';
     h += '<button class="save" data-act="saveQuote">저장</button>';
     openModal(q && q.id ? "구절 고치기" : "구절 옮겨 적기", h, "mj");
-    richInit("qNote", "nq");
     richInit("qText");
     restoreDraft("quote");
     markDraftBase();
@@ -2895,7 +2883,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   function noteForm(n) {
     form = n ? JSON.parse(JSON.stringify(n)) : { id: null, tags: [], createdAt: today() };
     form.draw = (n && n.drawId && drawCache[n.drawId]) ? drawCache[n.drawId] : "";
-    var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="fzUpBtn">각주</button><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
+    var h = '<div class="f"><label style="min-height:22px"><button type="button" class="boldbtn" id="fzSmallBtn">작게</button><button type="button" class="boldbtn" id="fzLargeBtn">크게</button><button type="button" class="boldbtn bi fz-gap" id="italBtn" aria-label="기울임">가</button><button type="button" class="boldbtn bu" id="uLineBtn" aria-label="밑줄">가</button><button type="button" class="boldbtn bb" id="boldBtn" aria-label="진하게">가</button></label>' +
       '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 모르는 단어의 뜻, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자!">' +
       boldToHtml(n ? n.text : "") + "</div></div>";
     var nWhereInit = n ? (n.bookId ? ((bookOf(n.bookId) || {}).title || "") : (n.source || "")) : "";
@@ -3715,7 +3703,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       page: document.getElementById("qPage").value.trim(),
       createdAt: readDate("qDate") || today(),
       savedAt: form.savedAt || new Date().toISOString(),
-      note: trimEnd(htmlToBold(document.getElementById("qNote"))),
+      note: trimEnd(document.getElementById("qNote").value),
       tags: parseTags(document.getElementById("qTags").value),
       keep: !!form.keep,
       editedAt: new Date().toISOString()
