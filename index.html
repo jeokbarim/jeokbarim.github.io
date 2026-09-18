@@ -1106,7 +1106,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     return base + ".  " + String(t.getHours()).padStart(2, "0") + ":" + String(t.getMinutes()).padStart(2, "0");
   }
 
-  function noteCard(n) {
+  function noteCard(n, opt) {
+    opt = opt || {};
     var h = '<button class="note" data-act="openNote" data-id="' + n.id +
       '" data-asc="' + (noteAsc[n.id] || 0) + '">';
     if (n.keep) h += '<div class="note-star">\u2605</div>';
@@ -1114,14 +1115,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       h += '<img class="note-img" src="' + drawCache[n.drawId] + '" alt="">';
     }
     var star = n.keep ? '<span class="keepstar">\u2605</span> ' : "";
+    var when = opt.noDate ? (star ? star : "") : star + noteTime(n);
     if (n.tags && n.tags.length) {
       h += '<div class="note-t">' + escKeepIndent(n.text) + "</div>";
       h += '<div class="tagrow"><div class="tags">' +
         n.tags.map(function (t) { return '<span class="tag dark">' + esc(t) + "</span>"; }).join("") + "</div>";
-      h += '<div class="note-d">' + star + noteTime(n) + "</div></div>";
+      h += '<div class="note-d">' + when + "</div></div>";
     } else {
       h += '<div class="note-row"><div class="note-t">' + escKeepIndent(n.text) + "</div>";
-      h += '<div class="note-d">' + star + noteTime(n) + "</div></div>";
+      h += '<div class="note-d">' + when + "</div></div>";
     }
     return h + "</button>";
   }
@@ -2996,7 +2998,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += '<button class="ghost" data-act="quoteFromBook" data-id="' + b.id + '">＋ 이 책에서 구절 옮기기</button>';
     var bns = state.notes.filter(function (x) { return x.bookId === b.id; }).sort(byAdded);
     h += '<div class="sec sec-row kb" style="margin-top:22px">이 책을 읽으며 <b>' + bns.length + "</b></div>";
-    h += '<div class="notes-flat">' + bns.map(function (n) { return noteCard(n); }).join("") + "</div>";
+    h += '<div class="notes-flat">' + bns.map(function (n) { return noteCard(n, { noDate: true }); }).join("") + "</div>";
     h += '<button class="ghost" data-act="noteFromBook" data-id="' + b.id + '">＋ 이 책 읽으며 적기</button>';
     h += '<button class="ghost" data-act="editBook" data-id="' + b.id + '">고치기</button>';
     h += '<button class="del" data-act="delBook" data-id="' + b.id + '">서가에서 지우기</button>';
@@ -3294,6 +3296,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         var nwi = document.getElementById("nWhere");
         if (nwi && nb) nwi.value = nb.title;
         markDraftBase();
+        backToBook = id; backToBookBottom = true;
         break;
       }
       case "openNote": noteDetail(noteOf(id)); break;
