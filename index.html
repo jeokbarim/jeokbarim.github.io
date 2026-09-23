@@ -122,6 +122,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .sec-row.head .sorttoggle[data-act="sortCycle"] { justify-content: center; padding-left: 6px; padding-right: 0; }
 .sec.mj .sorttoggle { font-size: 11px; }
 .sec.kb { font-size: 11.5px; }
+.sec.hs { font-size: 12.5px; }
+.sec-row.head.hs > span { position: relative; top: -0.5px; }
 .addbtn.mj { font-size: 11.5px; }
 .addbtn.kb { font-size: 12px; padding-top: 2px; }
 .addbtn { position: relative; top: -2px; display: inline-flex; align-items: center; justify-content: center; height: 27px; min-width: 70px; padding: 0 8px; font-size: 12px; line-height: 1; color: var(--paper); border: 1px solid var(--paper); border-radius: 999px; white-space: nowrap; letter-spacing: 0; }
@@ -139,7 +141,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 /* 탭을 바꿔도 세로선 자리가 안 흔들리게 폭을 고정 */
 .sec-row > span { min-width: 88px; }
 /* 서가는 ‘모은 책’으로 한 글자 짧아 그만큼 칸을 좁힘 */
-.sec-row.head:not(.mj):not(.kb) > span { min-width: 75px; }
+.sec-row.head:not(.mj):not(.kb):not(.hs) > span { min-width: 75px; }
 .sec-row .sorttoggle[data-act$="SortCycle"], .sec-row .sorttoggle[data-act="sortCycle"] { min-width: 78px; }
 .chip { font-size: 12.5px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
 .chip.on { border-color: var(--paper); color: #1B2A2C; background: var(--paper); font-weight: 700; }
@@ -289,13 +291,14 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .month { font-size: 11.5px; letter-spacing: 0.15em; color: var(--paper); margin: 4px 0 15px; }
 
 .nums { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 26px; }
-.num { background: var(--ink); padding: 15px 14px; }
+.num { background: var(--ink); padding: 13px 14px; }
+button.num { display: block; width: 100%; text-align: left; border: none; }
 .storagebar { margin-top: 22px; }
 .storagebar .row { display: flex; justify-content: space-between; align-items: baseline; font-size: 11px; color: var(--muted); margin-bottom: 7px; }
 .storagebar .track { height: 5px; border-radius: 3px; background: rgba(242,236,220,0.12); overflow: hidden; }
 .storagebar .fill { height: 100%; background: var(--muted); border-radius: 3px; }
-.num .v { font-size: 28px; font-weight: 700; color: var(--paper); line-height: 1.15; letter-spacing: -0.01em; }
-.num .v small { font-size: 13px; color: var(--muted); margin-left: 3px; }
+.num .v { font-size: 23px; font-weight: 700; color: var(--paper); line-height: 1.15; letter-spacing: -0.01em; }
+.num .v small { font-size: 12px; color: var(--muted); margin-left: 3px; }
 .num .l { font-size: 11.5px; color: var(--muted); margin-top: 4px; letter-spacing: 0.06em; }
 .bars { display: flex; align-items: flex-end; gap: 4px; min-height: 42px; margin-bottom: 6px; padding-bottom: 3px; border-bottom: 1px solid var(--line); }
 .bar { flex: 1; display: flex; flex-direction: column-reverse; gap: 2px; min-width: 0; }
@@ -1464,7 +1467,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         }
         return (wSortMode === "oldest" ? -1 : 1) * (ts(b) - ts(a));
       });
-      h += ws.length ? ws.map(wordCard).join("") : '<div class="empty"><b>휑•••</b></div>';
+      h += ws.length ? ws.map(wordCard).join("") : '<div class="empty hs"><b>휑•••</b></div>';
       if (ws.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "keep") {
       var keepN = state.quotes.filter(function (x) { return x.keep; }).length +
@@ -1961,19 +1964,17 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var max = 1;
     months.forEach(function (m) { max = Math.max(max, tally[m].done + tally[m].q); });
 
+    var keptQ = state.quotes.filter(function (x) { return x.keep; });
+    var keptN = state.notes.filter(function (x) { return x.keep; });
     var h = '<div class="nums">';
     h += '<div class="num"><div class="v">' + yearDone + "<small>권</small></div><div class=\"l\">끝낸 책</div></div>";
     h += '<div class="num"><div class="v">' + state.quotes.length + "<small>개</small></div><div class=\"l\">모은 구절</div></div>";
     h += '<div class="num"><div class="v">' + reading + "<small>권</small></div><div class=\"l\">읽는 중</div></div>";
     h += '<div class="num"><div class="v">' + state.books.length + "<small>권</small></div><div class=\"l\">모은 책</div></div>";
     h += '<div class="num"><div class="v">' + (state.words || []).length + "<small>개</small></div><div class=\"l\">모은 단어</div></div>";
+    h += '<button class="num" data-act="keepAll"><div class="v">' + (keptQ.length + keptN.length) +
+      "<small>개</small></div><div class=\"l\">\u2605 아낌</div></button>";
     h += "</div>";
-
-    var keptQ = state.quotes.filter(function (x) { return x.keep; });
-    var keptN = state.notes.filter(function (x) { return x.keep; });
-    if (keptQ.length + keptN.length) {
-      h += '<button class="ghost" data-act="keepAll" style="margin-bottom:20px">\u2605 아낌</button>';
-    }
 
     if (top.length) {
       h += '<div class="sec" style="margin-top:0">태그</div><div class="tags">';
