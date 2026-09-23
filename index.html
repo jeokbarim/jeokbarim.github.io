@@ -478,7 +478,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .word-row { display: flex; align-items: flex-start; gap: 12px; }
 .word-w { flex: 0 0 auto; max-width: 38%; font-size: 13.5px; color: var(--paper); letter-spacing: 0.02em; line-height: 1.65; word-break: keep-all; }
 .word-m { flex: 1 1 0; min-width: 0; padding-left: 12px; border-left: 1px solid var(--line);
-  font-size: 13.5px; color: var(--text); line-height: 1.65;
+  font-size: 13.5px; color: var(--paper); line-height: 1.65;
   text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: break-all; line-break: strict; overflow-wrap: anywhere; }
 .word-s { margin-top: 8px; font-size: 11px; color: var(--muted); }
 .word-w.big { font-size: 20px; }
@@ -1163,7 +1163,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var wWhereInit = w ? (w.bookId ? ((bookOf(w.bookId) || {}).title || "") : (w.source || "")) : "";
     var h = '<div class="f"><label>단어</label><input id="wWord" autocomplete="off" value="' + esc(w ? w.word : "") + '"></div>';
     h += '<div class="f"><label>뜻</label><textarea id="wMean" rows="3">' + esc(w ? w.mean : "") + "</textarea></div>";
-    h += '<div class="f wherewrap"><label>어느 책 (없어도 돼)</label><input id="wWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
+    h += '<div class="f wherewrap"><label>어느 책 (비워도 돼)</label><input id="wWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
       esc(wWhereInit) + '"><span class="where-caret"></span><div id="wWhereList"></div></div>';
     h += '<button class="save" data-act="saveWord">저장</button>';
     openModal(w && w.id ? "단어 고치기" : "단어 모으기", h, "hs");
@@ -2998,7 +2998,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       '<div id="nText" class="rich kb" contenteditable="true" spellcheck="false" autocorrect="on" autocapitalize="off" data-ph="프리페이지📄&#10;일기나 글을 써도 좋고, 번뜩 아이디어, 모르는 단어의 뜻, 그냥 끄적끄적 메모 등등•••&#10;무엇이든 좋아! 내 마음이 내는 목소리를 들어 보자!">' +
       boldToHtml(n ? n.text : "") + "</div></div>";
     var nWhereInit = n ? (n.bookId ? ((bookOf(n.bookId) || {}).title || "") : (n.source || "")) : "";
-    h += '<div class="f wherewrap"><label>어느 책 (없어도 돼)</label><input id="nWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
+    h += '<div class="f wherewrap"><label>어느 책 (비워도 돼)</label><input id="nWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
       esc(nWhereInit) + '"><span class="where-caret"></span><div id="nWhereList"></div></div>';
     h += '<button type="button" class="keepbtn' + (form.keep ? " on" : "") + '" data-act="keepToggle"><i>\u2605</i> 아낌</button>';
     h += '<div class="f tagwrap"><label>태그 (쉼표로 구분)</label><input id="nTags" autocomplete="off" value="' +
@@ -3275,6 +3275,10 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   }, true);
 
   /* ── 이벤트 ── */
+  // iOS는 버튼이 아닌 빈 곳을 눌러도 click이 안 올라올 때가 있어서 손이 닿는 순간도 같이 봄
+  document.addEventListener("touchstart", function (e) {
+    if (!e.target.closest(".wherewrap")) renderWhereList(false);
+  }, { passive: true });
   document.addEventListener("click", function (e) {
     var t = e.target.closest("[data-act], [data-tab]");
     if (!e.target.closest(".wherewrap")) renderWhereList(false);
@@ -3408,8 +3412,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       case "editWord": wordForm(wordOf(id)); break;
       case "saveWord": saveWord(); break;
       case "delWord":
-        state.words = (state.words || []).filter(function (x) { return x.id !== id; });
-        persist(); closeModal(); render();
+        if (t.dataset.armed) {
+          state.words = (state.words || []).filter(function (x) { return x.id !== id; });
+          persist(); closeModal(); render();
+        } else {
+          t.dataset.armed = "1";
+          t.textContent = "정말 지울까? 한 번 더 눌러";
+        }
         break;
       case "wSortCycle":
         wSortMode = wSortMode === "recent" ? "oldest" : (wSortMode === "oldest" ? "abc" : "recent");
