@@ -465,12 +465,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .note { display: block; width: 100%; text-align: left; padding: 15px 0 16px; border-bottom: 1px solid var(--line); }
 /* 말집 */
 .word { display: block; width: 100%; text-align: left; padding: 14px 0 15px; border-bottom: 1px solid var(--line); }
-.word-w { font-size: 14.5px; color: var(--paper); letter-spacing: 0.02em; }
-.word-m { margin-top: 7px; font-size: 12.5px; color: var(--text); line-height: 1.65;
+.word-row { display: flex; align-items: flex-start; gap: 12px; }
+.word-w { flex: 0 0 auto; max-width: 38%; font-size: 14.5px; color: var(--paper); letter-spacing: 0.02em; line-height: 1.65; word-break: keep-all; }
+.word-m { flex: 1 1 0; min-width: 0; padding-left: 12px; border-left: 1px solid var(--line);
+  font-size: 12.5px; color: var(--text); line-height: 1.65;
   text-align: justify; -webkit-text-align-last: left; text-align-last: left; word-break: break-all; line-break: strict; overflow-wrap: anywhere; }
 .word-s { margin-top: 8px; font-size: 11px; color: var(--muted); }
 .word-w.big { font-size: 20px; }
-.word-m.big { margin-top: 12px; font-size: 14px; margin-bottom: 18px; }
+.word-m.big { margin-top: 12px; font-size: 14px; margin-bottom: 18px; padding-left: 0; border-left: none; }
+.word-w.big { max-width: none; }
 /* 심필 탭: 크기가 같은 포스트잇 판 */
 .note-grid { display: flex; align-items: flex-start; gap: 9px; }
 .note-col { flex: 1 1 0; min-width: 0; }
@@ -1129,8 +1132,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   function wordCard(w) {
     var src = w.bookId ? ((bookOf(w.bookId) || {}).title || "") : (w.source || "");
     var h = '<button class="word" data-act="openWord" data-id="' + w.id + '">';
-    h += '<div class="word-w">' + escKeepIndent(w.word) + "</div>";
-    if (w.mean) h += '<div class="word-m">' + escKeepIndent(w.mean) + "</div>";
+    h += '<div class="word-row"><div class="word-w">' + escKeepIndent(w.word) + "</div>";
+    h += '<div class="word-m">' + (w.mean ? escKeepIndent(w.mean) : "") + "</div></div>";
     if (src) h += '<div class="word-s">' + esc(src) + "</div>";
     return h + "</button>";
   }
@@ -1143,22 +1146,22 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     else if (w.source) h += '<div class="extra"><div class="extra-l">어느 책</div><div class="extra-b">' + escKeepIndent(w.source) + "</div></div>";
     h += '<button class="ghost" data-act="editWord" data-id="' + w.id + '">고치기</button>';
     h += '<button class="del" data-act="delWord" data-id="' + w.id + '">지우기</button>';
-    openModal("말", h);
+    openModal("단어", h);
   }
   function wordForm(w) {
     form = w ? JSON.parse(JSON.stringify(w)) : {};
     var wWhereInit = w ? (w.bookId ? ((bookOf(w.bookId) || {}).title || "") : (w.source || "")) : "";
-    var h = '<div class="f"><label>말</label><input id="wWord" autocomplete="off" value="' + esc(w ? w.word : "") + '"></div>';
+    var h = '<div class="f"><label>단어</label><input id="wWord" autocomplete="off" value="' + esc(w ? w.word : "") + '"></div>';
     h += '<div class="f"><label>뜻</label><textarea id="wMean" rows="3">' + esc(w ? w.mean : "") + "</textarea></div>";
     h += '<div class="f wherewrap"><label>어느 책 (없어도 돼)</label><input id="wWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
       esc(wWhereInit) + '"><span class="where-caret"></span><div id="wWhereList"></div></div>';
     h += '<button class="save" data-act="saveWord">저장</button>';
-    openModal(w && w.id ? "말 고치기" : "말 모으기", h);
+    openModal(w && w.id ? "단어 고치기" : "단어 모으기", h);
     disableSpellcheck(document);
   }
   function saveWord() {
     var word = (document.getElementById("wWord") || { value: "" }).value.trim();
-    if (!word) { toast("말을 적어 줘"); return; }
+    if (!word) { toast("단어를 적어 줘"); return; }
     var wWhere = (document.getElementById("wWhere") || { value: "" }).value.trim();
     var matched = null;
     state.books.forEach(function (b) { if (b.title === wWhere) matched = b; });
@@ -1344,7 +1347,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       });
       h += '<div class="sec">' + (tagOnly ? "태그 " + esc(query) : "검색 결과") +
         ' · 책 <b>' + bs.length + "</b> · 구절 <b>" + qs.length + "</b> · 심필 <b>" + ns.length +
-        "</b>" + (tagOnly ? "" : " · 말 <b>" + wsx.length + "</b>") + "</div>";
+        "</b>" + (tagOnly ? "" : " · 단어 <b>" + wsx.length + "</b>") + "</div>";
       h += bs.map(bookRow).join("");
       if (bs.length && qs.length) h += '<div style="height:18px"></div>';
       h += qs.map(function (q, i) { return quoteCard(q, i); }).join("");
@@ -1442,11 +1445,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       if (ns2.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "words") {
       var ws = (state.words || []).slice();
-      h += '<div class="sec sec-row head" style="border-bottom:1px solid var(--line);padding:5px 0;margin-bottom:19px"><span>모은 말 <b>' +
+      h += '<div class="sec sec-row head" style="border-bottom:1px solid var(--line);padding:5px 0;margin-bottom:19px"><span>모은 단어 <b>' +
         ws.length + '</b></span>' +
         '<button class="sorttoggle" data-act="wSortCycle"><span class="ar">⇅</span> ' +
         (wSortMode === "abc" ? "가나다순" : (wSortMode === "oldest" ? "오래된 순" : "최근순")) + "</button>" +
-        '<button class="addbtn" data-act="newWord" style="margin-left:auto">＋ 말</button></div>';
+        '<button class="addbtn" data-act="newWord" style="margin-left:auto">＋ 단어</button></div>';
       ws.sort(function (a, b) {
         if (wSortMode === "abc") return String(a.word || "").localeCompare(String(b.word || ""), "ko");
         if (a.createdAt !== b.createdAt) {
@@ -1956,7 +1959,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += '<div class="num"><div class="v">' + state.quotes.length + "<small>개</small></div><div class=\"l\">모은 구절</div></div>";
     h += '<div class="num"><div class="v">' + reading + "<small>권</small></div><div class=\"l\">읽는 중</div></div>";
     h += '<div class="num"><div class="v">' + state.books.length + "<small>권</small></div><div class=\"l\">모은 책</div></div>";
-    h += '<div class="num"><div class="v">' + (state.words || []).length + "<small>개</small></div><div class=\"l\">모은 말</div></div>";
+    h += '<div class="num"><div class="v">' + (state.words || []).length + "<small>개</small></div><div class=\"l\">모은 단어</div></div>";
     h += "</div>";
 
     var keptQ = state.quotes.filter(function (x) { return x.keep; });
@@ -3099,7 +3102,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += bws.length ? '<div style="margin-top:22px">' + bws.map(wordCard).join("") + "</div>" : "";
     h += '<button class="ghost" data-act="quoteFromBook" data-id="' + b.id + '">＋ 구절 옮기기</button>';
     h += '<button class="ghost" data-act="noteFromBook" data-id="' + b.id + '">＋ 심필 적기</button>';
-    h += '<button class="ghost" data-act="wordFromBook" data-id="' + b.id + '">＋ 말 모으기</button>';
+    h += '<button class="ghost" data-act="wordFromBook" data-id="' + b.id + '">＋ 단어 모으기</button>';
     h += '<button class="ghost" data-act="editBook" data-id="' + b.id + '">책 정보 고치기</button>';
     h += '<button class="del" data-act="delBook" data-id="' + b.id + '">서가에서 지우기</button>';
     if (qs.length + bns.length + bws.length > 3) h += '<button class="scrollBottomBtn" data-act="scrollBottom" aria-label="맨 아래로">↓</button>';
