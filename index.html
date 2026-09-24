@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="utf-8">
 <meta http-equiv="Cache-Control" content="no-store, max-age=0">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -14,8 +13,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>적바림</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gothic+A1:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Gothic+A1:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
 <style>
 @font-face {
   font-family: 'BookkMyungjo';
@@ -122,7 +121,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .sec-row.head .sorttoggle[data-act="sortCycle"] { justify-content: center; padding-left: 6px; padding-right: 0; }
 .sec.mj .sorttoggle { font-size: 11px; }
 .sec.kb { font-size: 11.5px; }
-.sec.hs { font-size: 13.5px; }
+.sec.hs { font-size: 12.5px; }
+.sec.hs .sorttoggle { font-size: 12.5px; }
 .sec-row.head.hs > span { position: relative; top: -1.5px; }
 .addbtn.mj { font-size: 11.5px; }
 .addbtn.kb { font-size: 12px; padding-top: 2px; }
@@ -473,10 +473,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 
 .note { display: block; width: 100%; text-align: left; padding: 15px 0 16px; border-bottom: 1px solid var(--line); }
 /* 말집 */
-.word { display: block; width: 100%; text-align: left; padding: 14px 0 15px; border-bottom: 1px solid var(--line); }
+.word { display: block; width: 100%; text-align: left; padding: 14px 0 15px 8px; border-bottom: 1px solid var(--line); }
+.word:first-child { padding-top: 0; }
 /* 말집은 HS활공명조 */
 .hs, .word-w, .word-m, .wordform input, .wordform textarea { font-family: 'HwalkongSerif', 'BookkMyungjo', serif; }
-.word-row { display: flex; align-items: flex-start; gap: 12px; }
+.word-row { display: flex; align-items: center; gap: 12px; }
 .word-w { flex: 0 0 auto; max-width: 38%; font-size: 13.5px; color: var(--paper); letter-spacing: 0.02em; line-height: 1.65; word-break: keep-all; }
 .word-m { flex: 1 1 0; min-width: 0; padding-left: 12px; border-left: 1px solid var(--line);
   font-size: 13.5px; color: var(--paper); line-height: 1.65;
@@ -557,14 +558,14 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       <button class="infobtn" data-act="openGuide" aria-label="일러두기">※</button>
     </div>
   </div>
-  <div class="body" id="body"></div>
-  <div class="fab" id="fab"></div>
+  <div class="body" id="body" data-scroll-watch="1"></div>
+  <div class="fab hide" id="fab"></div>
   <div class="tabs">
-    <button class="tab on" data-tab="shelf">서가</button>
+    <button class="tab" data-tab="shelf">서가</button>
     <button class="tab" data-tab="quotes">필사</button>
     <button class="tab" data-tab="simpil">심필</button>
-    <button class="tab hs" data-tab="words">말집</button>
-    <button class="tab" data-tab="stats">자취</button>
+    <button class="tab" data-tab="words">말집</button>
+    <button class="tab on" data-tab="stats">자취</button>
   </div>
 </div>
 <div id="modalRoot"></div>
@@ -576,7 +577,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   var KEY = "jeokbarim-v2";
   var STATUS = { reading: "읽는 중", done: "완독", paused: "덮어둠" };
   var state = { books: [], quotes: [], notes: [], words: [] };
-  var tab = "shelf", filter = "all", sortMode = "recent", qSortMode = "recent", nSortMode = "recent", wSortMode = "recent", query = "", shuffleSeed = null, dailyExpanded = false, dailyMore = false, bqSortMode = "add", qKeep = false, nKeep = false, guideOpen = false, devOpen = false, consoleOpen = false, backToBook = null, backToBookBottom = false, storageOk = true;
+  var tab = "shelf", filter = "all", sortMode = "recent", qSortMode = "recent", nSortMode = "recent", wSortMode = "recent", query = "", shuffleSeed = null, dailyExpanded = false, dailyMore = false, bqSortMode = "add", qKeep = false, nKeep = false, wKeep = false, guideOpen = false, devOpen = false, consoleOpen = false, backToBook = null, backToBookBottom = false, storageOk = true;
 
   /* ── 저장 ── */
   function load() {
@@ -1143,7 +1144,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   function wordCard(w) {
     var src = w.bookId ? ((bookOf(w.bookId) || {}).title || "") : (w.source || "");
     var h = '<button class="word" data-act="openWord" data-id="' + w.id + '">';
-    h += '<div class="word-row"><div class="word-w">' + escKeepIndent(w.word) + "</div>";
+    h += '<div class="word-row"><div class="word-w">' +
+      (w.keep ? '<span class="keepstar">\u2605</span> ' : "") + escKeepIndent(w.word) + "</div>";
     h += '<div class="word-m">' + (w.mean ? escKeepIndent(w.mean) : "") + "</div></div>";
     if (src) h += '<div class="word-s">' + esc(src) + "</div>";
     return h + "</button>";
@@ -1166,6 +1168,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     h += '<div class="f"><label>뜻</label><textarea id="wMean" rows="3">' + esc(w ? w.mean : "") + "</textarea></div>";
     h += '<div class="f wherewrap"><label>어느 책 (비워도 돼)</label><input id="wWhere" autocomplete="off" data-act="openWhereList" placeholder="직접 입력 또는 목록 선택" value="' +
       esc(wWhereInit) + '"><span class="where-caret"></span><div id="wWhereList"></div></div>';
+    h += '<button type="button" class="keepbtn' + (form.keep ? " on" : "") + '" data-act="keepToggle"><i>\u2605</i> 아낌</button>';
     h += '<button class="save" data-act="saveWord">저장</button>';
     openModal(w && w.id ? "단어 고치기" : "단어 모으기", h, "hs");
     disableSpellcheck(document);
@@ -1182,6 +1185,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       mean: (document.getElementById("wMean") || { value: "" }).value.trim(),
       bookId: matched ? matched.id : null,
       source: matched ? "" : wWhere,
+      keep: !!form.keep,
       createdAt: form.createdAt || today(),
       editedAt: new Date().toISOString()
     };
@@ -1455,11 +1459,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         : '<div class="empty kb"><b>휑•••</b></div>';
       if (ns2.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "words") {
-      var ws = (state.words || []).slice();
+      var ws = (state.words || []).filter(function (x) { return !wKeep || x.keep; });
       h += '<div class="sec sec-row head hs" style="border-bottom:1px solid var(--line);padding:5px 0;margin-bottom:19px"><span>모은 단어 <b>' +
         ws.length + '</b></span>' +
         '<button class="sorttoggle" data-act="wSortCycle"><span class="ar">⇅</span> ' +
         (wSortMode === "abc" ? "가나다순" : (wSortMode === "oldest" ? "오래된 순" : "최근순")) + "</button>" +
+        '<button class="sorttoggle keeptoggle' + (wKeep ? " on" : "") + '" data-act="wKeep" data-v="' +
+        (wKeep ? "" : "1") + '"><span class="ar">\u2605</span> 아낌</button>' +
         '<button class="addbtn hs" data-act="newWord" style="margin-left:auto">＋ 단어</button></div>';
       ws.sort(function (a, b) {
         if (wSortMode === "abc") return String(a.word || "").localeCompare(String(b.word || ""), "ko");
@@ -1472,7 +1478,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       if (ws.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "keep") {
       var keepN = state.quotes.filter(function (x) { return x.keep; }).length +
-        state.notes.filter(function (x) { return x.keep; }).length;
+        state.notes.filter(function (x) { return x.keep; }).length +
+        (state.words || []).filter(function (x) { return x.keep; }).length;
       h += '<div class="sec sec-row" style="border-bottom:1px solid var(--line);padding:7px 0;margin-bottom:15px"><span>\u2605 아낌 <b>' + keepN + '</b></span>' +
         '<button class="flowx" data-act="tabStats" style="margin-left:auto" aria-label="닫기">\u00d7</button></div>';
       h += keepAllBody();
@@ -1936,6 +1943,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
           '<div class="note-t">' + escKeepIndent(n.text) + "</div></button></div>";
       }).join("");
     }
+    var kws = (state.words || []).filter(function (x) { return x.keep; });
+    if (kws.length) {
+      h += '<div class="sec hs"' + (h ? ' style="margin-top:26px"' : ' style="margin-top:0"') + '>단어 <b>' + kws.length + "</b></div>";
+      h += kws.map(wordCard).join("");
+    }
     if (!h) h += '<div class="empty"><b>휑•••</b></div>';
     return h;
   }
@@ -1965,11 +1977,12 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 
     var keptQ = state.quotes.filter(function (x) { return x.keep; });
     var keptN = state.notes.filter(function (x) { return x.keep; });
+    var keptW = (state.words || []).filter(function (x) { return x.keep; });
     var h = '<div class="nums">';
     h += '<div class="num"><div class="v">' + state.books.length + "<small>권</small></div><div class=\"l\">모은 책</div></div>";
     h += '<div class="num"><div class="v">' + state.quotes.length + "<small>개</small></div><div class=\"l\">모은 구절</div></div>";
     h += '<div class="num"><div class="v">' + (state.words || []).length + "<small>개</small></div><div class=\"l\">모은 단어</div></div>";
-    h += '<button class="num" data-act="keepAll"><div class="v">' + (keptQ.length + keptN.length) +
+    h += '<button class="num" data-act="keepAll"><div class="v">' + (keptQ.length + keptN.length + keptW.length) +
       "<small>개</small></div><div class=\"l\">\u2605 아낌</div></button>";
     h += "</div>";
 
@@ -3482,6 +3495,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         break;
       case "qKeep": qKeep = !!v; render(); break;
       case "nKeep": nKeep = !!v; render(); break;
+      case "wKeep": wKeep = !!v; render(); break;
       case "keepToggle":
         form.keep = !form.keep;
         t.classList.toggle("on", !!form.keep);
@@ -4048,5 +4062,6 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   });
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
