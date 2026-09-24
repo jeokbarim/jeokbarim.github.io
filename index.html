@@ -3350,7 +3350,15 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         sortMode = sortMode === "recent" ? "ratingDesc" : sortMode === "ratingDesc" ? "ratingAsc" : "recent";
         render();
         break;
-      case "toggleDaily": dailyExpanded = !dailyExpanded; render(); break;
+      case "toggleDaily":
+        dailyExpanded = !dailyExpanded;
+        render();
+        // 접을 때는 길어졌던 만큼 내려가 있으니 맨 위로 되돌림
+        if (!dailyExpanded) {
+          var bd = document.getElementById("body");
+          if (bd) bd.scrollTop = 0;
+        }
+        break;
       case "openGuide":
         openModal("일러두기", '<div class="guideline"></div><div class="guide-body">' + guideBody() + "</div>", "guidemodal");
         break;
