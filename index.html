@@ -142,7 +142,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .sec-row > span { min-width: 88px; }
 /* 서가는 ‘모은 책’으로 한 글자 짧아 그만큼 칸을 좁힘 */
 .sec-row.head:not(.mj):not(.kb):not(.hs) > span { min-width: 75px; }
-.sec-row.head.hs > span { min-width: 84px; }
+.sec-row.head.hs > span { min-width: 88px; }
 .sec-row .sorttoggle[data-act$="SortCycle"], .sec-row .sorttoggle[data-act="sortCycle"] { min-width: 78px; }
 .chip { font-size: 12.5px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
 .chip.on { border-color: var(--paper); color: #1B2A2C; background: var(--paper); font-weight: 700; }
@@ -474,11 +474,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .note { display: block; width: 100%; text-align: left; padding: 15px 0 16px; border-bottom: 1px solid var(--line); }
 /* 말집 */
 .word { display: block; width: 100%; text-align: left; padding: 14px 0 15px 8px; border-bottom: 1px solid var(--line); }
-.word:first-child { padding-top: 0; }
+.word:first-of-type { padding-top: 0; }
 /* 말집은 HS활공명조 */
 .hs, .word-w, .word-m, .wordform input, .wordform textarea { font-family: 'HwalkongSerif', 'BookkMyungjo', serif; }
 .word-row { display: flex; align-items: center; gap: 8px; }
 .word-c { flex: 0 0 auto; color: var(--muted); font-size: 13.5px; }
+.word-k { flex: 0 0 auto; color: var(--paper); font-size: 11px; line-height: 1;
+  font-family: 'Pretendard', -apple-system, sans-serif; margin-right: -2px; }
 .word-w { flex: 0 0 auto; max-width: 38%; font-size: 13.5px; color: var(--paper); letter-spacing: 0.02em; line-height: 1.65; word-break: keep-all; }
 .word-m { flex: 1 1 0; min-width: 0;
   font-size: 13.5px; color: var(--paper); line-height: 1.65;
@@ -1145,8 +1147,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   function wordCard(w) {
     var src = w.bookId ? ((bookOf(w.bookId) || {}).title || "") : (w.source || "");
     var h = '<button class="word" data-act="openWord" data-id="' + w.id + '">';
-    h += '<div class="word-row"><div class="word-w">' +
-      (w.keep ? '<span class="keepstar">\u2605</span> ' : "") + escKeepIndent(w.word) + "</div>";
+    h += '<div class="word-row">';
+    if (w.keep) h += '<div class="word-k">\u2605</div>';
+    h += '<div class="word-w">' + escKeepIndent(w.word) + "</div>";
     h += '<div class="word-c">:</div>';
     h += '<div class="word-m">' + (w.mean ? escKeepIndent(w.mean) : "") + "</div></div>";
     if (src) h += '<div class="word-s">' + esc(src) + "</div>";
@@ -2350,6 +2353,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   }
   function closeModal() {
     closeCal();
+    modalKind = "";
     draftKind = null; draftBase = null;
     var back = backToBook;
     backToBook = null;
