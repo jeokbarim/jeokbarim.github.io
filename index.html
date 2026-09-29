@@ -503,7 +503,14 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
 .hs, .word-w, .word-m, .wordform input, .wordform textarea { font-family: 'HwalkongSerif', 'BookkMyungjo', serif; }
 .word-row { display: flex; align-items: center; gap: 8px; }
 .word-c { flex: 0 0 auto; color: var(--muted); font-size: 13.5px; }
-/* 아낌 화면은 훑어보는 곳이라 몇 줄만 보여 줌 */
+/* 아낌 화면은 훑어보는 곳이라 두 칸에 작게 */
+.keeplist { column-count: 2; column-gap: 13px; }
+.keeplist > * { break-inside: avoid; -webkit-column-break-inside: avoid; display: block; width: 100%; }
+.keeplist .qt { font-size: 11.5px; line-height: 1.6; }
+.keeplist .note-t { font-size: 12px; line-height: 1.7; }
+.keeplist .word-w, .keeplist .word-m { font-size: 12px; }
+.keeplist .qf, .keeplist .word-s { font-size: 10px; }
+/* 줄 수 제한 */
 .keeplist .qt { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .keeplist .qn, .keeplist .qn-line { display: none; }
 .keeplist .note-t { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -1216,8 +1223,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     for (var i = 0; i < ws.length; i++) if (ws[i].id === id) return ws[i];
     return null;
   }
-  function wordCard(w) {
-    var src = w.bookId ? ((bookOf(w.bookId) || {}).title || "") : (w.source || "");
+  function wordCard(w, opt) {
+    opt = opt || {};
+    var src = opt.noSrc ? "" : (w.bookId ? ((bookOf(w.bookId) || {}).title || "") : (w.source || ""));
     var h = '<button class="word" data-act="openWord" data-id="' + w.id + '">';
     h += '<div class="word-row">';
     if (w.keep) h += '<div class="word-k">\u2605</div>';
@@ -1558,7 +1566,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         }
         return (wSortMode === "oldest" ? -1 : 1) * (ts(b) - ts(a));
       });
-      h += ws.length ? ws.map(function (w) { return markPicked(wordCard(w), w.id); }).join("")
+      h += ws.length ? ws.map(function (w) { return markPicked(wordCard(w, { noSrc: true }), w.id); }).join("")
         : '<div class="empty hs"><b>휑•••</b></div>';
       if (ws.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "keep") {
@@ -2031,7 +2039,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var kws = (state.words || []).filter(function (x) { return x.keep; });
     if (kws.length) {
       h += '<div class="sec hs"' + (h ? ' style="margin-top:26px"' : ' style="margin-top:0"') + '>단어 <b>' + kws.length + "</b></div>";
-      h += kws.map(wordCard).join("");
+      h += '<div class="keeplist">' + kws.map(wordCard).join("") + "</div>";
     }
     if (!h) h += '<div class="empty"><b>휑•••</b></div>';
     return h;
