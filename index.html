@@ -108,8 +108,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .sec.mj, .addbtn.mj, .filters.mj { font-family: 'BookkMyungjo','Gowun Batang','AppleMyungjo','Batang',serif; }
 .sec.kb, .addbtn.kb, .filters.kb { font-family: 'KkuBulLim', 'Pretendard', sans-serif; }
 .sec.mj { font-size: 11px; }
-/* 화면 왼쪽 끝(본문 여백 16px 포함)부터 첫 세로선까지의 한가운데 */
-.sec-row.head > span { text-align: center; padding-left: 0; padding-right: 10px; }
+/* 숫자가 한 자리 늘어도 글자가 밀리지 않게 왼쪽 고정 */
+.sec-row.head > span { text-align: left; padding-left: 6px; padding-right: 0; }
 /* 폰트별 글자 앉는 높이 보정. 폰트 파일에서 잰 값 */
 .sec-row.head.mj > span { position: relative; top: -1.13px; }
 .sec-row.head.kb > span { position: relative; top: -0.9px; }
@@ -130,6 +130,20 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .filters { display: flex; align-items: center; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
 .sorttoggle { margin-left: auto; font-size: 11.5px; color: var(--muted); padding: 5px 2px; white-space: nowrap; }
 .keeptoggle.on, .sorttoggle.on { color: var(--paper); }
+/* 여러 개 고르기 */
+.picked { filter: brightness(0.42); }
+.pickbar { display: flex; align-items: center; gap: 10px;
+  margin: 10px 0 16px; padding: 9px 12px; background: var(--ink); border: 1px solid var(--line);
+  font-size: 11.5px; color: var(--muted); letter-spacing: 0.06em; }
+.pickgap { flex: 1 1 auto; }
+.pickall { font-size: 11.5px; color: var(--muted); letter-spacing: 0.06em;
+  padding-left: 10px; border-left: 1px solid var(--line); }
+.pickall.on { color: var(--paper); }
+.pickbar .del, .pickbar .ghost { width: auto; margin: 0; padding: 6px 12px; font-size: 11.5px; }
+.pickbar .ghost { color: var(--paper); border-color: var(--paper); }
+.pickbar [disabled] { opacity: 0.4; }
+.pickx { flex: 0 0 auto; width: 26px; font-size: 17px; color: var(--paper); line-height: 1;
+  font-family: 'Pretendard', -apple-system, sans-serif; }
 .keeptoggle .ar { margin-right: 4px; }
 /* 세로선 좌우 여백을 같게 */
 .sec-row.head .keeptoggle { padding-left: 16px; }
@@ -229,6 +243,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .cl-btns { display: flex; gap: 8px; margin-top: 20px; }
 .cl-btns button { flex: 1 1 0; width: auto; margin-top: 0; padding: 13px 0; border-radius: 2px; font-size: 14px; font-weight: 400; }
 .cl-btns .ghost { border: 1px solid var(--line); color: var(--muted); }
+.cl-btns { margin-top: 8px; }
 .cl-btns .ghost[data-act="hideChangelog"] { border-color: var(--paper); color: var(--paper); }
 .cl-btns .save { background: var(--paper); color: #1B2A2C; border: 1px solid var(--paper); }
 .guidemodal .mh { margin-bottom: 11px; }
@@ -584,6 +599,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   var KEY = "jeokbarim-v2";
   var STATUS = { reading: "읽는 중", done: "완독", paused: "덮어둠" };
   var state = { books: [], quotes: [], notes: [], words: [] };
+  var pickMode = null, picked = {};
   var tab = "shelf", filter = "all", sortMode = "recent", lastDateSort = "recent", lastRateSort = "ratingDesc", qSortMode = "recent", nSortMode = "recent", wSortMode = "recent", query = "", shuffleSeed = null, dailyExpanded = false, dailyMore = false, bqSortMode = "add", qKeep = false, nKeep = false, wKeep = false, guideOpen = false, devOpen = false, consoleOpen = false, backToBook = null, backToBookBottom = false, storageOk = true;
 
   /* ── 저장 ── */
@@ -1045,6 +1061,32 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     for (var j = 0; j < empty; j++) h += '<i class="blank">★</i>';
     return h;
   }
+  // 여러 개 고르기
+  var PICK_NAME = { shelf: "책", quotes: "구절", simpil: "심필", words: "단어" };
+  function pickCount() { var n = 0; for (var k in picked) if (picked[k]) n++; return n; }
+  function pickBar() {
+    if (!pickMode) return "";
+    var n = pickCount();
+    var all = pickIds();
+    var everyOn = all.length > 0 && n >= all.length;
+    return '<div class="pickbar"><span>' + n + '개</span>' +
+      '<button class="pickall' + (everyOn ? " on" : "") + '" data-act="pickAll">모두 고르기</button>' +
+      '<span class="pickgap"></span>' +
+      '<button class="ghost pickshare" data-act="pickShare"' + (n ? "" : " disabled") + '>복사하기</button>' +
+      '<button class="del" data-act="pickDel"' + (n ? "" : " disabled") + '>지우기</button>' +
+      '<button class="pickx" data-act="pickEnd" aria-label="그만두기">\u00d7</button></div>';
+  }
+  function markPicked(html, id) {
+    if (!picked[id] || !html) return html;
+    return html.replace('class="', 'class="picked ');
+  }
+  function pickIds() {
+    if (pickMode === "shelf") return state.books.map(function (x) { return x.id; });
+    if (pickMode === "quotes") return state.quotes.map(function (x) { return x.id; });
+    if (pickMode === "simpil") return state.notes.map(function (x) { return x.id; });
+    if (pickMode === "words") return (state.words || []).map(function (x) { return x.id; });
+    return [];
+  }
   function bookRow(b) {
     var n = state.quotes.filter(function (x) { return x.bookId === b.id; }).length;
     var h = '<button class="book ' + b.status + '" data-act="openBook" data-id="' + b.id + '">';
@@ -1165,7 +1207,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var wb = w.bookId ? bookOf(w.bookId) : null;
     if (wb) h += '<button class="ghost" data-act="toBookFromWord" data-id="' + w.id + '">' + esc(wb.title) + " 정보 보기</button>";
     else if (w.source) h += '<div class="extra"><div class="extra-l">어느 책</div><div class="extra-b">' + escKeepIndent(w.source) + "</div></div>";
-    h += '<button class="ghost" data-act="editWord" data-id="' + w.id + '">고치기</button>';
+    h += '<div class="cl-btns"><button class="ghost" data-act="copyWord" data-id="' + w.id + '">복사하기</button>' +
+      '<button class="ghost" data-act="editWord" data-id="' + w.id + '">고치기</button></div>';
     h += '<button class="del" data-act="delWord" data-id="' + w.id + '">지우기</button>';
     openModal("단어", h, "hs");
   }
@@ -1387,6 +1430,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         '<button class="sorttoggle' + (onDate ? "" : " on") + '" data-act="rateCycle"><span class="ar">⇅</span> ' +
         (lastRateSort === "ratingAsc" ? "별점 낮은 순" : "별점 높은 순") + "</button>" +
         '<button class="addbtn" data-act="newBook" style="margin-left:auto">＋ 책</button></div>';
+      h += pickBar();
       h += '<div class="filters">';
       [["all", "전체"], ["reading", "읽는 중"], ["done", "완독"], ["paused", "덮어둠"]].forEach(function (p) {
         h += '<button class="chip' + (filter === p[0] ? " on" : "") + '" data-act="filter" data-v="' + p[0] + '">' + p[1] + "</button>";
@@ -1413,7 +1457,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
           if (sortMode === "ratingAsc") return ratingSort(a, b, false) || dateSort(a, b);
           return dateSort(a, b);
         });
-      h += shelf.length ? shelf.map(bookRow).join("")
+      h += shelf.length ? shelf.map(function (b) { return markPicked(bookRow(b), b.id); }).join("")
         : '<div class="empty"><b>휑•••</b></div>';
       if (shelf.length > 4) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "quotes") {
@@ -1424,8 +1468,9 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         '<button class="sorttoggle keeptoggle' + (qKeep ? " on" : "") + '" data-act="qKeep" data-v="' +
         (qKeep ? "" : "1") + '"><span class="ar">\u2605</span> 아낌</button>' +
         '<button class="addbtn mj" data-act="newQuote" style="margin-left:auto">＋ 필사</button></div>';
+      h += pickBar();
       if (!qKeep) {
-        h += dailyQuote();
+        h += markPicked(dailyQuote(), (pickDailyQuote(false) || {}).id || "");
         h += '<div style="margin:0 -16px 15px;border-top:1px solid var(--line)"></div>';
       }
       function qRecent(a, b) {
@@ -1445,7 +1490,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         }
         return qRecent(a, b);
       });
-      h += sorted.length ? sorted.map(function (q, i) { return quoteCard(q, i); }).join("")
+      h += sorted.length ? sorted.map(function (q, i) { return markPicked(quoteCard(q, i), q.id); }).join("")
         : '<div class="empty mj"><b>휑•••</b></div>';
       if (sorted.length > 4) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "simpil") {
@@ -1456,6 +1501,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         '<button class="sorttoggle keeptoggle' + (nKeep ? " on" : "") + '" data-act="nKeep" data-v="' +
         (nKeep ? "" : "1") + '"><span class="ar">\u2605</span> 아낌</button>' +
         '<button class="addbtn kb" data-act="newNote" style="margin-left:auto">＋ 심필</button></div>';
+      h += pickBar();
       function nRecent(a, b) {
         if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
         return ts(b) - ts(a);
@@ -1464,7 +1510,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       var ns2 = state.notes.filter(function (x) { return !nKeep || x.keep; }).sort(function (a, b) {
         return nSortMode === "oldest" ? -nRecent(a, b) : nRecent(a, b);
       });
-      h += ns2.length ? '<div class="note-grid">' + ns2.map(noteCard).join("") + "</div>"
+      h += ns2.length ? '<div class="note-grid">' +
+        ns2.map(function (n) { return markPicked(noteCard(n), n.id); }).join("") + "</div>"
         : '<div class="empty kb"><b>휑•••</b></div>';
       if (ns2.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "words") {
@@ -1476,6 +1523,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         '<button class="sorttoggle keeptoggle' + (wKeep ? " on" : "") + '" data-act="wKeep" data-v="' +
         (wKeep ? "" : "1") + '"><span class="ar">\u2605</span> 아낌</button>' +
         '<button class="addbtn hs" data-act="newWord" style="margin-left:auto">＋ 단어</button></div>';
+      h += pickBar();
       ws.sort(function (a, b) {
         if (wSortMode === "abc") return String(a.word || "").localeCompare(String(b.word || ""), "ko");
         if (a.createdAt !== b.createdAt) {
@@ -1483,7 +1531,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         }
         return (wSortMode === "oldest" ? -1 : 1) * (ts(b) - ts(a));
       });
-      h += ws.length ? ws.map(wordCard).join("") : '<div class="empty hs"><b>휑•••</b></div>';
+      h += ws.length ? ws.map(function (w) { return markPicked(wordCard(w), w.id); }).join("")
+        : '<div class="empty hs"><b>휑•••</b></div>';
       if (ws.length > 6) h += '<button class="scrollBottomBtn inbody" data-act="scrollBody" aria-label="맨 아래로">↓</button>';
     } else if (tab === "keep") {
       var keepN = state.quotes.filter(function (x) { return x.keep; }).length +
@@ -1917,14 +1966,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   // 안내문 본문. 자취 탭과 일러두기 창이 같이 씀.
   function guideBody() {
     return '<div class="gitem">안녕? 먼저, 여기는 그 누구에게도 공유되지 않는 나만의 비밀 공간이라는 점 일러둘게.</div>' +
-      '<div class="gitem">1. 왼쪽 위 적바림이나 유록 글자를 터치하거나, 밑의 서가/필사/심필/말집/자취 글자를 터치하면 화면이 자동으로 맨 위로 올라가. (유록은 내 호!)</div>' +
-      '<div class="gitem">2. 기록은 브라우저(크롬/사파리/앱 등) 안에 저장돼. 브라우저 탭이나 홈 화면에 추가한 앱을 지우면 기록이 사라지니까, 종종 백업해서 저장해 두는 게 좋아.</div>' +
-      '<div class="gitem">3. 업데이트 사항이 반영되려면, 브라우저 탭을 새로고침하거나, PC 작업 표시줄에 고정해 놓은 건 그냥 껐다가 다시 켜면 돼. 아예 지우는 건 금지!</div>' +
-      '<div class="gitem">4. 모바일과 PC를 오가며 사용하고 싶다면, 자취 탭에서 \u2018백업 파일 이용법\u2019을 펼쳐봐.</div>' +
-      '<div class="gitem">5. 써 보면서 좋은 점, 불편한 점, 추가했으면 하는 기능 등의 피드백을 주면 너무 기쁘고 고마울 거야. 빠른 반영과 개작을 약속하겠어.</div>' +
+      '<div class="gitem">1. 왼쪽 위 적바림이나 유록 글자를 터치하거나, 밑의 서가/필사/심필/말집/자취 글자를 터치하면 화면이 자동으로 맨 위로 올라가. 카드를 꾹 누르면 여러 개를 한꺼번에 고를 수 있어. (유록은 내 호!)</div>' +
+      '<div class="gitem">2. 기록은 브라우저(크롬/사파리/앱 등) 안에 저장돼. 탭이나 앱을 지우면 기록이 사라지니까, 종종 백업해서 저장해 두는 게 좋아. 업데이트가 반영되려면 탭을 새로고침하거나 앱을 껐다 켜면 돼.</div>' +
+      '<div class="gitem">3. 모바일과 PC를 오가며 사용하고 싶다면, 자취 탭에서 \u2018백업 파일 이용법\u2019을 펼쳐봐.</div>' +
+      '<div class="gitem">4. 써 보면서 좋은 점, 불편한 점, 추가했으면 하는 기능 등의 피드백을 주면 너무 기쁘고 고마울 거야. 빠른 반영과 개작을 약속하겠어.</div>' +
       '<div class="gitem">북적북적한 독서 생활에, 적바림이 부디 곰비임비의 즐거움으로 닿기를 바라.</div>';
   }
-  // 자취 탭 접이식 항목. 일러두기 4번이 가리키는 곳.
+  // 자취 탭 접이식 항목. 일러두기 3번이 가리키는 곳.
   function guideBackup() {
     return '<div class="gitem">모바일과 PC를 오가며 쓸 수 있어.' +
       '<span class="gsub">- 한쪽에서 백업 파일을 받아서 에어드롭이나 메일 첨부 등으로 다른 쪽에 옮긴 다음, 두 가지 중에 고르면 돼.</span>' +
@@ -3049,7 +3097,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     if (n.drawId && drawCache[n.drawId]) h += '<button class="ghost" data-act="saveDraw" data-id="' + n.id + '">그림 저장</button>';
     if (nbk) h += '<button class="ghost" data-act="toBookFromNote" data-id="' + n.id + '">' + esc(nbk.title) + ' 정보 보기</button>';
     else if (n.source) h += '<div class="extra"><div class="extra-l">어느 책</div><div class="extra-b">' + escKeepIndent(n.source) + '</div></div>';
-    h += '<button class="ghost" data-act="editNote" data-id="' + n.id + '">고치기</button>';
+    h += '<div class="cl-btns"><button class="ghost" data-act="copyNote" data-id="' + n.id + '">복사하기</button>' +
+      '<button class="ghost" data-act="editNote" data-id="' + n.id + '">고치기</button></div>';
     h += '<button class="del" data-act="delNote" data-id="' + n.id + '">지우기</button>';
     openModal("심필", h, "kb");
     modalKind = "note";
@@ -3147,8 +3196,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       }).join("") + "</div>";
     }
     h += '<button class="ghost" data-act="toBook" data-id="' + q.id + '">책 정보 보기</button>';
-    h += '<button class="ghost" data-act="copyQuote" data-id="' + q.id + '">구절만 복사</button>';
-    h += '<button class="ghost" data-act="editQuote" data-id="' + q.id + '">고치기</button>';
+    h += '<div class="cl-btns"><button class="ghost" data-act="copyQuote" data-id="' + q.id + '">복사하기</button>' +
+      '<button class="ghost" data-act="editQuote" data-id="' + q.id + '">고치기</button></div>';
     h += '<button class="del" data-act="delQuote" data-id="' + q.id + '">지우기</button>';
     openModal("옮겨 적은 구절", h, "mj");
     modalKind = "quote";
@@ -3354,6 +3403,33 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     pressedInsideModal = !!e.target.closest(".modal");
   }, true);
 
+  /* ── 꾹 눌러 고르기 ── */
+  var lpTimer = null, lpSkipClick = false;
+  var LP_KIND = { openBook: "shelf", openQuote: "quotes", openNote: "simpil", openWord: "words" };
+  function lpClear() { if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; } }
+  function lpStart(e) {
+    lpClear();
+    if (pickMode || query) return;
+    var c = e.target.closest("[data-act][data-id]");
+    if (!c) return;
+    var kind = LP_KIND[c.dataset.act];
+    if (!kind || kind !== tab) return;
+    var theId = c.dataset.id;
+    lpTimer = setTimeout(function () {
+      lpTimer = null;
+      lpSkipClick = true;
+      pickMode = kind;
+      picked = {};
+      picked[theId] = true;
+      render();
+    }, 480);
+  }
+  document.addEventListener("touchstart", lpStart, { passive: true });
+  document.addEventListener("touchmove", lpClear, { passive: true });
+  document.addEventListener("touchend", lpClear, { passive: true });
+  document.addEventListener("mousedown", lpStart);
+  document.addEventListener("mouseup", lpClear);
+
   /* ── 이벤트 ── */
   // iOS는 버튼이 아닌 빈 곳을 눌러도 click이 안 올라올 때가 있어서 손이 닿는 순간도 같이 봄
   document.addEventListener("touchstart", function (e) {
@@ -3374,10 +3450,22 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       if (ta !== "openCal" && ta !== "dateType") closeCal();
     }
     if (!t) return;
+    if (lpSkipClick) { lpSkipClick = false; return; }
     var act = t.dataset.act, id = t.dataset.id, v = t.dataset.v;
 
+    // 고르는 중에는 카드를 눌러도 열리지 않고 골라짐
+    if (pickMode && id) {
+      var openAct = { shelf: "openBook", quotes: "openQuote", simpil: "openNote", words: "openWord" }[pickMode];
+      if (act === openAct) {
+        picked[id] = !picked[id];
+        render();
+        return;
+      }
+    }
+
     if (t.dataset.tab) {
-      tab = t.dataset.tab; tagOnly = false; tagBack = null; query = ""; syncSearch(); render();
+      tab = t.dataset.tab; pickMode = null; picked = {};
+      tagOnly = false; tagBack = null; query = ""; syncSearch(); render();
       // 탭을 누르면 늘 맨 위부터 보이게
       var toTop = function () {
         var b = document.getElementById("body");
@@ -3513,6 +3601,80 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       case "copyQuote": {
         var cq = quoteOf(id);
         if (cq) copyText(plainText(cq.text));
+        break;
+      }
+      case "copyNote": {
+        var cn = noteOf(id);
+        if (cn) copyText(plainText(cn.text));
+        break;
+      }
+      case "copyWord": {
+        var cw = wordOf(id);
+        if (cw) copyText(cw.word + (cw.mean ? " : " + cw.mean : ""));
+        break;
+      }
+      case "pickShare": {
+        var lines = [];
+        if (pickMode === "shelf") {
+          state.books.forEach(function (b) {
+            if (picked[b.id]) lines.push(b.title + (b.author ? " · " + b.author : ""));
+          });
+        } else if (pickMode === "quotes") {
+          state.quotes.forEach(function (q) {
+            if (picked[q.id]) lines.push(plainText(q.text) + "\n— " + (srcOf(q) || "") + (q.page ? " " + q.page + "쪽" : ""));
+          });
+        } else if (pickMode === "simpil") {
+          state.notes.forEach(function (n) { if (picked[n.id]) lines.push(plainText(n.text)); });
+        } else if (pickMode === "words") {
+          (state.words || []).forEach(function (w) {
+            if (picked[w.id]) lines.push(w.word + " : " + (w.mean || ""));
+          });
+        }
+        if (!lines.length) break;
+        copyText(lines.join("\n\n"));
+        break;
+      }
+      case "pickAll": {
+        var all = pickIds();
+        var every = all.length && all.every(function (x) { return picked[x]; });
+        picked = {};
+        if (!every) all.forEach(function (x) { picked[x] = true; });
+        render();
+        break;
+      }
+      case "pickEnd": pickMode = null; picked = {}; render(); break;
+      case "pickDel": {
+        var pn = pickCount();
+        if (!pn) break;
+        if (t.dataset.armed) {
+          var gone = picked, kind = pickMode;
+          if (kind === "shelf") {
+            state.quotes.forEach(function (x) {
+              if (x.bookId && gone[x.bookId]) { x.source = (bookOf(x.bookId) || {}).title || ""; x.bookId = null; }
+            });
+            state.notes.forEach(function (x) { if (x.bookId && gone[x.bookId]) x.bookId = null; });
+            (state.words || []).forEach(function (x) { if (x.bookId && gone[x.bookId]) x.bookId = null; });
+            state.books.filter(function (b) { return gone[b.id]; }).forEach(function (b) {
+              if (b.drawId) drawStoreDel(b.drawId);
+            });
+            state.books = state.books.filter(function (b) { return !gone[b.id]; });
+          } else if (kind === "quotes") {
+            state.quotes = state.quotes.filter(function (x) { return !gone[x.id]; });
+          } else if (kind === "simpil") {
+            state.notes.filter(function (n) { return gone[n.id]; }).forEach(function (n) {
+              if (n.drawId) drawStoreDel(n.drawId);
+            });
+            state.notes = state.notes.filter(function (x) { return !gone[x.id]; });
+          } else if (kind === "words") {
+            state.words = (state.words || []).filter(function (x) { return !gone[x.id]; });
+          }
+          devLog("한꺼번에 지움 · " + kind + " " + pn + "개");
+          pickMode = null; picked = {};
+          persist(); render();
+        } else {
+          t.dataset.armed = "1";
+          t.textContent = pn + "개를 정말 지울까? 한 번 더 눌러";
+        }
         break;
       }
       case "newWord": wordForm(null); break;
