@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko"><head>
+<html lang="ko">
+<head>
 <meta charset="utf-8">
 <meta http-equiv="Cache-Control" content="no-store, max-age=0">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -13,8 +14,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>적바림</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Gothic+A1:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gothic+A1:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 @font-face {
   font-family: 'BookkMyungjo';
@@ -584,14 +585,14 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       <button class="infobtn" data-act="openGuide" aria-label="일러두기">※</button>
     </div>
   </div>
-  <div class="body" id="body" data-scroll-watch="1"></div>
-  <div class="fab hide" id="fab"></div>
+  <div class="body" id="body"></div>
+  <div class="fab" id="fab"></div>
   <div class="tabs">
-    <button class="tab" data-tab="shelf">서가</button>
+    <button class="tab on" data-tab="shelf">서가</button>
     <button class="tab" data-tab="quotes">필사</button>
     <button class="tab" data-tab="simpil">심필</button>
-    <button class="tab" data-tab="words">말집</button>
-    <button class="tab on" data-tab="stats">자취</button>
+    <button class="tab hs" data-tab="words">말집</button>
+    <button class="tab" data-tab="stats">자취</button>
   </div>
 </div>
 <div id="modalRoot"></div>
@@ -2177,6 +2178,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   var form = {};
   var modalKind = "";
   var backToQuote = null;
+  var backToBookTop = 0;
   function openModal(title, inner, cls) {
     var ovCls = (cls && cls.indexOf("center") !== -1) ? "ov center" : "ov";
     var bare = cls && cls.indexOf("bare") !== -1;
@@ -2445,10 +2447,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       backToBookBottom = false;
       var bk = bookOf(back);
       if (bk) {
+        var keepTop = backToBookTop;
+        backToBookTop = 0;
         bookDetail(bk);
-        if (toBottom) {
-          var mm = mroot.querySelector(".modal");
-          if (mm) mm.scrollTop = mm.scrollHeight;
+        var mm = mroot.querySelector(".modal");
+        if (mm) {
+          if (toBottom) mm.scrollTop = mm.scrollHeight;
+          else if (keepTop) mm.scrollTop = keepTop;
         }
         return;
       }
@@ -3707,7 +3712,14 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         backToBook = id; backToBookBottom = true;
         break;
       }
-      case "openWord": wordDetail(wordOf(id)); break;
+      case "openWord": {
+        var ww2 = wordOf(id);
+        var inBook3 = (modalKind === "book" && ww2 && ww2.bookId) ? ww2.bookId : null;
+        if (inBook3) { var mw = mroot.querySelector(".modal"); backToBookTop = mw ? mw.scrollTop : 0; }
+        wordDetail(ww2);
+        backToBook = inBook3;
+        break;
+      }
       case "editWord": wordForm(wordOf(id)); break;
       case "saveWord": saveWord(); break;
       case "delWord":
@@ -3747,6 +3759,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       case "openNote": {
         var nn2 = noteOf(id);
         var inBook2 = (modalKind === "book" && nn2 && nn2.bookId) ? nn2.bookId : null;
+        if (inBook2) { var mn = mroot.querySelector(".modal"); backToBookTop = mn ? mn.scrollTop : 0; }
         noteDetail(nn2);
         backToBook = inBook2;
         break;
@@ -3756,6 +3769,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       case "openQuote":
         var qq = quoteOf(id);
         var inBook = (modalKind === "book" && qq && qq.bookId) ? qq.bookId : null;
+        if (inBook) { var mq = mroot.querySelector(".modal"); backToBookTop = mq ? mq.scrollTop : 0; }
         quoteDetail(qq);
         backToBook = inBook;
         break;
@@ -4351,6 +4365,5 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   });
 })();
 </script>
-
-
-</body></html>
+</body>
+</html>
