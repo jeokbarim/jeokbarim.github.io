@@ -132,6 +132,10 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .keeptoggle.on, .sorttoggle.on { color: var(--paper); }
 /* 여러 개 고르기 */
 .picked { filter: brightness(0.42); }
+/* 목록 카드는 꾹 누르면 고르기니까, 기기 기본 글자 선택은 끔 */
+.book, .quote, .note, .word, .daily .quote-body {
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
 .pickbar { display: flex; align-items: center; gap: 10px;
   margin: 10px 0 16px; padding: 9px 12px; background: var(--ink); border: 1px solid var(--line);
   font-size: 11.5px; color: var(--muted); letter-spacing: 0.06em; }
