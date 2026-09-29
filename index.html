@@ -2133,7 +2133,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
     var h = '<div class="f">' +
       '<textarea id="pasteBox" rows="8" placeholder=\'{"books":[...],"quotes":[...],"notes":[...]}\'></textarea></div>';
     h += '<div class="cl-btns">' +
-      '<button class="ghost" data-act="doPasteMerge">합치기</button>' +
+      '<button class="save" data-act="doPasteMerge">합치기</button>' +
       '<button class="save" data-act="doPasteRestore">덮어쓰기</button></div>';
     openModal("백업 파일(.json) 내용 전체 선택 후 복사하고 여기에 붙여넣기", h);
   }
@@ -4016,7 +4016,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         // 선택창: 합치기 vs 덮어쓰기
         var h = '<p style="margin-bottom:16px;line-height:1.7">' + esc(f.name) + '</p>' +
           '<div class="cl-btns">' +
-          '<button class="ghost" data-act="doDropMerge">합치기</button>' +
+          '<button class="save" data-act="doDropMerge">합치기</button>' +
           '<button class="save" data-act="doDropRestore">덮어쓰기</button></div>';
         pendingDropData = { d: d, draws: draws2 };
         openModal("어떻게 할까?", h, "center");
