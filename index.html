@@ -249,6 +249,8 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .cl-btns button { flex: 1 1 0; width: auto; margin-top: 0; padding: 13px 0; border-radius: 2px; font-size: 14px; font-weight: 400; }
 .cl-btns .ghost { border: 1px solid var(--line); color: var(--muted); }
 .cl-btns { margin-top: 8px; }
+/* 구절·심필·단어 화면의 복사하기·고치기는 지우기와 같은 크기로 */
+.cl-btns .ghost[data-act^="copy"], .cl-btns .ghost[data-act^="edit"] { padding: 10px 0; font-size: 13px; }
 .cl-btns .ghost[data-act="hideChangelog"] { border-color: var(--paper); color: var(--paper); }
 .cl-btns .save { background: var(--paper); color: #1B2A2C; border: 1px solid var(--paper); }
 .guidemodal .mh { margin-bottom: 11px; }
@@ -473,8 +475,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   text-stroke: 0.5px currentColor;
   paint-order: stroke fill;
 }
-/* 편집칸은 덧그리지 않음. 덧그리면 진하게를 꺼도 계속 진해 보임 */
-.rich b { -webkit-text-stroke: 0; text-stroke: 0; }
+/* 편집칸에도 덧그려서 진하게가 보이게 하되,
+   브라우저가 진하게를 끄며 안쪽에 굵기를 덧씌운 부분은 제외 */
+.rich b { -webkit-text-stroke: 0.4px currentColor; text-stroke: 0.4px currentColor; paint-order: stroke fill; }
+.rich b [style*="font-weight"], .rich b [style*="font-weight"] * {
+  -webkit-text-stroke: 0; text-stroke: 0; }
 /* 밝은 바탕에 어두운 글자인 곳만 잉크를 덜어냄 (어두운 바탕에서는 덜면 오히려 연해짐) */
 .qt b, .qn b, .qn-line b { opacity: 0.82; }
 .starrow2 { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
