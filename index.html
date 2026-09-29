@@ -129,7 +129,7 @@ select { -webkit-appearance: none; appearance: none; background-image: none; }
 .addbtn { position: relative; top: -2px; display: inline-flex; align-items: center; justify-content: center; height: 27px; min-width: 70px; padding: 0 8px; font-size: 12px; line-height: 1; color: var(--paper); border: 1px solid var(--paper); border-radius: 999px; white-space: nowrap; letter-spacing: 0; }
 .filters { display: flex; align-items: center; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
 .sorttoggle { margin-left: auto; font-size: 11.5px; color: var(--muted); padding: 5px 2px; white-space: nowrap; }
-.keeptoggle.on { color: var(--paper); }
+.keeptoggle.on, .sorttoggle.on { color: var(--paper); }
 .keeptoggle .ar { margin-right: 4px; }
 /* 세로선 좌우 여백을 같게 */
 .sec-row.head .keeptoggle { padding-left: 16px; }
@@ -584,7 +584,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
   var KEY = "jeokbarim-v2";
   var STATUS = { reading: "읽는 중", done: "완독", paused: "덮어둠" };
   var state = { books: [], quotes: [], notes: [], words: [] };
-  var tab = "shelf", filter = "all", sortMode = "recent", qSortMode = "recent", nSortMode = "recent", wSortMode = "recent", query = "", shuffleSeed = null, dailyExpanded = false, dailyMore = false, bqSortMode = "add", qKeep = false, nKeep = false, wKeep = false, guideOpen = false, devOpen = false, consoleOpen = false, backToBook = null, backToBookBottom = false, storageOk = true;
+  var tab = "shelf", filter = "all", sortMode = "recent", lastDateSort = "recent", lastRateSort = "ratingDesc", qSortMode = "recent", nSortMode = "recent", wSortMode = "recent", query = "", shuffleSeed = null, dailyExpanded = false, dailyMore = false, bqSortMode = "add", qKeep = false, nKeep = false, wKeep = false, guideOpen = false, devOpen = false, consoleOpen = false, backToBook = null, backToBookBottom = false, storageOk = true;
 
   /* ── 저장 ── */
   function load() {
@@ -1379,10 +1379,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         h += '<div class="empty"><b>휑•••</b></div>';
       }
     } else if (tab === "shelf") {
-      var sortLabel = { recent: "최근순", ratingDesc: "별점 높은 순", ratingAsc: "별점 낮은 순" }[sortMode];
+      var onDate = sortMode === "recent" || sortMode === "oldest";
       h += '<div class="sec sec-row head" style="border-bottom:1px solid var(--line);padding:5px 0;margin-bottom:19px"><span>모은 책 <b>' +
         state.books.length + '</b></span>' +
-        '<button class="sorttoggle" data-act="sortCycle"><span class="ar">⇅</span> ' + sortLabel + "</button>" +
+        '<button class="sorttoggle' + (onDate ? " on" : "") + '" data-act="sortCycle"><span class="ar">⇅</span> ' +
+        (lastDateSort === "oldest" ? "오래된 순" : "최근순") + "</button>" +
+        '<button class="sorttoggle' + (onDate ? "" : " on") + '" data-act="rateCycle"><span class="ar">⇅</span> ' +
+        (lastRateSort === "ratingAsc" ? "별점 낮은 순" : "별점 높은 순") + "</button>" +
         '<button class="addbtn" data-act="newBook" style="margin-left:auto">＋ 책</button></div>';
       h += '<div class="filters">';
       [["all", "전체"], ["reading", "읽는 중"], ["done", "완독"], ["paused", "덮어둠"]].forEach(function (p) {
@@ -1394,7 +1397,8 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         return x.startedAt || x.createdAt || "";
       }
       function dateSort(a, b) {
-        return String(keyDate(b)).localeCompare(String(keyDate(a)));
+        var r = String(keyDate(b)).localeCompare(String(keyDate(a)));
+        return sortMode === "oldest" ? -r : r;
       }
       function ratingSort(a, b, desc) {
         var av = a.rating, bv = b.rating;
@@ -3403,6 +3407,13 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         pendingSnap = null; draftBase = null; draftKind = null; pendingClose = false;
         closeModal();
         break;
+      case "rateCycle":
+        if (sortMode === "ratingDesc" || sortMode === "ratingAsc") {
+          lastRateSort = lastRateSort === "ratingDesc" ? "ratingAsc" : "ratingDesc";
+        }
+        sortMode = lastRateSort;
+        render();
+        break;
       case "filter": filter = v; render(); break;
       case "nSortCycle":
         nSortMode = nSortMode === "recent" ? "oldest" : "recent";
@@ -3413,7 +3424,11 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         render();
         break;
       case "sortCycle":
-        sortMode = sortMode === "recent" ? "ratingDesc" : sortMode === "ratingDesc" ? "ratingAsc" : "recent";
+        // 날짜 갈래가 이미 켜져 있으면 방향만 뒤집고, 아니면 날짜 갈래로 넘어옴
+        if (sortMode === "recent" || sortMode === "oldest") {
+          lastDateSort = lastDateSort === "recent" ? "oldest" : "recent";
+        }
+        sortMode = lastDateSort;
         render();
         break;
       case "toggleDaily":
