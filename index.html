@@ -1076,6 +1076,23 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       '<button class="del" data-act="pickDel"' + (n ? "" : " disabled") + '>지우기</button>' +
       '<button class="pickx" data-act="pickEnd" aria-label="그만두기">\u00d7</button></div>';
   }
+  // 고를 때마다 화면 전체를 다시 그리면 심필 칸 배치가 흔들려서, 바뀐 곳만 손댐
+  function refreshPickBar() {
+    var bar = document.querySelector(".pickbar");
+    if (!bar) return;
+    var box = document.createElement("div");
+    box.innerHTML = pickBar();
+    if (box.firstChild) bar.parentNode.replaceChild(box.firstChild, bar);
+  }
+  function paintPicked() {
+    var els = document.querySelectorAll("#body [data-id]");
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (!LP_KIND[el.dataset.act]) continue;
+      el.classList.toggle("picked", !!picked[el.dataset.id]);
+    }
+    refreshPickBar();
+  }
   function markPicked(html, id) {
     if (!picked[id] || !html) return html;
     return html.replace('class="', 'class="picked ');
@@ -3458,7 +3475,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
       var openAct = { shelf: "openBook", quotes: "openQuote", simpil: "openNote", words: "openWord" }[pickMode];
       if (act === openAct) {
         picked[id] = !picked[id];
-        render();
+        paintPicked();
         return;
       }
     }
@@ -3639,7 +3656,7 @@ body.dropping #app::after { content: "백업 파일을 여기 놓으면 불러�
         var every = all.length && all.every(function (x) { return picked[x]; });
         picked = {};
         if (!every) all.forEach(function (x) { picked[x] = true; });
-        render();
+        paintPicked();
         break;
       }
       case "pickEnd": pickMode = null; picked = {}; render(); break;
